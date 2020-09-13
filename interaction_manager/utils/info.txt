@@ -1,0 +1,3 @@
+unset PYTHONPATH; pyuic5 -x app_manager/ui/connectiondialog.ui -o app_manager/view/ui_connection_dialog.py -x; source ~/.bash_profile
+
+pyuic5 -x interaction_manager/ui/blockmanagergui.ui -o interaction_manager/view/block_manager_gui.py -x

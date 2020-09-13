@@ -1,0 +1,19 @@
+topic: ~index()
+language: enu
+
+include: general.top
+
+u: (e:pageLoaded $pageLoaded=="index") "back to $pageLoaded"
+
+u: (e:loadPage) $pageName=$loadPage ^gotoReactivate(loadPageTag)
+
+#u: (_~greetings {Pepper}) ^gotoReactivate(greetingsTag)
+#proposal: %greetingsTag $pageName="greetings" ^gotoReactivate(loadPageTag)
+
+# Execute the selected page using javascript. This needs to run ON the robot
+proposal: %loadPageTag %script
+from naoqi import ALProxy
+ALTabletService = ALProxy("ALTabletService", "localhost", 9559)
+ALMemory = ALProxy("ALMemory", "localhost", 9559)
+ALTabletService.executeJS("getPage('" + ALMemory.getData("pageName") + "');")
+%script

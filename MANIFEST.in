@@ -1,0 +1,3 @@
+include interaction_manager/properties/*.yaml
+include interaction_manager/properties/*.json
+include interaction_manager/qss/*.qss

@@ -1,0 +1,7 @@
+ESGraphicsBlock QGraphicsTextItem { font: 11pt bold "Courier"; color: black; }
+ESBlockContentWidget { background: transparent; }
+ESBlockContentWidget QLabel { font: 10pt "Courier"; color: #e0e0e0; background: transparent; }
+ESBlockContentWidget QTextEdit { font: 10pt "Courier"; color: gray; background: white; }
+ESBlockContentWidget QLineEdit { font: 10pt "Courier"; color: black; background: #f1f1f1; }
+QGraphicsView { selection-background-color: rgb(255, 255, 255); }
+BlockListWidget { font: 10pt "Courier"; }

@@ -1,0 +1,5 @@
+robot:
+  realm: {
+      nao: "rie.5f57375acbbb01f089d83cde",
+      pepper: "rie.5f58d011cbbb01f089d84767"
+  }

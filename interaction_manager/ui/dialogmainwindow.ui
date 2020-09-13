@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogGUI</class>
+ <widget class="QMainWindow" name="DialogGUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1216</width>
+    <height>769</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>62</width>
+    <height>50</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Interaction Design</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_11">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_8">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>DESIGN PANEL</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="designPanelLayout">
+        <item row="0" column="0">
+         <widget class="QWidget" name="tmpWidget" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1216</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionMenuNew"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuImportBlocks"/>
+    <addaction name="actionMenuExportBlocks"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuSave"/>
+    <addaction name="actionMenuSaveAs"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuMusic"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionMenuUndo"/>
+    <addaction name="actionMenuRedo"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuCopy"/>
+    <addaction name="actionMenuPaste"/>
+    <addaction name="actionMenuPasteParameters"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuDelete"/>
+    <addaction name="actionMenuClear"/>
+   </widget>
+   <widget class="QMenu" name="menuRobot">
+    <property name="title">
+     <string>Robot</string>
+    </property>
+    <addaction name="actionMenuConnect"/>
+    <addaction name="actionMenuDisconnect"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuWakeUp"/>
+    <addaction name="actionMenuRest"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuEnableTouch"/>
+    <addaction name="actionMenuShowImage"/>
+    <addaction name="actionMenuHideImage"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuVolumeUp"/>
+    <addaction name="actionMenuVolumeDown"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuTest"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuPlay"/>
+    <addaction name="actionMenuPause"/>
+    <addaction name="actionMenuStop"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuSimulate"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuEnableMoving"/>
+    <addaction name="actionMenuDisableMoving"/>
+   </widget>
+   <widget class="QMenu" name="menuDatabase">
+    <property name="title">
+     <string>Database</string>
+    </property>
+    <addaction name="actionMenuDatabaseConnect"/>
+    <addaction name="actionMenuDatabaseDisconnect"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionMenuBlockList"/>
+    <addaction name="actionMenuLogs"/>
+    <addaction name="actionMenuSimulationDockView"/>
+    <addaction name="actionMenuMusicDockView"/>
+    <addaction name="actionMenuSettingsDockView"/>
+    <addaction name="separator"/>
+    <addaction name="actionMenuZoomIn"/>
+    <addaction name="actionMenuZoomOut"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuRobot"/>
+   <addaction name="menuDatabase"/>
+   <addaction name="menuView"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionMenuSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuCopy"/>
+   <addaction name="actionMenuPasteParameters"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuClear"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuConnect"/>
+   <addaction name="actionMenuDisconnect"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuWakeUp"/>
+   <addaction name="actionMenuRest"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuVolumeUp"/>
+   <addaction name="actionMenuVolumeDown"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuPlay"/>
+   <addaction name="actionMenuStop"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuMusic"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuSimulate"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuImportBlocks"/>
+   <addaction name="actionMenuExportBlocks"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="blocksDockWidget">
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>Dialogue Blocks</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_8">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_11">
+         <property name="font">
+          <font>
+           <weight>50</weight>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
+           <widget class="QComboBox" name="dialogueBlocksCategoryComboBox">
+            <item>
+             <property name="text">
+              <string>All</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Opening</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Service-Provision</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Closing</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Chit-Chat</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="Line" name="line_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QListWidget" name="dragListWidget">
+            <property name="font">
+             <font>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="lineWidth">
+             <number>1</number>
+            </property>
+            <property name="verticalScrollBarPolicy">
+             <enum>Qt::ScrollBarAlwaysOn</enum>
+            </property>
+            <property name="dragEnabled">
+             <bool>true</bool>
+            </property>
+            <property name="dragDropMode">
+             <enum>QAbstractItemView::DragOnly</enum>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>100</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="selectionRectVisible">
+             <bool>true</bool>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>Salutation</string>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>13</pointsize>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="icon">
+              <iconset resource="hre_resources/resources.qrc">
+               <normaloff>:/hreresources/pepper-icons/pepper-greet.png</normaloff>:/hreresources/pepper-icons/pepper-greet.png</iconset>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="logsDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>182</width>
+     <height>177</height>
+    </size>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <property name="windowTitle">
+    <string>Logs</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_27">
+     <item row="0" column="0">
+      <widget class="QTextEdit" name="logsTextEdit">
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background: rgb(76, 76, 76)</string>
+       </property>
+       <property name="undoRedoEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="acceptRichText">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="musicDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>Music Player</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QGridLayout" name="gridLayout_16">
+     <item row="2" column="0">
+      <spacer name="verticalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="0" column="1">
+        <widget class="QComboBox" name="musicPlaylistComboBox"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="musicTracksComboBox"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Playlists</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Tracks</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0">
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="0" column="1">
+        <widget class="QPushButton" name="musicPauseButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Pause</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normalon>:/hreresources/icons/pause.png</normalon>
+          </iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="musicPlayButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Play</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normalon>:/hreresources/icons/play.png</normalon>
+          </iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="4">
+        <widget class="QLineEdit" name="musicMessageLineEdit">
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: transparent;</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="frame">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QSpinBox" name="musicVolumeSpinBox">
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="singleStep">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <number>70</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="musicVolumeButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Vol (%)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="settingsDockWidget">
+   <property name="windowTitle">
+    <string>Settings</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_6">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="blocksDelaySpinBox">
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="maximum">
+          <number>60</number>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string>Certainty (%)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Speech-Recognition</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="speechCertaintySpinBox">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>50</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Face-Detection</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="faceDetectionCertaintySpinBox">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>50</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Delay Between Blocks (s)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionReload">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/refresh.png</normaloff>:/hreresources/icons/refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reload</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionMenuNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionMenuImportBlocks">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/import.png</normaloff>:/hreresources/icons/import.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import Design</string>
+   </property>
+   <property name="toolTip">
+    <string>Import Design</string>
+   </property>
+  </action>
+  <action name="actionMenuExportBlocks">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/export.png</normaloff>:/hreresources/icons/export.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export Design</string>
+   </property>
+   <property name="toolTip">
+    <string>Export Design</string>
+   </property>
+  </action>
+  <action name="actionMenuSave">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/save.png</normaloff>:/hreresources/icons/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionMenuSaveAs">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/save.png</normaloff>:/hreresources/icons/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionMenuExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionMenuUndo">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionMenuRedo">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionMenuCopy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/copy.png</normaloff>:/hreresources/icons/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionMenuPaste">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/paste.png</normaloff>:/hreresources/icons/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionMenuPasteParameters">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/paste.png</normaloff>:/hreresources/icons/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste Parameters</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste Parameters</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+V</string>
+   </property>
+  </action>
+  <action name="actionMenuDelete">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/delete.png</normaloff>:/hreresources/icons/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Backspace</string>
+   </property>
+  </action>
+  <action name="actionMenuClear">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/erase.png</normaloff>:/hreresources/icons/erase.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Backspace</string>
+   </property>
+  </action>
+  <action name="actionMenuConnect">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/connect.png</normaloff>:/hreresources/icons/connect.png</iconset>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionMenuDisconnect">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/disconnect1.png</normaloff>:/hreresources/icons/disconnect1.png</iconset>
+   </property>
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionMenuWakeUp">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/eyeon.png</normaloff>:/hreresources/icons/eyeon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Wake Up</string>
+   </property>
+  </action>
+  <action name="actionMenuRest">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/eyeoff.png</normaloff>:/hreresources/icons/eyeoff.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rest</string>
+   </property>
+  </action>
+  <action name="actionMenuEnableTouch">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/touch.png</normaloff>:/hreresources/icons/touch.png</iconset>
+   </property>
+   <property name="text">
+    <string>Enable Touch</string>
+   </property>
+  </action>
+  <action name="actionMenuShowImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/tablet-show.png</normaloff>:/hreresources/icons/tablet-show.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Image</string>
+   </property>
+  </action>
+  <action name="actionMenuHideImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/tablet-hide.png</normaloff>:/hreresources/icons/tablet-hide.png</iconset>
+   </property>
+   <property name="text">
+    <string>Hide Image</string>
+   </property>
+  </action>
+  <action name="actionMenuVolumeUp">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/volume-up.png</normaloff>:/hreresources/icons/volume-up.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vol+</string>
+   </property>
+  </action>
+  <action name="actionMenuVolumeDown">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/volume-down.png</normaloff>:/hreresources/icons/volume-down.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vol-</string>
+   </property>
+  </action>
+  <action name="actionMenuTest">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Test</string>
+   </property>
+  </action>
+  <action name="actionMenuPlay">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/play.png</normaloff>:/hreresources/icons/play.png</iconset>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+  </action>
+  <action name="actionMenuPause">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/pause.png</normaloff>:/hreresources/icons/pause.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionMenuStop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/stop.png</normaloff>:/hreresources/icons/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionMenuEnableMoving">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Enable Moving</string>
+   </property>
+  </action>
+  <action name="actionMenuDisableMoving">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Disable Moving</string>
+   </property>
+  </action>
+  <action name="actionMenuDatabaseConnect">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/database-connect.png</normaloff>:/hreresources/icons/database-connect.png</iconset>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionMenuDatabaseDisconnect">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/database-disconnect.png</normaloff>:/hreresources/icons/database-disconnect.png</iconset>
+   </property>
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionMenuZoomIn">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/zoomin.png</normaloff>:/hreresources/icons/zoomin.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
+   </property>
+  </action>
+  <action name="actionMenuZoomOut">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/zoomout.png</normaloff>:/hreresources/icons/zoomout.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionMenuBlockList">
+   <property name="text">
+    <string>Block List Panel</string>
+   </property>
+  </action>
+  <action name="actionMenuLogs">
+   <property name="text">
+    <string>Logs Panel</string>
+   </property>
+  </action>
+  <action name="actionMenuSimulate">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/simulate-chat.png</normaloff>:/hreresources/icons/simulate-chat.png</iconset>
+   </property>
+   <property name="text">
+    <string>Simulate</string>
+   </property>
+  </action>
+  <action name="actionMenuMusic">
+   <property name="icon">
+    <iconset resource="hre_resources/resources.qrc">
+     <normaloff>:/hreresources/icons/music.png</normaloff>:/hreresources/icons/music.png</iconset>
+   </property>
+   <property name="text">
+    <string>Spotify</string>
+   </property>
+   <property name="toolTip">
+    <string>Music</string>
+   </property>
+  </action>
+  <action name="actionMenuMusicDockView">
+   <property name="text">
+    <string>Music Panel</string>
+   </property>
+  </action>
+  <action name="actionMenuSimulationDockView">
+   <property name="text">
+    <string>Simulation Panel</string>
+   </property>
+   <property name="toolTip">
+    <string>Simulation</string>
+   </property>
+  </action>
+  <action name="actionMenuSettingsDockView">
+   <property name="text">
+    <string>Settings Panel</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="hre_resources/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

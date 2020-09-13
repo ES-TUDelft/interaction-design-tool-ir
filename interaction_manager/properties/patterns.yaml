@@ -1,0 +1,95 @@
+start:
+    inputs: 0  # sockets
+    outputs: 1  # sockets
+    output_edges: 1
+    icon: block_manager/icons/blue/start.png
+    bg_color: 056b4a
+    topic: ""
+    tags: []
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+end:
+    inputs: 1
+    outputs: 0
+    output_edges: 0
+    icon: block_manager/icons/blue/x.png
+    bg_color: 202022
+    topic: ""
+    tags: []
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+question:
+    inputs: 1
+    outputs: 1
+    output_edges: 2
+    icon: block_manager/icons/blue/question-mark.png
+    bg_color: 291a2d #7e2a2a
+    topic: "question"
+    tags:
+        - askQuestionTag
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+confirmation:
+    inputs: 1
+    outputs: 1
+    output_edges: 2
+    icon: block_manager/icons/blue/check.png
+    bg_color: 2b4a4a
+    topic: "question"
+    tags:
+        - confirmationTag
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+instructions:
+    inputs: 1
+    outputs: 1
+    output_edges: 1
+    icon: block_manager/icons/blue/instructions.png
+    bg_color: 00243f
+    topic: ""
+    tags: []
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+monologue:
+    inputs: 1
+    outputs: 1
+    output_edges: 1
+    icon: block_manager/icons/blue/speaker.png
+    topic: ""
+    tags: []
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+action_wait:
+    inputs: 1
+    outputs: 1
+    output_edges: 1
+    icon: block_manager/icons/blue/action-wait.png
+    bg_color: 057389
+    topic: ""
+    tags: []
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+    action: 1
+#condition:
+#    inputs: 1
+#    outputs: 1
+#    icon: block_manager/icons/blue/condition.png
+#    topic: ""
+#    tags: []
+#    tablet:
+#        - index
+#        - displayinfo

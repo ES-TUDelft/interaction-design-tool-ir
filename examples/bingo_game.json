@@ -1,0 +1,952 @@
+{
+    "id": 4474201616, 
+    "blocks": [
+        {
+            "id": 4737518736, 
+            "title": "Start", 
+            "icon": "interaction_manager/icons/blue/start.png", 
+            "pos_x": -1133.0, 
+            "pos_y": -138.0, 
+            "inputs": [], 
+            "outputs": [
+                {
+                    "id": 4737549264, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4739003888, 
+                "block": 4737518736, 
+                "description": "Salutation"
+            }, 
+            "parent": {
+                "id": 4737518096, 
+                "name": "start", 
+                "pattern": "start", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "Hello", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4737518736, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4736172176, 
+            "title": "Confirmation", 
+            "icon": "interaction_manager/icons/blue/question-mark.png", 
+            "pos_x": -357.0, 
+            "pos_y": 202.0, 
+            "inputs": [
+                {
+                    "id": 4736172496, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4736172560, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4736143600, 
+                "block": 4736172176, 
+                "description": "Winner?"
+            }, 
+            "parent": {
+                "id": 4737630032, 
+                "name": "confirmation", 
+                "pattern": "confirmation", 
+                "topic_tag": {
+                    "topic": "question", 
+                    "goto_ids": [
+                        4722814032, 
+                        4494281744
+                    ], 
+                    "name": "confirmationTag", 
+                    "answers": [
+                        "yes; bingo", 
+                        "no; continue"
+                    ], 
+                    "feedbacks": [
+                        "Awesome!", 
+                        "I will pick another number"
+                    ]
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "pepper-standing.png", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "Do we have a winner?", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4736172176, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4494282256, 
+            "title": "Action_Wait", 
+            "icon": "interaction_manager/icons/blue/action-wait.png", 
+            "pos_x": -349.0, 
+            "pos_y": -65.0, 
+            "inputs": [
+                {
+                    "id": 4494282576, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4494282640, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4751564624, 
+                "block": 4494282256, 
+                "description": "Bingo Spinner"
+            }, 
+            "parent": {
+                "id": 4494281744, 
+                "name": "action_wait", 
+                "pattern": "action_wait", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "pepper-standing.png", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "The next pick is", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {
+                    "id": 4736732048, 
+                    "command_type": "BINGO_SPINNER", 
+                    "range_min": 1, 
+                    "range_max": 75, 
+                    "draw": 49, 
+                    "choices": [
+                        1, 
+                        2, 
+                        3, 
+                        4, 
+                        5, 
+                        6, 
+                        7, 
+                        8, 
+                        9, 
+                        10, 
+                        11, 
+                        12, 
+                        15, 
+                        16, 
+                        17, 
+                        18, 
+                        19, 
+                        20, 
+                        21, 
+                        22, 
+                        23, 
+                        27, 
+                        28, 
+                        29, 
+                        30, 
+                        32, 
+                        33, 
+                        34, 
+                        35, 
+                        36, 
+                        37, 
+                        39, 
+                        40, 
+                        41, 
+                        42, 
+                        44, 
+                        46, 
+                        47, 
+                        50, 
+                        51, 
+                        52, 
+                        53, 
+                        55, 
+                        56, 
+                        58, 
+                        61, 
+                        64, 
+                        67, 
+                        69, 
+                        71, 
+                        72, 
+                        73, 
+                        74
+                    ], 
+                    "prev_choices": [
+                        45, 
+                        13, 
+                        60, 
+                        62, 
+                        70, 
+                        43, 
+                        31, 
+                        14, 
+                        38, 
+                        59, 
+                        48, 
+                        54, 
+                        68, 
+                        25, 
+                        66, 
+                        26, 
+                        63, 
+                        65, 
+                        24, 
+                        57, 
+                        49
+                    ]
+                }, 
+                "block": 4494282256, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4752730576, 
+            "title": "Instructions", 
+            "icon": "interaction_manager/icons/blue/instructions.png", 
+            "pos_x": -645.0, 
+            "pos_y": -341.0, 
+            "inputs": [
+                {
+                    "id": 4752729744, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4752731280, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4761525456, 
+                "block": 4752730576, 
+                "description": "Gameplay"
+            }, 
+            "parent": {
+                "id": 4752730832, 
+                "name": "instructions", 
+                "pattern": "instructions", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "pepper-standing.png", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "I will randomly pick letter-number combinations.", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4752730576, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4722812304, 
+            "title": "Monologue", 
+            "icon": "interaction_manager/icons/blue/speaker.png", 
+            "pos_x": -16.0, 
+            "pos_y": -70.0, 
+            "inputs": [
+                {
+                    "id": 4722812624, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4722812688, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4727021808, 
+                "block": 4722812304, 
+                "description": "Congrats"
+            }, 
+            "parent": {
+                "id": 4722812048, 
+                "name": "monologue", 
+                "pattern": "monologue", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "Congratulations! You won the Bingo game.", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4722812304, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4736730576, 
+            "title": "Question", 
+            "icon": "interaction_manager/icons/blue/question-mark.png", 
+            "pos_x": -23.0, 
+            "pos_y": 198.0, 
+            "inputs": [
+                {
+                    "id": 4736731024, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4736730896, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4736688848, 
+                "block": 4736730576, 
+                "description": "Ask for name"
+            }, 
+            "parent": {
+                "id": 4722814032, 
+                "name": "question", 
+                "pattern": "question", 
+                "topic_tag": {
+                    "topic": "question", 
+                    "goto_ids": [
+                        4722812048, 
+                        4722812048
+                    ], 
+                    "name": "askQuestionTag", 
+                    "answers": [
+                        "My name is joseph; I am Joseph; joseph", 
+                        "my name is kate; I am Kate; kate"
+                    ], 
+                    "feedbacks": [
+                        "Nice to meet you Joseph", 
+                        "Nice to meet you Kate."
+                    ]
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "pepper-standing.png", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "What is your name?", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4736730576, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4722814480, 
+            "title": "End", 
+            "icon": "interaction_manager/icons/blue/x.png", 
+            "pos_x": -25.0, 
+            "pos_y": -329.0, 
+            "inputs": [
+                {
+                    "id": 4469958608, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [], 
+            "content": {
+                "id": 4747490640, 
+                "block": 4722814480, 
+                "description": "Farewell"
+            }, 
+            "parent": {
+                "id": 4722813904, 
+                "name": "end", 
+                "pattern": "end", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "Goodbye! \nSee you next time.", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4722814480, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4746123536, 
+            "title": "Monologue", 
+            "icon": "interaction_manager/icons/blue/speaker.png", 
+            "pos_x": -897.0, 
+            "pos_y": -340.0, 
+            "inputs": [
+                {
+                    "id": 4745152016, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4745152784, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4746237104, 
+                "block": 4746123536, 
+                "description": "Present Self"
+            }, 
+            "parent": {
+                "id": 4722812880, 
+                "name": "monologue", 
+                "pattern": "monologue", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "My name is Pepper. I will be your game host.", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4746123536, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4745605008, 
+            "title": "Confirmation", 
+            "icon": "interaction_manager/icons/blue/question-mark.png", 
+            "pos_x": -643.0, 
+            "pos_y": -64.0, 
+            "inputs": [
+                {
+                    "id": 4745601168, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4745602704, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4744600624, 
+                "block": 4745605008, 
+                "description": "All clear?"
+            }, 
+            "parent": {
+                "id": 4746124304, 
+                "name": "confirmation", 
+                "pattern": "confirmation", 
+                "topic_tag": {
+                    "topic": "question", 
+                    "goto_ids": [
+                        4832208848, 
+                        4752730832
+                    ], 
+                    "name": "confirmationTag", 
+                    "answers": [
+                        "yes; sure", 
+                        "no; nope"
+                    ], 
+                    "feedbacks": [
+                        "Great, let's start.", 
+                        "No worries, let's repeat."
+                    ]
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "pepper-standing.png", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "Are the instructions clear?", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4745605008, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4473146704, 
+            "title": "Instructions", 
+            "icon": "interaction_manager/icons/blue/instructions.png", 
+            "pos_x": -362.0, 
+            "pos_y": -337.0, 
+            "inputs": [
+                {
+                    "id": 4473147024, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4473147088, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4594835856, 
+                "block": 4473146704, 
+                "description": "Explanation"
+            }, 
+            "parent": {
+                "id": 4473146448, 
+                "name": "instructions", 
+                "pattern": "instructions", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "When you complete a row, a column or a diagonal on your scoreboard, you can shout \"BINGO\". \nGood luck.", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {}, 
+                "block": 4473146704, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }, 
+        {
+            "id": 4832209104, 
+            "title": "Action_Wait", 
+            "icon": "interaction_manager/icons/blue/action-wait.png", 
+            "pos_x": -636.0, 
+            "pos_y": 146.0, 
+            "inputs": [
+                {
+                    "id": 4832209424, 
+                    "index": 0, 
+                    "position": "BOTTOM_LEFT", 
+                    "socket_type": "INPUT"
+                }
+            ], 
+            "outputs": [
+                {
+                    "id": 4832209488, 
+                    "index": 0, 
+                    "position": "TOP_RIGHT", 
+                    "socket_type": "OUTPUT"
+                }
+            ], 
+            "content": {
+                "id": 4732218736, 
+                "block": 4832209104, 
+                "description": "Play Music"
+            }, 
+            "parent": {
+                "id": 4832208848, 
+                "name": "action_wait", 
+                "pattern": "action_wait", 
+                "topic_tag": {
+                    "topic": "", 
+                    "goto_ids": [], 
+                    "name": "", 
+                    "answers": [], 
+                    "feedbacks": []
+                }, 
+                "tablet_page": {
+                    "text": "", 
+                    "image": "pepper-standing.png", 
+                    "name": "index", 
+                    "heading": ""
+                }, 
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png", 
+                "behavioral_parameters": {
+                    "gestures": {
+                        "close": "", 
+                        "open": ""
+                    }, 
+                    "eye_color": "GREEN", 
+                    "proxemics": 0.75, 
+                    "gaze_pattern": "FIXATED", 
+                    "message": "I will play a song", 
+                    "voice": {
+                        "prosody": "WEAK", 
+                        "volume": 60.0, 
+                        "speed": 100.0, 
+                        "name": "NAO_ENU", 
+                        "pitch": 1.0
+                    }, 
+                    "message_type": "INFORMAL", 
+                    "gestures_type": "OPEN"
+                }, 
+                "action_command": {
+                    "id": 4538048912, 
+                    "command_type": "PLAY_MUSIC", 
+                    "playlist": "Summer '20", 
+                    "track": "Insomnia", 
+                    "play_time": 30
+                }, 
+                "block": 4832209104, 
+                "interaction_start_time": 0, 
+                "interaction_end_time": 0
+            }
+        }
+    ], 
+    "edges": [
+        {
+            "id": 4774174224, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4736172560, 
+            "end_socket": 4494282576
+        }, 
+        {
+            "id": 4494225488, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4494282640, 
+            "end_socket": 4736172496
+        }, 
+        {
+            "id": 4469958288, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4736730896, 
+            "end_socket": 4722812624
+        }, 
+        {
+            "id": 4469923344, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4736172560, 
+            "end_socket": 4736731024
+        }, 
+        {
+            "id": 4745604752, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4722812688, 
+            "end_socket": 4469958608
+        }, 
+        {
+            "id": 4736732496, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4745152784, 
+            "end_socket": 4752729744
+        }, 
+        {
+            "id": 4469960592, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4737549264, 
+            "end_socket": 4745152016
+        }, 
+        {
+            "id": 4746121744, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4745602704, 
+            "end_socket": 4752729744
+        }, 
+        {
+            "id": 4474770896, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4752731280, 
+            "end_socket": 4473147024
+        }, 
+        {
+            "id": 4473113808, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4473147088, 
+            "end_socket": 4745601168
+        }, 
+        {
+            "id": 4832162704, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4745602704, 
+            "end_socket": 4832209424
+        }, 
+        {
+            "id": 4772438800, 
+            "edge_type": "BEZIER", 
+            "start_socket": 4832209488, 
+            "end_socket": 4494282576
+        }
+    ]
+}

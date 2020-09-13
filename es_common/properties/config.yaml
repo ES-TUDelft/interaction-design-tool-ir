@@ -1,0 +1,25 @@
+table_booker:
+  api_url: "https://api.tablemanager.be/v1"
+  reservations_url: "{{ api_url }}/reservations/"
+
+  username: YOUR_USER_NAME
+  password: YOUR_PASSWORD
+
+  params: {
+    restaurant_id: YOUR_RESTAURANT_ID,
+    from_date: "2020-08-19",
+    to_date: "2020-08-20"
+  }
+
+  headers: {
+      Content-Type: "application/json",
+      Accept-Language: "en",
+      X-API-KEY: YOUR_API_KEY,
+      Authorization: "Basic"
+  }
+
+robot:
+  realm: {
+      nao: rie.YOUR_NAO_ID,
+      pepper: rie.YOUR_PEPPER_ID
+  }

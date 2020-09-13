@@ -1,0 +1,27 @@
+tags:
+  askQuestionTag:
+    pages:
+      - index
+      - displayinfo
+      - displayimage
+  confirmationTag:
+    pages:
+      - index
+      - displayinfo
+      - displayimage
+      - confirmation
+  offerHelpTag:
+    pages:
+      - index
+      - displayinfo
+      - help
+tablet:
+  pages:
+    - index
+    - displayinfo
+    - displayimage
+  images:
+    - welcome.jpg
+    - pepper-standing.png
+    - pepper-question.png
+    - blank.jpg

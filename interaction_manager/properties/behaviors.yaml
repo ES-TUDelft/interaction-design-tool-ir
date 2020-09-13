@@ -1,0 +1,48 @@
+gestures:
+  open:
+    salutation: animations/Stand/Gestures/Hey_1
+    dontKnow: animations/Stand/Gestures/IDontKnow_1
+    cheering: animations/Stand/Gestures/Hey_2
+    disagree: animations/Stand/Gestures/No_1
+    agree: animations/Stand/Gestures/Yes_3
+    presentself: animations/Stand/Gestures/Me_7
+    you: animations/Stand/Gestures/You_1
+    pointDown: animations/Stand/Gestures/ShowFloor_2
+    pointUp: animations/Stand/Gestures/ShowSky_1
+    pointRight: animations/Stand/Gestures/ShowSky_5
+    pointLeft: animations/Stand/Gestures/Far_1
+    raiseHand: animations/Stand/Gestures/ShowSky_9
+    showTablet: animations/Stand/Gestures/ShowTablet_2
+    ask: animations/Stand/Gestures/Thinking_8
+    explain: animations/Stand/Gestures/YouKnowWhat_5
+    calmDown: animations/Stand/Gestures/CalmDown_5
+    enthusiastic: animations/Stand/Gestures/Enthusiastic_5
+    excited: animations/Stand/Gestures/Excited_1
+    bow: animations/Stand/Gestures/BowShort_1
+    embarrassed: animations/Stand/Emotions/Neutral/Embarrassed_1
+    bored: animations/Stand/Emotions/Negative/Bored_1
+    disappointed: animations/Stand/Gestures/Desperate_1
+    every: animations/Stand/Gestures/Everything_1
+    select: animations/Stand/Gestures/Choice_1
+
+  close:
+    salutation: animations/Stand/Gestures/Hey_3
+    dontKnow: animations/Stand/Gestures/IDontKnow_2
+    disagree: animations/Stand/Gestures/No_8
+    agree: animations/Stand/Gestures/Yes_3
+    presentself: animations/Stand/Gestures/Me_4
+    you: animations/Stand/Gestures/You_1
+    pointDown: animations/Stand/Gestures/ShowFloor_1
+    pointUp: animations/Stand/Gestures/ShowSky_2
+    pointRight: animations/Stand/Gestures/Far_3
+    pointLeft: animations/Stand/Gestures/Far_2
+    raiseHand: animations/Stand/Gestures/ShowSky_9
+    showTablet: animations/Stand/Gestures/ShowTablet_3
+    ask: animations/Stand/Gestures/Thinking_1
+    explain: animations/Stand/Gestures/YouKnowWhat_6
+    calmDown: animations/Stand/Gestures/CalmDown_6
+    embarrassed: animations/Stand/Emotions/Neutral/Embarrassed_1
+    bored: animations/Stand/Emotions/Negative/Bored_1
+    disappointed: animations/Stand/Gestures/Desperate_1
+    every: animations/Stand/Gestures/Everything_2
+    select: animations/Stand/Gestures/Choice_1

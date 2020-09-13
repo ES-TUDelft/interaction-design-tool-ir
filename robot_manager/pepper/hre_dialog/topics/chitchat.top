@@ -1,0 +1,48 @@
+topic: ~chitchat()
+language: enu
+
+include: general.top
+
+u: (e:startTopicTag) ^gotoReactivate(startTopicTag)
+u: (e:endTopicTag) "Ok, time is up. Back to our task." $blockCompleted=1 ^gotoReactivate(resetWebPageTag)
+
+u: ({can you} repeat {please}) "Sure, i'll repeat." ^gotoReactivate($lastTagName)
+
+# PROPOSALS:
+# ----------
+proposal: %startTopicTag $lastTagName=startTopicTag $anim=["^notExist(customAnimation) ~neutralAnimation" "$customAnimation"] "^start($anim) How is your day so far? ^wait($anim)"
+    u1: (_[Good Okay Great]) "My day is $1 as well." ^gotoReactivate(haveJobTag)
+    u1: (_[bad terrible horrible]) "Oh no, I am very sorry to hear that. Don't worry, hopefully things will get better" ^gotoReactivate(haveJobTag)
+
+proposal: %haveJobTag $lastTagName=haveJobTag "Do you have a job?"
+    u1: (~yes) "Nice." ^gotoReactivate(likeJobTag)
+    u1: (~no) "Me too! I just stand here all day talking to strangers, can you imagine!" ^gotoReactivate(houseTag)
+
+proposal: %likeJobTag $lastTagName=likeJobTag "Do you like it?"
+    u1: (~yes) "Awesome, I like mine as well." ^gotoReactivate(houseTag)
+    u1: (~no) "Me too! I just stand here all day talking to strangers, can you imagine!" ^gotoReactivate(houseTag)
+
+proposal: %houseTag $lastTagName=houseTag "How about your home? Is it far away from here?"
+    u1: (~yes) "Oh, i hope you were not stuck in traffic." ^gotoReactivate(marriedTag)
+    u1: (~no) "Great! I'd love to see you around more, you seem a nice human." ^gotoReactivate(marriedTag)
+
+proposal: %marriedTag $lastTagName=marriedTag "Tell me, are you married ?"
+    u1: (~yes) "That's great" ^gotoReactivate(kidsTag)
+    u1: (~no) "Ok, hopefully you will someday, you never know!" ^gotoReactivate(continueTag)
+
+proposal: %kidsTag $lastTagName=kidsTag "Do you have kids?"
+    u1: (~yes) "Awesome, kids are amazing. They drive me crazy sometimes." ^gotoReactivate(continueTag)
+    u1: (~no) "Well, you may have some one day. Kids are amazing." ^gotoReactivate(continueTag)
+
+proposal: %howAreYouTag $lastTagName=howAreYouTag ["^notExist(customMessage) Tell me, How are you feeling today?" "$customMessage"]
+    u1: ({~i_am} {feeling} {i feel} {all is} _["{rather} fine" "{very} good" great ok super perfect "{rather} well" awesome] {"thank you"} {thanks} ) "Good to know ["^notExist(iAmFine) ~i_am feeling $1 as well" "^empty $iAmFine==1"]. " ^gotoReactivate(finishedTag)
+    u1: ([~i_dont_feel_good ~im_sick ~im_tired bad "{~i_am} not {feeling} good" horrible] ) "Oh, sorry to hear that." ^gotoReactivate(finishedTag)
+
+proposal: %askQuestionTag ["^notExist(customMessage) Need anything?" "$customMessage"]
+    u1: (["^notExist(customUserAnswer) No" "$customUserAnswer"]) ["^notExist(customRobotAnswer) Ok" "$customRobotAnswer"] ^gotoReactivate(finishedTag)
+
+proposal: %continueTag $lastTagName=continueTag "Alright, back to our task." $blockCompleted=1 ^gotoReactivate(resetWebPageTag)
+
+proposal: %finishedTag $lastTagName=finishedTag $blockCompleted=1 ^gotoReactivate(resetWebPageTag)
+
+proposal: %resetWebPageTag $lastTagName=resetWebPageTag $pageName="index" ^topicTagReactivate(general, loadPageTag)

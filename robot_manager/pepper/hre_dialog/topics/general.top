@@ -1,0 +1,37 @@
+topic: ~general()
+language: enu
+
+include: lexicon_enu.top
+include: concepts.top
+
+u: (reset) %resetTag ^clear(name) ^clear(iAmFine) ^clear(customMessage) ^clear(customAnimation) ^clear(pageName)
+
+u: ([exit stop quit]) Ok, i'm exiting ^gotoReactivate(exitTag)
+
+u: (["I am" "I'm"] in a hurry) Oh, OK, let us continue. ^gotoReactivate(exitTag)
+
+u: (e:loadPage) $pageName=$loadPage ^gotoReactivate(loadPageTag)
+
+u: ({please} repeat {please}) Ok, no problem. ^gotoReactivate(lastTagName)
+
+proposal: %exitTag $pageName="index" $blockCompleted=1 ^gotoReactivate(loadPageTag)
+
+# Execute the selected page using javascript. This needs to run ON the robot
+proposal: %loadPageTag ^gotoReactivate(getPageTag)
+
+proposal: %getPageTag %script
+from naoqi import ALProxy
+ALTabletService = ALProxy("ALTabletService", "localhost", 9559)
+ALMemory = ALProxy("ALMemory", "localhost", 9559)
+ALTabletService.executeJS("getPage('" + ALMemory.getData("pageName") + "');")
+%script
+
+proposal: %loadAndFillPageTag ^gotoReactivate(getAndFillPageTag)
+
+# Execute the selected page using javascript. This needs to run ON the robot
+proposal: %getAndFillPageTag %script
+from naoqi import ALProxy
+ALTabletService = ALProxy("ALTabletService", "localhost", 9559)
+ALMemory = ALProxy("ALMemory", "localhost", 9559)
+ALTabletService.executeJS("getAndFillPage('" + ALMemory.getData("pageName") + "', '" + ALMemory.getData("pageHeading") + "', '" + ALMemory.getData("pageText") + "', '" + ALMemory.getData("pageImage") + "');")
+%script

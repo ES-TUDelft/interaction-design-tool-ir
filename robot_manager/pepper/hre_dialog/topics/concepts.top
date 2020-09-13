@@ -1,0 +1,32 @@
+topic: ~concepts()
+language: enu
+
+dynamic:answer1
+dynamic:answer2
+#dynamic:feedback1
+#dynamic:feedback2
+
+# Defining extra concepts out of words or group of words
+concept:(how_is) ["how is" "how's"]
+concept:(how_are) ["how are" "how're"]
+concept:(namesList) [Kate Peter]
+concept:(stranger) "I have no idea who you are, stranger!"
+concept:(curseWords) [idiot alien stupid]
+concept:(greetings) ^rand[hello hola hi hey greetings "good day" howdy "hey there" ]
+concept:(goodbye) ^rand[bye "bye bye" goodbye "["see you" "talk to you"] later" "take care" "see you when i see you" ]
+concept:(webpages) ^rand[home riddle tip]
+concept:(scale) [[no nope] ["a bit" bit] "neutral" "much" "[very pretty] much"]
+concept:(cancel) [stop quit leave close cancel exit leave quit]
+
+# Animations
+concept: (embarrassedAnimation) ^rand["animations/Stand/Emotions/Neutral/Embarrassed_1" "animations/Stand/Emotions/Neutral/Embarrassed_2"]
+concept: (happyAnimation) ^rand["animations/Stand/Emotions/Positive/Happy_4" "animations/Stand/Gestures/Explain_10" "animations/Stand/Gestures/Explain_5" "animations/Stand/Gestures/Explain_8"]
+concept: (enthusiasticAnimation) ^rand["animations/Stand/Gestures/Enthusiastic_4" "animations/Stand/Gestures/Enthusiastic_5"]
+concept: (explainAnimation) ^rand["animations/Stand/Gestures/Explain_2" "animations/Stand/Gestures/Explain_3" "animations/Stand/Gestures/Explain_4" "animations/Stand/Gestures/Explain_5"]
+concept: (disappointedAnimation) ^rand["animations/Stand/Gestures/Desperate_1" "animations/Stand/Gestures/Desperate_2" "animations/Stand/Gestures/Desperate_4" "animations/Stand/Gestures/Desperate_5"]
+concept: (greetingAnimation) ^rand["animations/Stand/Gestures/Hey_1" "animations/Stand/Gestures/Hey_2" "animations/Stand/Gestures/Hey_3"]
+concept: (selectAnimation) ["animations/Stand/Gestures/Choice_1"]
+concept: (angryAnimation) ^rand["animations/Stand/Gestures/CalmDown_1" "animations/Stand/Gestures/CalmDown_5" "animations/Stand/Gestures/CalmDown_6"]
+concept: (neutralAnimation) ^rand["animations/Stand/Gestures/YouKnowWhat_2" "animations/Stand/Gestures/YouKnowWhat_3" "animations/Stand/Gestures/YouKnowWhat_5" "animations/Stand/Gestures/YouKnowWhat_6"]
+concept: (pleaseAnimation) ["animations/Stand/Gestures/Please_1"]
+concept: (explainAnimation) ["animations/Stand/Gestures/YouKnowWhat_1"]

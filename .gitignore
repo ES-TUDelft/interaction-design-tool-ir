@@ -127,3 +127,18 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+test_rie.py
+tests/
+res_helper.txt
+
+.DS_Store
+blocks/
+.idea/
+logs/*.json
+.cache-*
+
+interaction_manager/properties/spotify*.yaml
+interaction_manager/properties/*animations*.yaml
+design-tool*
+es_common/properties/tablebooker.yaml
+

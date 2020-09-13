@@ -1,0 +1,42 @@
+colors:
+    white: FFFFFF
+    gray: D1D0CE
+    silver: BCC6CC
+    maroon: A52A2A
+    pen:
+        default: FF000000
+        selected: 3090C7
+        light: 2F2F2F
+        dark: 1F1F1F
+        edge: F0F0F0 #212121 # BCC6CC
+        edge_selected: 3090C7
+    brush:
+        block_title: D6D6D6 #FF313131
+        scene_bg: 222223 # EFF0F1  # f8f7f7  # 393939  # C0C0C0 # 5E5E5E
+        block_bg: 173a69  # E32121
+    socket:
+        in: BCC6CC
+        out: 848482
+        out_selected: 008080
+
+font: Arial
+size:
+    block:
+        width: 160
+        height: 110
+        rounded_edge_size: 10.0 # rounded_edge of the triangle
+        title_height: 24.0
+        icon_dim: [40, 40]
+        list_icon_dim: [50, 50]
+        selected_pen_width: 5.0
+    socket:
+        width: 6.0
+        height: 6.0
+
+icons:
+    settings: block_manager/icons/white/parameters.png
+    edit: block_manager/icons/white/edit.png
+
+block_mimetype: application/x-item
+
+history_limit: 100
