@@ -47,6 +47,7 @@ class InteractionBlock(Serializable):
 
         self.interaction_start_time = 0
         self.interaction_end_time = 0
+        self.is_hidden = False
 
     def set_behavioral_parameters(self, p_name, behavioral_parameters):
         """
@@ -134,6 +135,9 @@ class InteractionBlock(Serializable):
                     if execution_result.lower() in self.topic_tag.answers[i].lower():
                         next_int_block = self._get_block_by_id(int_blocks, self.topic_tag.goto_ids[i])
                         break
+                # update the block's message, if any
+                if next_int_block and "{answer}" in next_int_block.message:
+                    next_int_block.message = next_int_block.message.format(answer=execution_result.lower())
             connecting_edge = self.get_output_connected_edge(next_int_block)
         except Exception as e:
             self.logger.error("Error while attempting to get the next block! {}".format(e))
@@ -252,8 +256,9 @@ class InteractionBlock(Serializable):
             ("behavioral_parameters", self.behavioral_parameters.to_dict),
             ("action_command", self.action_command.serialize() if self.action_command is not None else {}),
             ("block", self.block.id),
+            ("is_hidden", self.is_hidden),
             ("interaction_start_time", self.interaction_start_time),
-            ("interaction_end_time", self.interaction_end_time)
+            ("interaction_end_time", self.interaction_end_time),
         ])
 
         return block_dict
@@ -271,6 +276,9 @@ class InteractionBlock(Serializable):
             if 'behavioral_parameters' in block_dict.keys():  # otherwise, keep default values
                 block.behavioral_parameters = BehavioralParameters.create_behavioral_parameters(
                     beh_dict=block_dict['behavioral_parameters'])
+
+            block.is_hidden = block_dict["is_hidden"] if "is_hidden" in block_dict.keys() else False
+
             if any('interaction' in k for k in block_dict.keys()):
                 block.interaction_start_time = block_dict['interaction_start_time']
                 block.interaction_end_time = block_dict['interaction_end_time']

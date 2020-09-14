@@ -1,0 +1,47 @@
+import logging
+
+from es_common.command.get_reservations_command import GetReservationsCommand
+from es_common.enums.module_enums import InteractionModule
+from es_common.module.es_module import ESModule
+
+INT_DESIGN_FILE = "es_common/module/interaction_design/reservations.json"
+
+
+class RestaurantReservationsModule(ESModule):
+    def __init__(self, block_controller, origin_block=None):
+        super().__init__(block_controller, origin_block)
+        self.logger = logging.getLogger("RestaurantReservationsModule")
+
+        self.module_type = InteractionModule.RESTAURANT_RESERVATIONS
+        self.design_file = INT_DESIGN_FILE
+
+        self.reservations = []
+        self.current_reservation = None
+        self.get_reservations_command = GetReservationsCommand()
+
+    def start_module(self):
+        self.reservations = self.get_reservations_command.execute()
+
+        if self.reservations and len(self.reservations) > 0:
+            # get names
+            firstnames, lastnames = self.get_customers_names()
+            self.logger.info(f"{firstnames} | {lastnames}")
+            return True
+
+        return False
+
+    def get_customers_names(self):
+        firstnames = []
+        lastnames = []
+
+        for res in self.reservations:
+            try:
+                if res and "customer" in res.keys():
+                    firstnames.append(res["customer"]["firstname"])
+                    lastnames.append(res["customer"]["lastnames"])
+            except Exception as e:
+                self.logger.error("Error while fetching customers: {}".format(e))
+            finally:
+                continue
+
+        return firstnames, lastnames

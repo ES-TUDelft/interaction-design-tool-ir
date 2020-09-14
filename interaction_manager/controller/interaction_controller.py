@@ -17,6 +17,7 @@ from PyQt5.QtCore import QTimer
 from block_manager.enums.block_enums import ExecutionMode
 from es_common.enums.command_enums import ActionCommand
 from es_common.model.observable import Observable
+from es_common.module.restaurant_reservations_module import RestaurantReservationsModule
 from es_common.utils.timer_helper import TimerHelper
 from interaction_manager.utils import config_helper
 from robot_manager.pepper.controller.robot_controller import RobotController
@@ -59,6 +60,9 @@ class InteractionController(object):
         self.stop_playing = False
         self.execution_result = None
         self.has_finished_playing_observable = Observable()
+
+        self.res_module = RestaurantReservationsModule(block_controller=self.block_controller)
+        self.res_module.get_blocks_data()
 
     def connect_to_robot(self, robot_name=None, robot_realm=None):
         self.robot_name = robot_name

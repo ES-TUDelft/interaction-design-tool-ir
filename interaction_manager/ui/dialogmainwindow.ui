@@ -198,8 +198,8 @@
    <addaction name="actionMenuWakeUp"/>
    <addaction name="actionMenuRest"/>
    <addaction name="separator"/>
-   <addaction name="actionMenuVolumeUp"/>
    <addaction name="actionMenuVolumeDown"/>
+   <addaction name="actionMenuVolumeUp"/>
    <addaction name="separator"/>
    <addaction name="actionMenuPlay"/>
    <addaction name="actionMenuStop"/>

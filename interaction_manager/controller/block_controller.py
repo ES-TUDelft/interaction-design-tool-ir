@@ -32,6 +32,8 @@ class ESBlockController(BlockController):
         # observe when new blocks are created from undo/redo operations
         block_helper.block_observable.add_observer(self.update_block_selected_observer)
 
+        self.hidden_scene = None
+
     def update_block_selected_observer(self, block):
         if type(block) is Block:
             # disable settings icon
@@ -124,3 +126,15 @@ class ESBlockController(BlockController):
                     behavioral_parameters=behavioral_parameters
                 )
         self.store("Updated behavioral parameters of all blocks")
+
+    def has_hidden_block(self, pattern=None):
+        if pattern is None or self.hidden_scene is None:
+            return None
+
+        for block in self.get_hidden_blocks():
+            if block.pattern.lower() == pattern.lower():
+                return block
+        return None
+
+    def get_hidden_blocks(self):
+        return None if self.hidden_scene is None else self.hidden_scene.blocks

@@ -15,7 +15,18 @@ def create_reservations_list(res_json):
     return res_lst
 
 
-def get_customers_prop(res_json, prop_key="firstname", prop_value="lastname"):
+def get_customers_names(res_json):
+    firstnames = []
+    lastnames = []
+    for res in res_json:
+        if res and "customer" in res.keys():
+            firstnames.append(res["customer"]["firstname"])
+            lastnames.append(res["customer"]["lastnames"])
+
+    return firstnames, lastnames
+
+
+def get_customers_prop(res_json, prop_key="firstname"):
     prop_lst = []
     for res in res_json:
         if res and "customer" in res.keys():

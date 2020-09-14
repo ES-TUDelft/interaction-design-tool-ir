@@ -4,7 +4,7 @@ from es_common.model.customer import Customer
 
 
 class Reservation(object):
-    def __init__(self, res_id, customer, guests, table, time):
+    def __init__(self, res_id=0, customer=None, guests=0, table=0, time=None):
         self.id = res_id
         self.customer = customer
         self.guests = guests

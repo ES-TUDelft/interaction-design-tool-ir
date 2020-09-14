@@ -69,15 +69,15 @@ class UIImportBlocksController(QtWidgets.QDialog):
 
         try:
             self.blocks_data = data_helper.load_data_from_file(filename)
-            for b_data in self.blocks_data["blocks"]:
-                pattern = config_helper.get_patterns()[b_data["title"].lower()]
-                # bg_color = self.get_property(b_data, "bg_color")
-                if "bg_color" in pattern.keys():
-                    # self.logger.debug("Setting bg_color for: {}".format(b_data["title"]))
-                    b_data["bg_color"] = pattern["bg_color"]
-                if "icon" in pattern.keys():
-                    # self.logger.debug("Setting icon for: {}".format(b_data["title"]))
-                    b_data["icon"] = pattern["icon"]
+            # for b_data in self.blocks_data["blocks"]:
+            #     pattern = config_helper.get_patterns()[b_data["title"].lower()]
+            #     # bg_color = self.get_property(b_data, "bg_color")
+            #     if "bg_color" in pattern.keys():
+            #         # self.logger.debug("Setting bg_color for: {}".format(b_data["title"]))
+            #         b_data["bg_color"] = pattern["bg_color"]
+            #     if "icon" in pattern.keys():
+            #         # self.logger.debug("Setting icon for: {}".format(b_data["title"]))
+            #         b_data["icon"] = pattern["icon"]
 
             message = "Data successfully imported."
         except Exception as e:

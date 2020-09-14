@@ -1,0 +1,491 @@
+{
+    "id": 140196464177888,
+    "blocks": [
+        {
+            "id": 140416296289280,
+            "title": "Monologue",
+            "icon": "block_manager/icons/blue/speaker.png",
+            "pos_x": -1343.0,
+            "pos_y": -892.0,
+            "inputs": [
+                {
+                    "id": 140416296289952,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140416296289472,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140416288401296,
+                "block": 140416296289280,
+                "description": ""
+            },
+            "parent": {
+                "id": 140416296288464,
+                "name": "monologue",
+                "pattern": "monologue",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "I am Pepper",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "block": 140416296289280,
+                "interaction_start_time": 1600076905.234876,
+                "interaction_end_time": 1600076907.383883
+            },
+            "bg_color": null
+        },
+        {
+            "id": 140294543958080,
+            "title": "Question",
+            "icon": "block_manager/icons/blue/question-mark.png",
+            "pos_x": -1070.0,
+            "pos_y": -894.0,
+            "inputs": [
+                {
+                    "id": 140294543958800,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140294543959328,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 2
+                }
+            ],
+            "content": {
+                "id": 140294585211200,
+                "block": 140294543958080,
+                "description": ""
+            },
+            "parent": {
+                "id": 140294543960960,
+                "name": "question",
+                "pattern": "question",
+                "topic_tag": {
+                    "name": "askQuestionTag",
+                    "topic": "question",
+                    "answers": [
+                        "john",
+                        "repeat"
+                    ],
+                    "feedbacks": [],
+                    "goto_ids": [
+                        140234728801856,
+                        140234728800752
+                    ]
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "What is your name?",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "block": 140294543958080,
+                "interaction_start_time": 1600076930.2206788,
+                "interaction_end_time": 1600076934.009152
+            },
+            "bg_color": "291a2d"
+        },
+        {
+            "id": 140234789570880,
+            "title": "Question",
+            "icon": "block_manager/icons/blue/question-mark.png",
+            "pos_x": -811.0,
+            "pos_y": -1022.0,
+            "inputs": [
+                {
+                    "id": 140234789570448,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140234789571216,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 2
+                }
+            ],
+            "content": {
+                "id": 140234768165472,
+                "block": 140234789570880,
+                "description": "Confirm name"
+            },
+            "parent": {
+                "id": 140234728801856,
+                "name": "question",
+                "pattern": "question",
+                "topic_tag": {
+                    "name": "askQuestionTag",
+                    "topic": "question",
+                    "answers": [
+                        "yes",
+                        "no"
+                    ],
+                    "feedbacks": [],
+                    "goto_ids": [
+                        140234768227536,
+                        140234728800752
+                    ]
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "I heard john, is that correct?",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "block": 140234789570880,
+                "interaction_start_time": 1600076934.010337,
+                "interaction_end_time": 1600076938.002311
+            },
+            "bg_color": "291a2d"
+        },
+        {
+            "id": 140234728701904,
+            "title": "Monologue",
+            "icon": "block_manager/icons/blue/speaker.png",
+            "pos_x": -524.0,
+            "pos_y": -1164.0,
+            "inputs": [
+                {
+                    "id": 140234790849456,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140234790847440,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140234790880736,
+                "block": 140234728701904,
+                "description": "Welcome"
+            },
+            "parent": {
+                "id": 140234768227536,
+                "name": "monologue",
+                "pattern": "monologue",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "Great. Welcome",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "block": 140234728701904,
+                "interaction_start_time": 1600076938.003548,
+                "interaction_end_time": 1600076941.074292
+            },
+            "bg_color": null
+        },
+        {
+            "id": 140234728701040,
+            "title": "Monologue",
+            "icon": "block_manager/icons/blue/speaker.png",
+            "pos_x": -688.0,
+            "pos_y": -669.0,
+            "inputs": [
+                {
+                    "id": 140234765455568,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140234765455520,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140234728794576,
+                "block": 140234728701040,
+                "description": "Ask again"
+            },
+            "parent": {
+                "id": 140234728800752,
+                "name": "monologue",
+                "pattern": "monologue",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": ""
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "Ok, no worries, I will ask you again.",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "block": 140234728701040,
+                "interaction_start_time": 1600076925.42903,
+                "interaction_end_time": 1600076930.21912
+            },
+            "bg_color": null
+        },
+        {
+            "id": 140571069895200,
+            "title": "Start",
+            "icon": "block_manager/icons/blue/start.png",
+            "pos_x": -1527.0,
+            "pos_y": -1006.0,
+            "inputs": [],
+            "outputs": [
+                {
+                    "id": 140571069895824,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140571127685760,
+                "block": 140571069895200,
+                "description": ""
+            },
+            "parent": {
+                "id": 140571069895872,
+                "name": "start",
+                "pattern": "start",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": ""
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "Hello",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "block": 140571069895200,
+                "interaction_start_time": 1600076897.6323688,
+                "interaction_end_time": 1600076905.2328792
+            },
+            "bg_color": "056b4a"
+        }
+    ],
+    "edges": [
+        {
+            "id": 140482450285040,
+            "edge_type": "BEZIER",
+            "start_socket": 140416296289472,
+            "end_socket": 140294543958800
+        },
+        {
+            "id": 140234728698880,
+            "edge_type": "BEZIER",
+            "start_socket": 140234789571216,
+            "end_socket": 140234790849456
+        },
+        {
+            "id": 140234728801808,
+            "edge_type": "BEZIER",
+            "start_socket": 140234789570448,
+            "end_socket": 140294543959328
+        },
+        {
+            "id": 140234728700992,
+            "edge_type": "BEZIER",
+            "start_socket": 140294543959328,
+            "end_socket": 140234765455568
+        },
+        {
+            "id": 140234790849216,
+            "edge_type": "BEZIER",
+            "start_socket": 140234765455520,
+            "end_socket": 140294543958800
+        },
+        {
+            "id": 140234790848784,
+            "edge_type": "BEZIER",
+            "start_socket": 140234789571216,
+            "end_socket": 140234765455568
+        },
+        {
+            "id": 140571069896064,
+            "edge_type": "BEZIER",
+            "start_socket": 140571069895824,
+            "end_socket": 140416296289952
+        }
+    ]
+}

@@ -550,6 +550,7 @@ class UIController(QtWidgets.QMainWindow):
         # enable/disable copy/paste
         self.ui.actionMenuCopy.setEnabled(True)
         self.enable_paste_buttons()
+        self.repaint()
 
     def on_no_block_selected(self, event):
         self.selected_block = None

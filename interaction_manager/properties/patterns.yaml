@@ -84,6 +84,19 @@ action_wait:
         - displayinfo
         - displayimage
     action: 1
+module:
+    inputs: 1
+    outputs: 1
+    output_edges: 1
+    icon: block_manager/icons/blue/action-wait.png
+    bg_color: 057389
+    topic: ""
+    tags: []
+    tablet:
+        - index
+        - displayinfo
+        - displayimage
+    module: 1
 #condition:
 #    inputs: 1
 #    outputs: 1

@@ -16,6 +16,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from block_manager.enums.block_enums import SocketType
 from es_common.enums.command_enums import ActionCommand
+from es_common.enums.module_enums import InteractionModule
 from es_common.factory.command_factory import CommandFactory
 from interaction_manager.utils import config_helper
 import es_common.hre_config as pconfig
@@ -72,6 +73,9 @@ class UIEditBlockController(QtWidgets.QDialog):
 
         # Actions
         self.set_actions()
+
+        # Modules
+        self.set_modules()
 
         # gestures
         self.ui.openGestureLineEdit.setText(
@@ -135,6 +139,31 @@ class UIEditBlockController(QtWidgets.QDialog):
         else:
             self.ui.topicTab.setEnabled(True)
             self._set_topic_tab(reset=False)
+
+    def set_modules(self):
+        if "module" in self.pattern_settings.keys():
+            try:
+                modules = [m for m in InteractionModule.keys()]
+                self.toggle_module_tab(enable=True)
+
+                self.ui.moduleNameComboBox.addItems([pconfig.SELECT_OPTION])
+                self.ui.moduleNameComboBox.addItems(modules)
+
+                self.logger.info("Module tab is setup")
+            except Exception as e:
+                self.logger.error("Error while enabling the modules: {}".format(e))
+        else:
+            self.toggle_module_tab(enable=False)
+
+    def toggle_module_tab(self, enable=False):
+        tab_index = self.ui.tabWidget.indexOf(self.ui.tabWidget.findChild(QtWidgets.QWidget, 'moduleTab'))
+        self.ui.tabWidget.setTabEnabled(tab_index, enable)
+        self.ui.moduleGoToGroupBox.setEnabled(enable)
+
+        if enable is False:
+            self.ui.moduleNameComboBox.setHidden(True)
+            self.ui.moduleGoToGroupBox.setHidden(False)
+            self.ui.tabWidget.removeTab(tab_index)
 
     def set_actions(self):
         # TODO: Use the action property defined in the pattern
@@ -392,6 +421,14 @@ class UIEditBlockController(QtWidgets.QDialog):
                           text="{}".format(self.ui.tabletInfoTextEdit.toPlainText()).strip(),
                           image="{}".format(self.ui.tabletImageComboBox.currentText()),
                           )
+
+    def get_module(self):
+        if self.ui.moduleNameComboBox.isHidden():
+            return None
+
+        module_name = "{}".format(self.ui.moduleNameComboBox.currentText())
+        if module_name in InteractionModule.keys():
+            self.logger.info("TODO")
 
     def get_command(self):
         if self.ui.actionComboBox.isHidden():
