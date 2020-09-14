@@ -71,7 +71,7 @@ def join_array(arr, to_split=";"):
 
     result = []
     for i in range(len(arr)):
-        keywords = [s.strip() for s in arr[i].split(to_split)]
+        keywords = [s.strip() for s in arr[i].split(to_split) if s.strip() != '']
         result.extend(keywords)
     # print("Result from join: {}".format(result))
     return result

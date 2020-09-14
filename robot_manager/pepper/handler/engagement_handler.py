@@ -29,7 +29,7 @@ class EngagementHandler(object):
 
         self.face_certainty = 0.5
         # subscribe to face events
-        self.session.subscribe(self.on_face_detected, "rom.optional.face.stream")
+        # self.session.subscribe(self.on_face_detected, "rom.optional.face.stream")
 
     @inlineCallbacks
     def on_face_detected(self, frame):

@@ -48,6 +48,7 @@ class SpeechHandler(object):
 
                 if certainty >= self.speech_certainty:
                     self.keyword_stream(start=False)
+                    self.clear_keywords()
                     keyword = frame["data"]["body"]["text"]
                     self.logger.info("Keyword is: {}".format(keyword))
                     yield self.keyword_observers.notify_all(keyword)
@@ -118,7 +119,8 @@ class SpeechHandler(object):
             keywords = interaction_block.topic_tag.get_combined_answers()
             self.logger.info("Keywords: {}".format(keywords))
 
-            self.reset_keyword_stream()
+            # self.reset_keyword_stream()
+
             self.add_keywords(keywords=keywords)
             self.keyword_stream(start=True)
 
