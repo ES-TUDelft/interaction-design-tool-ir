@@ -43,7 +43,7 @@ class EngagementHandler(object):
                     # self.logger.info("Certainty = {}".format(certainty))
                     # if certainty >= self.face_certainty:
 
-                    self.logger.info("Detected a face: {}".format(frame["data"]))
+                    # self.logger.info("Detected a face: {}".format(frame["data"]))
                     yield  # self.face_detected_observers.notify_all(frame["data"])
                 else:
                     yield  # self.logger.info(frame["data"])
