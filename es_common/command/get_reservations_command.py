@@ -9,17 +9,14 @@
 #
 # @author ES
 # **
-import json
-import logging
 import base64
+import logging
 from collections import OrderedDict
 
 import requests
 
 from es_common.command.es_command import ESCommand
 from es_common.enums.command_enums import ActionCommand
-from es_common.model.customer import Customer
-from es_common.model.reservation import Reservation
 from es_common.utils import config_helper, date_helper
 
 

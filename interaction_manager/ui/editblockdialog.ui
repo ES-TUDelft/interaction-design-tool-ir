@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>449</width>
-    <height>454</height>
+    <height>517</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -290,17 +290,17 @@
       <attribute name="title">
        <string>Action</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_8">
+      <layout class="QGridLayout" name="gridLayout_31">
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_30">
-         <item row="3" column="0">
-          <spacer name="horizontalSpacer_3">
+         <item row="5" column="2">
+          <spacer name="verticalSpacer_6">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Vertical</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>40</width>
+             <width>20</width>
              <height>20</height>
             </size>
            </property>
@@ -432,54 +432,25 @@
            </layout>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="QGroupBox" name="timeGroupBox">
-           <property name="title">
-            <string>Time</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="0" column="0">
-             <widget class="QSpinBox" name="timeSpinBox">
-              <property name="maximum">
-               <number>600</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-              <property name="value">
-               <number>30</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>sec</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <spacer name="verticalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
          <item row="1" column="0" colspan="3">
           <widget class="Line" name="line_3">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
+         </item>
+         <item row="3" column="0">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item row="0" column="0" colspan="3">
           <layout class="QGridLayout" name="gridLayout_17">
@@ -508,80 +479,103 @@
            </item>
           </layout>
          </item>
-         <item row="3" column="2">
-          <widget class="QGroupBox" name="rangeGroupBox">
+         <item row="3" column="1" colspan="2">
+          <widget class="QGroupBox" name="timeGroupBox">
            <property name="title">
-            <string>Range</string>
+            <string>Time</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_27">
-            <item row="1" column="0">
-             <widget class="QSpinBox" name="rangeMinSpinBox">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="minimum">
-               <number>-250</number>
-              </property>
+           <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <widget class="QSpinBox" name="timeSpinBox">
               <property name="maximum">
-               <number>249</number>
+               <number>600</number>
               </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="rangeMaxSpinBox">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="minimum">
-               <number>-249</number>
-              </property>
-              <property name="maximum">
-               <number>250</number>
+              <property name="singleStep">
+               <number>10</number>
               </property>
               <property name="value">
-               <number>1</number>
+               <number>30</number>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="label_25">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <family>Courier</family>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
+             <widget class="QLabel" name="label_21">
               <property name="text">
-               <string>max</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
+               <string>sec</string>
               </property>
              </widget>
             </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="3">
+          <widget class="QGroupBox" name="reservationsGroupBox">
+           <property name="font">
+            <font>
+             <family>Courier New</family>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="title">
+            <string>Confirm Reservation</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_26">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="font">
-               <font>
-                <family>Courier</family>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>min</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
+             <layout class="QGridLayout" name="gridLayout_18">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_23">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Courier New</family>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>On Failure</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_17">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Courier New</family>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>On Success</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="failureReservationGoToComboBox"/>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="successReservationGoToComboBox"/>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>

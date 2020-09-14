@@ -155,11 +155,6 @@ class UIEditBlockController(QtWidgets.QDialog):
                     self.ui.animationsCheckBox.isChecked()))
                 self.ui.animationsComboBox.addItems([a for a in config_helper.get_animations()])
 
-                # if we're changing the min range and the value > max ==> update max with min value
-                self.ui.rangeMinSpinBox.valueChanged.connect(lambda: self.verify_range(update_max=True))
-                # if we're changing the max range and the value < min ==> update min with max value
-                self.ui.rangeMaxSpinBox.valueChanged.connect(lambda: self.verify_range(update_max=False))
-
                 # check if the block contains an action
                 if self.interaction_block.action_command is not None:
                     comm_type = self.interaction_block.action_command.command_type
@@ -167,10 +162,10 @@ class UIEditBlockController(QtWidgets.QDialog):
                     self.ui.actionComboBox.setCurrentIndex(
                         self.ui.actionComboBox.findText(comm_type.name, QtCore.Qt.MatchFixedString))
                     # update range
-                    # if comm_type is ActionCommand.DRAW_NUMBER:
-                    #     self.ui.rangeMinSpinBox.setValue(self.interaction_block.action_command.range_min)
-                    #     self.ui.rangeMaxSpinBox.setValue(self.interaction_block.action_command.range_max)
-                    if comm_type is ActionCommand.WAIT:
+                    if comm_type is ActionCommand.CHECK_RESERVATIONS:
+                        # TODO
+                        self.logger.info("TODO")
+                    elif comm_type is ActionCommand.WAIT:
                         self.ui.timeSpinBox.setValue(self.interaction_block.action_command.wait_time)
                     elif comm_type is ActionCommand.PLAY_MUSIC:
                         self.ui.playlistComboBox.setCurrentIndex(
@@ -196,7 +191,7 @@ class UIEditBlockController(QtWidgets.QDialog):
     def toggle_action_tab(self, enable=False):
         tab_index = self.ui.tabWidget.indexOf(self.ui.tabWidget.findChild(QtWidgets.QWidget, 'actionTab'))
         self.ui.tabWidget.setTabEnabled(tab_index, enable)
-        self.ui.rangeGroupBox.setHidden(True)
+        self.ui.reservationsGroupBox.setHidden(True)
         self.ui.musicGroupBox.setHidden(True)
         self.ui.timeGroupBox.setHidden(True)
 
@@ -205,24 +200,18 @@ class UIEditBlockController(QtWidgets.QDialog):
             self.ui.tabWidget.removeTab(tab_index)
 
     def on_action_change(self):
-        hide_range, hide_music, hide_time = True, True, True
-        # if self.ui.actionComboBox.currentText() in ActionCommand.DRAW_NUMBER.name:
-        #     hide_range = False
-        if self.ui.actionComboBox.currentText() in ActionCommand.WAIT.name:
+        hide_reservations, hide_music, hide_time = True, True, True
+        if self.ui.actionComboBox.currentText() in ActionCommand.CHECK_RESERVATIONS.name:
+            hide_reservations = False
+        elif self.ui.actionComboBox.currentText() in ActionCommand.WAIT.name:
             hide_time = False
         elif self.ui.actionComboBox.currentText() in ActionCommand.PLAY_MUSIC.name:
             hide_music = False
             self.update_playlist_combo()
 
-        self.ui.rangeGroupBox.setHidden(hide_range)
+        self.ui.reservationsGroupBox.setHidden(hide_reservations)
         self.ui.timeGroupBox.setHidden(hide_time)
         self.ui.musicGroupBox.setHidden(hide_music)
-
-    def verify_range(self, update_max):
-        if self.ui.rangeMinSpinBox.value() >= self.ui.rangeMaxSpinBox.value():
-            # set the max val to min+1 if update_max is True; else set the min val to max-1
-            self.ui.rangeMaxSpinBox.setValue(self.ui.rangeMinSpinBox.value() + 1) if update_max is True \
-                else self.ui.rangeMinSpinBox.setValue(self.ui.rangeMaxSpinBox.value() - 1)
 
     def update_playlist_combo(self):
         self.ui.playlistComboBox.clear()
@@ -319,7 +308,7 @@ class UIEditBlockController(QtWidgets.QDialog):
             tag, topic, a1, a2, = ("",) * 4
         else:
             topic_tag = self.interaction_block.topic_tag
-            tag = topic_tag.name
+            # tag = topic_tag.name
             topic = topic_tag.topic
 
             a1 = '' if len(topic_tag.answers) == 0 else topic_tag.answers[0]
@@ -341,17 +330,17 @@ class UIEditBlockController(QtWidgets.QDialog):
         self.ui.answer1TextEdit.setText(a1)
         self.ui.answer2TextEdit.setText(a2)
 
-        self.update_go_to()
+        self.update_go_to(self.interaction_block.topic_tag.goto_ids,
+                          self.ui.answer1GoToComboBox, self.ui.answer2GoToComboBox)
 
-    def update_go_to(self):
+    def update_go_to(self, goto_ids, combo_box_1, combo_box_2):
         if self.connected_interaction_blocks is not None and len(self.connected_interaction_blocks) > 0:
             items = [pconfig.SELECT_OPTION]
             items.extend(["{}: {}".format(b.title, b.description) for b in self.connected_interaction_blocks])
 
-            self.ui.answer1GoToComboBox.addItems(items)
-            self.ui.answer2GoToComboBox.addItems(items)
+            combo_box_1.addItems(items)
+            combo_box_2.addItems(items)
 
-            goto_ids = self.interaction_block.topic_tag.goto_ids
             if goto_ids is None or len(goto_ids) == 0:
                 return
 
@@ -364,11 +353,11 @@ class UIEditBlockController(QtWidgets.QDialog):
                 opt = "{}: {}".format(b.title, b.description)
                 if opt in items:
                     if i == 0:
-                        self.ui.answer1GoToComboBox.setCurrentIndex(
-                            self.ui.answer1GoToComboBox.findText(opt, QtCore.Qt.MatchFixedString))
+                        combo_box_1.setCurrentIndex(
+                            combo_box_1.findText(opt, QtCore.Qt.MatchFixedString))
                     else:
-                        self.ui.answer2GoToComboBox.setCurrentIndex(
-                            self.ui.answer2GoToComboBox.findText(opt, QtCore.Qt.MatchFixedString))
+                        combo_box_2.setCurrentIndex(
+                            combo_box_2.findText(opt, QtCore.Qt.MatchFixedString))
 
     def get_speech_act(self):
         return SpeechAct.create_speech_act({"message": "{}".format(self.ui.messageTextEdit.toPlainText()).strip(),

@@ -97,7 +97,6 @@ class SpeechHandler(object):
         self.logger.info("Message to animate: {}".format(message))
         return self.session.call("rom.optional.tts.animate", text="{}".format(message))
 
-    # CAN BE REMOVED
     def customized_say(self, interaction_block=None):
         if interaction_block is None:
             return False

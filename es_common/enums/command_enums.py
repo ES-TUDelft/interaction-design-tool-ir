@@ -14,6 +14,7 @@ from es_common.enums.es_enum import ESEnum
 
 
 class ActionCommand(ESEnum):
-    GET_RESERVATIONS = "GetReservations"
     PLAY_MUSIC = "PlayMusic"
+    GET_RESERVATIONS = "GetReservations"
+    CHECK_RESERVATIONS = "CheckReservations"
     WAIT = "Wait"
