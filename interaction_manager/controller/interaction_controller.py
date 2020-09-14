@@ -61,8 +61,9 @@ class InteractionController(object):
         self.execution_result = None
         self.has_finished_playing_observable = Observable()
 
-        self.res_module = RestaurantReservationsModule(block_controller=self.block_controller)
-        self.res_module.get_blocks_data()
+        # test
+        # self.res_module = RestaurantReservationsModule(block_controller=self.block_controller)
+        # self.res_module.get_blocks_data()
 
     def connect_to_robot(self, robot_name=None, robot_realm=None):
         self.robot_name = robot_name
