@@ -30,4 +30,5 @@ class Observable(object):
 
     def notify_all(self, event):
         for observer in self.observers:
-            observer(event)
+            if observer:
+                observer(event)

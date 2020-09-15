@@ -55,7 +55,7 @@ class ESBlockController(BlockController):
             item_text = data_stream.readQString()
 
             # check if the block has a "start" pattern and the scene already contains one:
-            start_block = self.has_block(pattern="start")
+            start_block = self.get_block(pattern="start")
             if "start" == item_text.lower() and start_block is not None:
                 to_display = "The scene has already a start block! The drop is ignored."
                 self.logger.warning(to_display)
@@ -109,25 +109,15 @@ class ESBlockController(BlockController):
                                                  output_edges=output_edges,
                                                  bg_color=bg_color)
         # editing/settings observers
-        interaction_block.block.settings_observables.add_observer(self.block_settings_selected)
-        interaction_block.block.editing_observables.add_observer(self.block_editing_selected)
+        interaction_block.block.settings_observers.add_observer(self.block_settings_selected)
+        interaction_block.block.editing_observers.add_observer(self.block_editing_selected)
 
         # disable settings icon
         interaction_block.block.content.settings_icon.setEnabled(False)
 
         return interaction_block
 
-    def update_blocks_behavioral_parameters(self, param_name, behavioral_parameters):
-        # apply settings to all blocks
-        for b in self.get_blocks():
-            if type(b.parent) is InteractionBlock:  # to be on the safe side!
-                b.parent.set_behavioral_parameters(
-                    p_name=param_name,
-                    behavioral_parameters=behavioral_parameters
-                )
-        self.store("Updated behavioral parameters of all blocks")
-
-    def has_hidden_block(self, pattern=None):
+    def get_hidden_block(self, pattern=None):
         if pattern is None or self.hidden_scene is None:
             return None
 

@@ -77,37 +77,9 @@ class UIEditBlockController(QtWidgets.QDialog):
         # Modules
         self.set_modules()
 
-        # gestures
-        self.ui.openGestureLineEdit.setText(
-            "{}".format(self.interaction_block.behavioral_parameters.gesture.gestures['open']))
-        self.ui.closeGestureLineEdit.setText(
-            "{}".format(self.interaction_block.behavioral_parameters.gesture.gestures['close']))
-        gestures = config_helper.get_gestures()
-        self.ui.openGestureComboBox.clear()
-        self.ui.openGestureComboBox.addItems([pconfig.SELECT_OPTION])
-        self.ui.openGestureComboBox.addItems(sorted([g for g in gestures['open']]))
-        self.ui.openGestureComboBox.currentIndexChanged.connect(lambda: self.update_gesture_text_box(
-            combo_box=self.ui.openGestureComboBox,
-            text_box=self.ui.openGestureLineEdit,
-            gesture_type="open"
-        ))
-        self.ui.closeGesturesComboBox.clear()
-        self.ui.closeGesturesComboBox.addItems([pconfig.SELECT_OPTION])
-        self.ui.closeGesturesComboBox.addItems(sorted([g for g in gestures['close']]))
-        self.ui.closeGesturesComboBox.currentIndexChanged.connect(lambda: self.update_gesture_text_box(
-            combo_box=self.ui.closeGesturesComboBox,
-            text_box=self.ui.closeGestureLineEdit,
-            gesture_type="close"
-        ))
-        if self.robot_controller is not None:
-            # Open Gestures
-            self.ui.testOpenGesturesPushButton.setEnabled(True)
-            self.ui.testOpenGesturesPushButton.clicked.connect(lambda: self.test_animation(
-                animation_name=self.ui.openGestureLineEdit.text()))
-            # Close Gestures
-            self.ui.testCloseGesturePushButton.setEnabled(True)
-            self.ui.testCloseGesturePushButton.clicked.connect(lambda: self.test_animation(
-                animation_name=self.ui.closeGestureLineEdit.text()))
+        # Gestures tab: remove!
+        beh_tab_index = self.ui.tabWidget.indexOf(self.ui.tabWidget.findChild(QtWidgets.QWidget, "behaviorsTab"))
+        self.ui.tabWidget.removeTab(beh_tab_index)
 
         # tablet page
         # self.ui.tabletPageNameComboBox.clear()
@@ -148,6 +120,13 @@ class UIEditBlockController(QtWidgets.QDialog):
 
                 self.ui.moduleNameComboBox.addItems([pconfig.SELECT_OPTION])
                 self.ui.moduleNameComboBox.addItems(modules)
+
+                # check if the block contains a module
+                module_name = self.interaction_block.interaction_module_name
+                if module_name:
+                    # update combobox current item
+                    self.ui.moduleNameComboBox.setCurrentIndex(
+                        self.ui.moduleNameComboBox.findText(module_name, QtCore.Qt.MatchFixedString))
 
                 self.logger.info("Module tab is setup")
             except Exception as e:
@@ -309,16 +288,6 @@ class UIEditBlockController(QtWidgets.QDialog):
             self.ui.tabletPageNameComboBox.setCurrentIndex(
                 self.ui.tabletPageNameComboBox.findText(tablet_page.name, QtCore.Qt.MatchFixedString))
 
-    def update_gesture_text_box(self, combo_box, text_box, gesture_type):
-        gesture_name = "{}".format(combo_box.currentText())
-
-        if pconfig.SELECT_OPTION in gesture_name:
-            return
-
-        gest = config_helper.get_gestures()[gesture_type]
-        if gesture_name in gest:
-            text_box.setText("{}".format(gest[gesture_name]))
-
     def test_animation(self, animation_name=None):
         if self.robot_controller is None or animation_name is None or animation_name.strip() == "":
             return
@@ -428,7 +397,8 @@ class UIEditBlockController(QtWidgets.QDialog):
 
         module_name = "{}".format(self.ui.moduleNameComboBox.currentText())
         if module_name in InteractionModule.keys():
-            self.logger.info("TODO")
+            self.logger.info(f"Module set to: {module_name}")
+            return module_name
 
     def get_command(self):
         if self.ui.actionComboBox.isHidden():
@@ -484,10 +454,9 @@ class UIEditBlockController(QtWidgets.QDialog):
         d_block.topic_tag = self.get_topic_tag()
         d_block.tablet_page = self.get_tablet_page()
         d_block.action_command = self.get_command()
-        # gestures
-        d_block.behavioral_parameters.gesture.set_gestures(open_gesture="{}".format(self.ui.openGestureLineEdit.text()),
-                                                           close_gesture="{}".format(
-                                                               self.ui.closeGestureLineEdit.text()))
+        d_block.interaction_module_name = self.get_module()
+
+        return d_block
 
     def update_interaction_block(self, int_block):
         if int_block is None:
@@ -498,6 +467,7 @@ class UIEditBlockController(QtWidgets.QDialog):
         int_block.speech_act = self.get_speech_act()
         int_block.topic_tag = self.get_topic_tag()
         int_block.tablet_page = self.get_tablet_page()
+        int_block.interaction_module_name = self.get_module()
 
         # don't update music command if there is no connection to the music service
         if "{}".format(self.ui.actionComboBox.currentText()) == ActionCommand.PLAY_MUSIC.name:
@@ -505,9 +475,6 @@ class UIEditBlockController(QtWidgets.QDialog):
                 int_block.action_command = self.get_command()
         else:
             int_block.action_command = self.get_command()
-        # gestures
-        int_block.set_gestures(open_gesture="{}".format(self.ui.openGestureLineEdit.text()),
-                               close_gesture="{}".format(self.ui.closeGestureLineEdit.text()))
 
     def _is_valid_option(self, option):
         if option is not None and option != "" and option != pconfig.SELECT_OPTION:

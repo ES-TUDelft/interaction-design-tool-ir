@@ -16,6 +16,8 @@ from PyQt5.QtCore import QTimer
 
 from block_manager.enums.block_enums import ExecutionMode
 from es_common.enums.command_enums import ActionCommand
+from es_common.enums.module_enums import InteractionModule
+from es_common.factory.module_factory import ModuleFactory
 from es_common.model.observable import Observable
 from es_common.module.restaurant_reservations_module import RestaurantReservationsModule
 from es_common.utils.timer_helper import TimerHelper
@@ -56,6 +58,7 @@ class InteractionController(object):
         self.previous_interaction_block = None
         self.interaction_blocks = None
         self.interaction_design = None
+        self.interaction_module = None
 
         self.stop_playing = False
         self.execution_result = None
@@ -202,15 +205,26 @@ class InteractionController(object):
         self.logger.debug("Getting the next interaction block...")
         try:
             self.logger.debug("Execution Result: {}".format(self.animation_thread.execution_result))
+            self.logger.info("Module Name: {} | Mode: {}\n\n".
+                             format(self.current_interaction_block.interaction_module_name,
+                                    self.current_interaction_block.execution_mode))
+            if self.current_interaction_block.interaction_module_name and \
+                    self.current_interaction_block.execution_mode is ExecutionMode.EXECUTING:
+                self.execute_interaction_module()
 
-            next_block, connecting_edge = self.current_interaction_block.get_next_interaction_block(
-                execution_result=self.animation_thread.execution_result)
+            if self.current_interaction_block.is_hidden and self.interaction_module:
+                connecting_edge = None
+                next_block = self.interaction_module.get_next_interaction_block(self.current_interaction_block)
+            else:
+                next_block, connecting_edge = self.current_interaction_block.get_next_interaction_block(
+                    execution_result=self.animation_thread.execution_result)
 
             # complete execution
             self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
 
             # update previous block
             self.previous_interaction_block = self.current_interaction_block
+
         except Exception as e:
             self.logger.error("Error while getting the next block! {}".format(e))
         finally:
@@ -288,16 +302,26 @@ class InteractionController(object):
         else:
             # get the next block to say
             self.current_interaction_block, connecting_edge = self.get_next_interaction_block()
+
+            # check if reached the end of the interaction_module
+            if self.current_interaction_block is None and self.previous_interaction_block:
+                if self.previous_interaction_block.is_hidden and self.interaction_module:
+                    self.current_interaction_block = self.interaction_module.origin_block
+                    self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
+                    self.current_interaction_block, connecting_edge = self.get_next_interaction_block()
+
             if self.verify_current_interaction_block() is False:
                 return False
 
         # execute the block
         self.current_interaction_block.execution_mode = ExecutionMode.EXECUTING
-        self.current_interaction_block.set_selected(True)
-        self.current_interaction_block.volume = self.robot_volume
 
-        if connecting_edge is not None:
-            connecting_edge.set_selected(True)
+        if not self.current_interaction_block.is_hidden:
+            self.current_interaction_block.set_selected(True)
+            if connecting_edge is not None:
+                connecting_edge.set_selected(True)
+
+        self.current_interaction_block.volume = self.robot_volume
 
         # TODO:
         # self.face_detection_thread.face_detection()
@@ -306,6 +330,21 @@ class InteractionController(object):
         self.animation_thread.customized_say(interaction_block=self.current_interaction_block)
 
         return True
+
+    def execute_interaction_module(self):
+        self.interaction_module = ModuleFactory.create_module(self.current_interaction_block.interaction_module_name,
+                                                              self.block_controller,
+                                                              self.current_interaction_block)
+        if self.interaction_module is None:
+            return
+
+        next_b = self.interaction_module.execute_module()
+
+        if next_b is not None:
+            next_b.is_hidden = True  # just in case!
+            self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
+            self.previous_interaction_block = self.current_interaction_block
+            self.current_interaction_block = next_b
 
     def execute_action_command(self):
         # check for remaining actions
@@ -429,24 +468,6 @@ class InteractionController(object):
             self.logger.error("Error while stopping the music! {}".format(e))
         finally:
             self.customized_say()
-
-    def test_behavioral_parameters(self, interaction_block, behavioral_parameters, volume):
-        message, error = (None,) * 2
-
-        if self.robot_controller is None:
-            error = "Please connect to the robot to be able to test the parameters."
-        else:
-            b = interaction_block.clone()
-            b.behavioral_parameters = behavioral_parameters
-            b.behavioral_parameters.speech_act = interaction_block.speech_act.clone()
-            b.behavioral_parameters.voice.volume = volume
-
-            self.face_detection_thread.gaze_pattern = b.behavioral_parameters.gaze_pattern
-            self.animation_thread.test_mode = True
-            self.animation_thread.customized_say(interaction_block=b)
-            message = "Testing: {}".format(b.message)
-
-        return message, error
 
     # TABLET
     # ------

@@ -34,13 +34,13 @@ class Block(Serializable, Observable):
 
         self._init_ui(socket_types, pos, output_edges)
 
-        # add observables
-        self.editing_observables = Observable()
-        self.settings_observables = Observable()
+        # add observers
+        self.editing_observers = Observable()
+        self.settings_observers = Observable()
 
         # add editing/settings listeners
-        self.content.editing_icon.clicked.connect(lambda: self.editing_observables.notify_all(event=self))
-        self.content.settings_icon.clicked.connect(lambda: self.settings_observables.notify_all(event=self))
+        self.content.editing_icon.clicked.connect(lambda: self.editing_observers.notify_all(event=self))
+        self.content.settings_icon.clicked.connect(lambda: self.settings_observers.notify_all(event=self))
 
         # add block to the scene
         self.scene.add_block(self)

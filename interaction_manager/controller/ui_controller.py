@@ -27,7 +27,6 @@ from interaction_manager.controller.ui_confirmation_dialog_controller import UIC
 from interaction_manager.controller.ui_edit_block_controller import UIEditBlockController
 from interaction_manager.controller.ui_export_blocks_controller import UIExportBlocksController
 from interaction_manager.controller.ui_import_blocks_controller import UIImportBlocksController
-from interaction_manager.controller.ui_parameters_controller import UIParametersController
 from interaction_manager.controller.ui_robot_connection_controller import UIRobotConnectionController
 from interaction_manager.controller.ui_spotify_connection_controller import UISpotifyConnectionController
 from interaction_manager.view.ui_dialog import Ui_DialogGUI
@@ -131,7 +130,7 @@ class UIController(QtWidgets.QMainWindow):
         # ----------
         # TODO: Copy block not parameters
         self.ui.actionMenuCopy.triggered.connect(self.copy_block)
-        self.ui.actionMenuPasteParameters.triggered.connect(self.paste_behavioral_parameters)
+        self.ui.actionMenuPaste.triggered.connect(self.paste_block)
 
         # DELETE, RESET, CLEAR, IMPORT and SAVE list listeners
         self._enable_buttons([self.ui.actionMenuNew, self.ui.actionMenuSaveAs],
@@ -177,7 +176,7 @@ class UIController(QtWidgets.QMainWindow):
         self.block_controller.start_block_observable.add_observer(self.on_invalid_action)
         self.block_controller.add_invalid_edge_observer(self.on_invalid_action)
         self.block_controller.add_on_scene_change_observer(self.on_scene_change)
-        self.block_controller.block_settings_observable.add_observer(self.block_settings)
+        # self.block_controller.block_settings_observable.add_observer(self.block_settings)
         self.block_controller.block_editing_observable.add_observer(self.block_editing)
         self.block_controller.add_right_click_block_observer(self.create_popup_menu)
 
@@ -485,7 +484,7 @@ class UIController(QtWidgets.QMainWindow):
 
     def verify_interaction_setup(self):
         # check if the scene contains a valid start block
-        block = self.block_controller.has_block(pattern="start")
+        block = self.block_controller.get_block(pattern="start")
         if block is None:
             self._display_message(error="The scene doesn't contain a starting block! "
                                         "Please add a 'START' block then click on play")
@@ -556,7 +555,7 @@ class UIController(QtWidgets.QMainWindow):
         self.selected_block = None
 
         # disable copy/paste
-        self._enable_buttons([self.ui.actionMenuCopy, self.ui.actionMenuPaste, self.ui.actionMenuPasteParameters],
+        self._enable_buttons([self.ui.actionMenuCopy, self.ui.actionMenuPaste],
                              enabled=False)
 
     def block_editing(self, block):
@@ -580,52 +579,19 @@ class UIController(QtWidgets.QMainWindow):
             self._display_message(error="Error while attempting to edit the block! {}".format(e))
             self.repaint()
 
-    def block_settings(self, block):
-        if block is None:
-            return
-
-        self.selected_block = block
-        try:
-            # Open parameters dialog
-            interaction_block = self.selected_block.parent
-            interaction_block.volume = self.volume
-            parameters_dialog = UIParametersController(interaction_block=interaction_block,
-                                                       block_controller=self.block_controller,
-                                                       interaction_controller=self.interaction_controller)
-
-            if parameters_dialog.exec_():
-                self.selected_block.parent.set_behavioral_parameters(
-                    p_name="all",
-                    behavioral_parameters=parameters_dialog.behavioral_parameters)
-                self._display_message(
-                    message="The parameters are updated.")
-                self.block_controller.store("Edited Parameters")
-
-        except Exception as e:
-            self._display_message(error="Error while attempting to edit the parameters! {}".format(e))
-            self.repaint()
-
-        self.selected_block = block
-
     def copy_block(self):
         if self.selected_block is not None:
             self.copied_block = self.selected_block
-            self.enable_paste_buttons()
+            # self.enable_paste_buttons()
 
-    def paste_behavioral_parameters(self):
-        if self.selected_block is not None and self.copied_block is not None:
-            behavioral_parameters = self.copied_block.parent.behavioral_parameters.clone()
-            self.selected_block.parent.set_behavioral_parameters(
-                p_name="All",
-                behavioral_parameters=behavioral_parameters)
-
-            self.block_controller.store("Updated parameters")
-
-            self._display_message(message="Successfully pasted the parameters.")
+    def paste_block(self):
+        # if self.selected_block is not None and self.copied_block is not None:
+        #     # TODO
+        # self.block_controller.store("Updated parameters")
+        self._display_message(warning="Not Implemented.")
 
     def enable_paste_buttons(self):
-        # TODO: activate paste block!
-        self._enable_buttons([self.ui.actionMenuPasteParameters],
+        self._enable_buttons([self.ui.actionMenuPaste],
                              enabled=False if self.copied_block is None else True)
 
     #
@@ -676,19 +642,6 @@ class UIController(QtWidgets.QMainWindow):
             # Add a separator
             self.right_click_menu.addSeparator()
 
-            # Add an edit block action
-            self.right_click_menu.addAction("Set Parameters")
-
-            # Add a separator
-            self.right_click_menu.addSeparator()
-
-            # Add copy/paste settings action
-            self.right_click_menu.addAction("Copy Settings")
-            self.right_click_menu.addAction("Paste Settings")
-
-            # Add a separator
-            self.right_click_menu.addSeparator()
-
             # Add a delete block action
             self.right_click_menu.addAction("Delete")
 
@@ -708,15 +661,11 @@ class UIController(QtWidgets.QMainWindow):
         """
         Function that executes popup menu actions
         """
-        action_name = str(action.text()).translate(None, '&')
+        action_name = "{}".format(action.text())
         if action_name == "Edit":
             self.block_editing(block)
-        elif action_name == "Set Parameters":
-            self.block_settings(block)
         elif action_name == "Copy Settings":
             self.copy_block()
-        elif action_name == "Paste Settings":
-            self.paste_behavioral_parameters()
         elif action_name == "Delete":
             self.on_delete()
         elif action_name == "Duplicate":

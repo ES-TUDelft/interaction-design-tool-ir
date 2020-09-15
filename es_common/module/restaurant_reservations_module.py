@@ -1,4 +1,5 @@
 import logging
+from collections import OrderedDict
 
 from es_common.command.get_reservations_command import GetReservationsCommand
 from es_common.enums.module_enums import InteractionModule
@@ -38,10 +39,25 @@ class RestaurantReservationsModule(ESModule):
             try:
                 if res and "customer" in res.keys():
                     firstnames.append(res["customer"]["firstname"])
-                    lastnames.append(res["customer"]["lastnames"])
+                    lastnames.append(res["customer"]["lastname"])
             except Exception as e:
                 self.logger.error("Error while fetching customers: {}".format(e))
             finally:
                 continue
 
         return firstnames, lastnames
+
+    ###
+    # SERIALIZATION
+    ###
+    def serialize(self):
+        return OrderedDict([
+            ("id", self.id),
+            ("module_type", self.module_type.name)
+        ])
+
+    def deserialize(self, data, hashmap={}):
+        self.id = data["id"]
+        hashmap[data["id"]] = self
+
+        return True

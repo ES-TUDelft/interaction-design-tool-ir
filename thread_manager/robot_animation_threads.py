@@ -137,6 +137,7 @@ class AnimateRobotThread(QThread):
             else:
                 if self.interaction_block is not None:
                     self.interaction_block.interaction_end_time = time.time()
+                self.logger.info("Block completed: notifying observers.")
                 self.customized_say_completed_observers.notify_all(True)
         except Exception as e:
             self.logger.error("Error while raising completed event: {}".format(e))

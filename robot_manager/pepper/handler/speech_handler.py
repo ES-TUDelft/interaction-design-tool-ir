@@ -34,6 +34,7 @@ class SpeechHandler(object):
 
         # add a listener to the keyword stream
         self.session.subscribe(self.on_keyword, "rom.optional.keyword.stream")
+        self.current_keywords = []
 
     # KEYWORDS
     # ========
@@ -44,13 +45,14 @@ class SpeechHandler(object):
                 yield self.logger.info("No frame received")
             else:
                 certainty = frame["data"]["body"]["certainty"]
-                self.logger.info("Certainty = {}".format(certainty))
-
                 if certainty >= self.speech_certainty:
                     self.keyword_stream(start=False)
-                    self.clear_keywords()
+
+                    if self.current_keywords and len(self.current_keywords) > 0:
+                        self.remove_keywords(self.current_keywords)
+
                     keyword = frame["data"]["body"]["text"]
-                    self.logger.info("Keyword is: {}".format(keyword))
+                    self.logger.info("Keyword is: {} | {}".format(keyword, certainty))
                     yield self.keyword_observers.notify_all(keyword)
                 else:
                     yield self.logger.info(frame["data"])
@@ -60,7 +62,10 @@ class SpeechHandler(object):
     def add_keywords(self, keywords=None):
         # add keywords to listen to
         if keywords is None:
+            self.current_keywords = []
             return
+
+        self.current_keywords = keywords
         self.session.call("rom.optional.keyword.add", keywords=keywords)  # keywords = array of strings
 
     def remove_keywords(self, keywords=None):
@@ -106,7 +111,11 @@ class SpeechHandler(object):
         self._set_page_fields(interaction_block.tablet_page)
 
         # say the message
-        speech_event = self.animated_say(message=interaction_block.message)
+        message = interaction_block.message
+        # update the block's message, if any
+        if "{answer}" in message:
+            message = message.format(answer=interaction_block.execution_result.lower())
+        speech_event = self.animated_say(message=message)
 
         # check if answers are needed
         # TODO: switch to another check
@@ -131,6 +140,7 @@ class SpeechHandler(object):
 
     def set_language(self, name="en"):
         # switch to English
+        self.session.call(u'rom.optional.tts.language', lang="en")
         self.session.call("rie.dialogue.config.language", lang="{}".format(name))
 
     def log(self, value):

@@ -93,8 +93,8 @@ class BlockController(object):
                                    parent=None,
                                    icon=item_text.lower())
             # editing/settings observers
-            block.settings_observables.add_observer(self.block_settings_selected)
-            block.editing_observables.add_observer(self.block_editing_selected)
+            block.settings_observers.add_observer(self.block_settings_selected)
+            block.editing_observers.add_observer(self.block_editing_selected)
 
             self.store("Added new {}".format(item_text))
 
@@ -108,16 +108,16 @@ class BlockController(object):
         if type(block) is Block:
             self.logger.debug("Observer for {} is updated.".format(block.title))
             block.add_observer(self.block_is_selected)
-            block.settings_observables.add_observer(self.block_settings_selected)
-            block.editing_observables.add_observer(self.block_editing_selected)
+            block.settings_observers.add_observer(self.block_settings_selected)
+            block.editing_observers.add_observer(self.block_editing_selected)
 
     def update_all_blocks_selected_observer(self):
         for block in self.get_blocks():
             self.logger.debug("Observer for {} is updated.".format(block.title))
             block.add_observer(self.block_is_selected)
             # editing/settings observers
-            block.settings_observables.add_observer(self.block_settings_selected)
-            block.editing_observables.add_observer(self.block_editing_selected)
+            block.settings_observers.add_observer(self.block_settings_selected)
+            block.editing_observers.add_observer(self.block_editing_selected)
 
     def block_is_selected(self, block):
         if type(block) is Block:
@@ -140,7 +140,7 @@ class BlockController(object):
             self.logger.debug("Editing icon of Block '{}' is selected. | id = {}".format(block.title, block.id))
             self.block_editing_observable.notify_all(block)
 
-    def has_block(self, pattern=None):
+    def get_block(self, pattern=None):
         if pattern is None:
             return None
 

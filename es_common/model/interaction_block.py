@@ -13,13 +13,14 @@ import copy
 import logging
 from collections import OrderedDict
 
-from es_common.datasource.serializable import Serializable
-from es_common.model.tablet_page import TabletPage
-from es_common.model.topic_tag import TopicTag
 from block_manager.enums.block_enums import SocketType, ExecutionMode
+from es_common.datasource.serializable import Serializable
 from es_common.enums.command_enums import ActionCommand
 from es_common.factory.command_factory import CommandFactory
+from es_common.model.tablet_page import TabletPage
+from es_common.model.topic_tag import TopicTag
 from interaction_manager.model.behavioral_parameters import BehavioralParameters
+from interaction_manager.model.speech_act import SpeechAct
 
 
 class InteractionBlock(Serializable):
@@ -38,23 +39,19 @@ class InteractionBlock(Serializable):
         self.set_icon_path(icon_path)
 
         self.behavioral_parameters = BehavioralParameters() if behavioral_parameters is None else behavioral_parameters
+        self.speech_act = SpeechAct()
         self.block = block
 
         # action command
         self.action_command = None  # ESCommand()
+        self.interaction_module_name = None
 
         self.execution_mode = ExecutionMode.NEW  # by default
 
         self.interaction_start_time = 0
         self.interaction_end_time = 0
         self.is_hidden = False
-
-    def set_behavioral_parameters(self, p_name, behavioral_parameters):
-        """
-        :param p_name: name of the behavioral parameter (i.e., property to set)
-        :param behavioral_parameters
-        """
-        self.behavioral_parameters.set_parameters(p_name, behavioral_parameters)
+        self.execution_result = ""
 
     def clone(self):
         block = InteractionBlock()
@@ -128,6 +125,7 @@ class InteractionBlock(Serializable):
             if execution_result is None or execution_result == "":
                 # select first if possible
                 next_int_block = int_blocks[0]  # we already verified the len to be > 0
+                next_int_block.execution_result = ""
             else:
                 # check the answers
                 for i in range(len(self.topic_tag.answers)):
@@ -136,8 +134,8 @@ class InteractionBlock(Serializable):
                         next_int_block = self._get_block_by_id(int_blocks, self.topic_tag.goto_ids[i])
                         break
                 # update the block's message, if any
-                if next_int_block and "{answer}" in next_int_block.message:
-                    next_int_block.message = next_int_block.message.format(answer=execution_result.lower())
+                if next_int_block:
+                    next_int_block.execution_result = execution_result
             connecting_edge = self.get_output_connected_edge(next_int_block)
         except Exception as e:
             self.logger.error("Error while attempting to get the next block! {}".format(e))
@@ -147,7 +145,7 @@ class InteractionBlock(Serializable):
             return next_int_block, connecting_edge
 
     def set_selected(self, val):
-        if val is not None:
+        if val is not None and self.block:
             self.block.set_selected(val)
 
     def _get_block_by_id(self, b_lst, target_id):
@@ -169,6 +167,9 @@ class InteractionBlock(Serializable):
     def has_action(self, action_type):
         return self.action_command is not None and self.action_command.command_type is action_type
 
+    def has_interaction_module(self, module_name):
+        return self.interaction_module_name == module_name
+
     # ===========
     # PROPERTIES
     # ===========
@@ -178,11 +179,11 @@ class InteractionBlock(Serializable):
 
     @property
     def speech_act(self):
-        return self.behavioral_parameters.speech_act
+        return self.__speech_act
 
     @speech_act.setter
     def speech_act(self, speech_act):
-        self.behavioral_parameters.speech_act = speech_act
+        self.__speech_act = speech_act.clone() if speech_act is not None else SpeechAct()
 
     @property
     def message(self):
@@ -253,9 +254,11 @@ class InteractionBlock(Serializable):
             ("topic_tag", self.topic_tag.to_dict),
             ("tablet_page", self.tablet_page.to_dict),
             ("icon_path", self.icon_path),
+            ("speech_act", self.speech_act.to_dict),
             ("behavioral_parameters", self.behavioral_parameters.to_dict),
             ("action_command", self.action_command.serialize() if self.action_command is not None else {}),
-            ("block", self.block.id),
+            ("interaction_module_name", self.interaction_module_name),
+            ("block", self.block.id if self.block is not None else 0),
             ("is_hidden", self.is_hidden),
             ("interaction_start_time", self.interaction_start_time),
             ("interaction_end_time", self.interaction_end_time),
@@ -274,10 +277,17 @@ class InteractionBlock(Serializable):
                                      icon_path=block_dict['icon_path']
                                      )
             if 'behavioral_parameters' in block_dict.keys():  # otherwise, keep default values
+                block.speech_act = SpeechAct.create_speech_act(block_dict['behavioral_parameters'])
                 block.behavioral_parameters = BehavioralParameters.create_behavioral_parameters(
                     beh_dict=block_dict['behavioral_parameters'])
+            if "speech_act" in block_dict.keys():
+                print("\nFound speech_act in keys.")
+                block.speech_act = SpeechAct.create_speech_act(block_dict["speech_act"])
 
             block.is_hidden = block_dict["is_hidden"] if "is_hidden" in block_dict.keys() else False
+            
+            if "interaction_module_name" in block_dict.keys():
+                block.interaction_module_name = block_dict["interaction_module_name"]
 
             if any('interaction' in k for k in block_dict.keys()):
                 block.interaction_start_time = block_dict['interaction_start_time']
