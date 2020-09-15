@@ -35,6 +35,9 @@ class RobotFaceDetectionThread(QThread):
     def __del__(self):
         self.wait()
 
+    def stop_running(self):
+        self.stop_face_detection = True
+
     def face_detection(self, start=True):
         if start is False:
             self.stop_face_detection = True
@@ -47,10 +50,11 @@ class RobotFaceDetectionThread(QThread):
             self.robot_controller.face_detection(start=True)
             self.tracking_start_time = time.time()
 
-            while self.stop_face_detection is False:
+            while not self.stop_face_detection:
                 time.sleep(1)
 
-            self.robot_controller.face_detection(start=False)
+            if self.robot_controller:
+                self.robot_controller.face_detection(start=False)
         except Exception as e:
             # self.is_disconnected.emit(True)
             self.logger.error("Error: {}".format(e))

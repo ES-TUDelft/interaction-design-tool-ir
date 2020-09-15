@@ -40,6 +40,9 @@ class RobotConnectionThread(QThread):
     def __del__(self):
         self.wait()
 
+    def stop_running(self):
+        self.stay_connected = False
+
     def connect_to_robot(self, session_observer, robot_name=None, robot_realm=None):
         try:
             if self.connection_handler is None:

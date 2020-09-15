@@ -54,6 +54,9 @@ class ImageControllerThread(QThread):
     def __del__(self):
         self.wait()
 
+    def stop_running(self):
+        pass
+
     def update_image(self, draw_image=True, show_fps=True):
         self.draw_image = draw_image
         self.show_fps = show_fps
@@ -149,6 +152,9 @@ class CameraThread(QThread):
     def __del__(self):
         self.wait()
 
+    def stop_running(self):
+        self.stop_image = True
+
     def setup_camera(self, camera_id, resolution):
         self.robot_controller.setup_camera(camera_id=camera_id, resolution=resolution)
 
@@ -162,7 +168,7 @@ class CameraThread(QThread):
         return math.ceil(fps)
 
     def run(self):
-        while self.stop_image is False:
+        while not self.stop_image:
             self.timer_helper.start()
             i_t = time.time()
             img = self.robot_controller.get_image()

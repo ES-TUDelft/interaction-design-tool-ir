@@ -36,19 +36,23 @@ class RobotEngagementThread(QThread):
 
     def engagement(self, start=True):
         if start is False:
-            self.stop_engagement = True
+            self.stop_running()
         elif not self.isRunning():
             self.start()
+
+    def stop_running(self):
+        self.stop_engagement = True
 
     def run(self):
         self.stop_engagement = False
         try:
             self.robot_controller.engagement(start=True)
-            while self.stop_engagement is False:
+            while not self.stop_engagement:
                 time.sleep(1)
 
-            self.robot_controller.engagement(start=False)
-            self.robot_controller.posture(reset=True)
+            if self.robot_controller:
+                self.robot_controller.engagement(start=False)
+                # self.robot_controller.posture(reset=True)
         except Exception as e:
             self.is_disconnected.emit(True)
             self.logger.error("Error while connecting to the robot: {}".format(e))

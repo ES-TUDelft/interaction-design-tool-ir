@@ -25,11 +25,16 @@ class WakeUpRobotThread(QThread):
 
     def __init__(self, robot_controller):
         QThread.__init__(self)
+
+        self.logger = logging.getLogger("WakeUpRobotThread")
         self.robot_controller = robot_controller
         self.wakeup = False
 
     def __del__(self):
         self.wait()
+
+    def stop_running(self):
+        self.logger.info("Thread is not running.")
 
     def stand(self):
         self.wakeup = True

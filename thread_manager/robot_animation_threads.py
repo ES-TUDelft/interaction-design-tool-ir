@@ -36,6 +36,9 @@ class MoveRobotThread(QThread):
     def __del__(self):
         self.wait()
 
+    def stop_running(self):
+        pass
+
     def move_to(self, x=0, y=0, theta=0):
         self.x = x
         self.y = y
@@ -67,8 +70,8 @@ class AnimateRobotThread(QThread):
         self.animated_say_completed_observers = Observable()
         self.customized_say_completed_observers = Observable()
 
-        self.robot_controller = robot_controller
-        self.robot_controller.observe_interaction_events(self.raise_completed_event, self.set_execution_result)
+        self.robot_controller = None
+        self.set_robot_controller(robot_controller)
 
         self.animation_name = None
         self.message = None
@@ -81,6 +84,13 @@ class AnimateRobotThread(QThread):
 
     def __del__(self):
         self.wait()
+
+    def stop_running(self):
+        self._reset()
+
+    def set_robot_controller(self, robot_controller):
+        self.robot_controller = robot_controller
+        self.robot_controller.observe_interaction_events(self.raise_completed_event, self.set_execution_result)
 
     def animate(self, animation_name):
         self.robot_controller.execute_animation(animation_name=animation_name)
@@ -143,7 +153,7 @@ class AnimateRobotThread(QThread):
             self.logger.error("Error while raising completed event: {}".format(e))
 
     def _reset(self):
-        self.robot_controller.posture(reset=True)
+        # self.robot_controller.posture(reset=True)
         self.move = False
         self.animation_name = None
         self.message = None

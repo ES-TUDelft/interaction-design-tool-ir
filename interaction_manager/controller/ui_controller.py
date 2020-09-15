@@ -182,7 +182,7 @@ class UIController(QtWidgets.QMainWindow):
 
     def _setup_interaction_controller(self):
         self.interaction_controller = InteractionController(block_controller=self.block_controller)
-        self.interaction_controller.has_finished_playing_observable.add_observer(self.on_finished_playing)
+        self.interaction_controller.has_finished_playing_observers.add_observer(self.on_finished_playing)
 
     def _setup_simulation_controller(self):
         self.simulation_controller = SimulationController(self.block_controller, parent=self)

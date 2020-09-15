@@ -11,6 +11,7 @@
 # **
 
 import logging
+import time
 
 from PyQt5.QtCore import QTimer
 
@@ -62,11 +63,9 @@ class InteractionController(object):
 
         self.stop_playing = False
         self.execution_result = None
-        self.has_finished_playing_observable = Observable()
-
-        # test
-        # self.res_module = RestaurantReservationsModule(block_controller=self.block_controller)
-        # self.res_module.get_blocks_data()
+        self.has_finished_playing_observers = Observable()
+        self.threads = []
+        self.on_connected_observers = Observable()
 
     def connect_to_robot(self, robot_name=None, robot_realm=None):
         self.robot_name = robot_name
@@ -81,51 +80,69 @@ class InteractionController(object):
         self.robot_controller = RobotController()  # self.connection_thread.robot_controller
         self.robot_controller.set_session(session=session)
         self.update_threads()
+        self.on_connected_observers.notify_all(True)
 
     def disconnect_from_robot(self):
         self.engagement_counter = 0
-        try:
-            if self.animation_thread is not None:
-                self.engagement(start=False)
 
-            if self.connection_thread is not None:
-                self.connection_thread.stay_connected = False
+        self.stop_all_threads()
+        try:
+            self.logger.info("Disconnecting in 10s...")
+            time.sleep(2)
+            self.robot_controller = None
         except Exception as e:
             self.logger.error("Error while disconnecting from robot. | {}".format(e))
-        finally:
-            self.robot_controller = None
 
-        # if self.animation_thread is not None:
-        #     self.animation_thread.dialog(start=False)
         return True
+
+    def stop_all_threads(self):
+        # close all threads
+        for thread in self.threads:
+            try:
+                thread.stop_running()
+                thread.quit()
+                thread.wait()
+            except Exception as e:
+                self.logger.error("Error while stopping thread: {} | {}".format(thread, e))
+            finally:
+                continue
 
     def is_connected(self):
         return False if self.robot_controller is None else True
 
     def update_threads(self):
-        if self.animation_thread is None:
-            self.animation_thread = AnimateRobotThread(robot_controller=self.robot_controller)
-            self.animation_thread.customized_say_completed_observers.add_observer(self.customized_say)
-            self.animation_thread.animate_completed_observers.add_observer(self.on_animation_completed)
-            self.animation_thread.is_disconnected.connect(self.disconnect_from_robot)
-        else:
-            self.animation_thread.robot_controller = self.robot_controller
-            # .connect_to_robot(robot_name=self.robot_name, robot_realm=self.robot_realm)
+        self.threads = []
 
-        if self.face_detection_thread is None:
-            self.face_detection_thread = RobotFaceDetectionThread(robot_controller=self.robot_controller)
-            self.face_detection_thread.is_disconnected.connect(self.disconnect_from_robot)
-        else:
-            # update the robot controller
-            self.face_detection_thread.robot_controller = self.robot_controller
+        # if self.animation_thread is None:
+        self.animation_thread = AnimateRobotThread(robot_controller=self.robot_controller)
+        self.animation_thread.customized_say_completed_observers.add_observer(self.customized_say)
+        self.animation_thread.animate_completed_observers.add_observer(self.on_animation_completed)
+        self.animation_thread.is_disconnected.connect(self.disconnect_from_robot)
 
-        if self.engagement_thread is None:
-            self.engagement_thread = RobotEngagementThread(robot_controller=self.robot_controller)
-            self.engagement_thread.is_disconnected.connect(self.disconnect_from_robot)
-            self.robot_controller.is_engaged_observers.add_observer(self.interaction)
-        else:
-            # update the robot controller
-            self.engagement_thread.robot_controller = self.robot_controller
+        self.threads.append(self.animation_thread)
+
+        # else:
+        #     self.animation_thread.robot_controller = self.robot_controller
+
+        # if self.face_detection_thread is None:
+        self.face_detection_thread = RobotFaceDetectionThread(robot_controller=self.robot_controller)
+        self.face_detection_thread.is_disconnected.connect(self.disconnect_from_robot)
+
+        self.threads.append(self.face_detection_thread)
+
+        # else:
+        #     # update the robot controller
+        #     self.face_detection_thread.robot_controller = self.robot_controller
+
+        # if self.engagement_thread is None:
+        self.engagement_thread = RobotEngagementThread(robot_controller=self.robot_controller)
+        self.engagement_thread.is_disconnected.connect(self.disconnect_from_robot)
+        self.robot_controller.is_engaged_observers.add_observer(self.interaction)
+
+        self.threads.append(self.engagement_thread)
+        # else:
+        #     # update the robot controller
+        #     self.engagement_thread.robot_controller = self.robot_controller
 
     def update_detection_certainty(self, speech_certainty=None, face_certainty=None):
         if self.robot_controller is not None:
@@ -139,8 +156,12 @@ class InteractionController(object):
     def wakeup_robot(self):
         success = False
         try:
-            self.wakeup_thread = WakeUpRobotThread(robot_controller=self.robot_controller)
+            if self.wakeup_thread is None:
+                self.wakeup_thread = WakeUpRobotThread(robot_controller=self.robot_controller)
+                self.threads.append(self.wakeup_thread)
+
             self.wakeup_thread.stand()
+
             success = True
         except Exception as e:
             self.logger.error("Error while waking up the robot! | {}".format(e))
@@ -151,6 +172,8 @@ class InteractionController(object):
         try:
             if self.wakeup_thread is None:
                 self.wakeup_thread = WakeUpRobotThread(robot_controller=self.robot_controller)
+                self.threads.append(self.wakeup_thread)
+
             self.wakeup_thread.rest()
         except Exception as e:
             self.logger.error("Error while setting the robot posture to rest: {}".format(e))
@@ -269,7 +292,7 @@ class InteractionController(object):
                 self.engagement_thread.engagement(start=False)
                 # self.face_detection_thread.face_detection(start=False)
 
-                self.has_finished_playing_observable.notify_all(True)
+                self.has_finished_playing_observers.notify_all(True)
 
             else:  # continue
                 self.is_ready_to_interact = True

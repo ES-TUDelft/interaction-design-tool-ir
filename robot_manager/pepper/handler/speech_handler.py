@@ -35,33 +35,36 @@ class SpeechHandler(object):
         # add a listener to the keyword stream
         self.session.subscribe(self.on_keyword, "rom.optional.keyword.stream")
         self.current_keywords = []
+        self.is_listening = False
 
     # KEYWORDS
     # ========
     @inlineCallbacks
     def on_keyword(self, frame):
-        try:
-            if frame is None or len(frame) == 0:
-                yield self.logger.info("No frame received")
-            else:
-                certainty = frame["data"]["body"]["certainty"]
-                if certainty >= self.speech_certainty:
-                    if self.current_keywords and len(self.current_keywords) > 0:
-                        # self.remove_keywords(self.current_keywords)
-                        self.clear_keywords()
-                        self.current_keywords = None
-                    self.logger.info("Sleeping...")
-                    time.sleep(1)
-                    self.logger.info("I'm awake now...")
-                    self.keyword_stream(start=False)
-
-                    keyword = frame["data"]["body"]["text"]
-                    self.logger.info("Detected keyword is: {} | {}".format(keyword, certainty))
-                    yield self.keyword_observers.notify_all(keyword)
+        if self.is_listening:
+            try:
+                if frame is None or len(frame) == 0:
+                    yield self.logger.info("No frame received")
                 else:
-                    yield self.logger.info(frame["data"])
-        except Exception as e:
-            yield self.logger.error("Error while getting the received answer! | {}".format(e))
+                    certainty = frame["data"]["body"]["certainty"]
+                    if certainty >= self.speech_certainty:
+                        self.is_listening = False
+                        if self.current_keywords and len(self.current_keywords) > 0:
+                            # self.remove_keywords(self.current_keywords)
+                            self.clear_keywords()
+                            self.current_keywords = None
+                        # time.sleep(0.5)
+                        self.keyword_stream(start=False)
+
+                        keyword = frame["data"]["body"]["text"]
+                        self.logger.info("Detected keyword is: {} | {}".format(keyword, certainty))
+                        yield self.keyword_observers.notify_all(keyword)
+                    else:
+                        yield self.logger.info(frame["data"])
+            except Exception as e:
+                yield self.logger.error("Error while getting the received answer! | {}".format(e))
+        else:
+            yield
 
     def add_keywords(self, keywords=None):
         # add keywords to listen to
@@ -82,6 +85,7 @@ class SpeechHandler(object):
 
     def keyword_stream(self, start=False):
         self.logger.info("{} keyword stream.".format("Starting" if start else "Closing"))
+        self.is_listening = start
         # start/close the keyword stream
         self.session.call("rom.optional.keyword.stream" if start else "rom.optional.keyword.close")
 

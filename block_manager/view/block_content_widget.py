@@ -102,9 +102,9 @@ class ESBlockContentWidget(QWidget, Serializable ):
             ("description", self.description)
         ])
 
-    def deserialize(self, data, hashmap=[]):
+    def deserialize(self, data, hashmap={}):
         self.id = data["id"]
-        hashmap["id"] = self
+        hashmap[data["id"]] = self
 
         self.block = hashmap[data["block"]]
         self.desc_line_edit.setText(data["description"])

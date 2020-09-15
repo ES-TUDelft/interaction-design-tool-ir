@@ -11,6 +11,7 @@
 # **
 
 import logging
+import time
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
@@ -62,7 +63,9 @@ class UIRobotConnectionController(QtWidgets.QDialog):
             self._display_message(message="Connecting...")
 
             robot_name = RobotName[self.ui.robotNameComboBox.currentText().upper()]
+
             self.interaction_controller.connect_to_robot(robot_name=robot_name, robot_realm=self.robot_realm)
+
             self.success = True
             self.ui.connectPushButton.setEnabled(False)
             self._display_message(message="Successfully connected to the robot.")
