@@ -46,13 +46,17 @@ class SpeechHandler(object):
             else:
                 certainty = frame["data"]["body"]["certainty"]
                 if certainty >= self.speech_certainty:
+                    if self.current_keywords and len(self.current_keywords) > 0:
+                        # self.remove_keywords(self.current_keywords)
+                        self.clear_keywords()
+                        self.current_keywords = None
+                    self.logger.info("Sleeping...")
+                    time.sleep(1)
+                    self.logger.info("I'm awake now...")
                     self.keyword_stream(start=False)
 
-                    if self.current_keywords and len(self.current_keywords) > 0:
-                        self.remove_keywords(self.current_keywords)
-
                     keyword = frame["data"]["body"]["text"]
-                    self.logger.info("Keyword is: {} | {}".format(keyword, certainty))
+                    self.logger.info("Detected keyword is: {} | {}".format(keyword, certainty))
                     yield self.keyword_observers.notify_all(keyword)
                 else:
                     yield self.logger.info(frame["data"])
@@ -113,7 +117,7 @@ class SpeechHandler(object):
         # say the message
         message = interaction_block.message
         # update the block's message, if any
-        if "{answer}" in message:
+        if "{answer}" in message and interaction_block.execution_result:
             message = message.format(answer=interaction_block.execution_result.lower())
         speech_event = self.animated_say(message=message)
 

@@ -543,6 +543,7 @@ class UIController(QtWidgets.QMainWindow):
     def on_scene_change(self, val):
         # backup scene
         self.backup_blocks()
+        self.repaint()
 
     def on_block_selected(self, block):
         self.selected_block = block
@@ -557,6 +558,7 @@ class UIController(QtWidgets.QMainWindow):
         # disable copy/paste
         self._enable_buttons([self.ui.actionMenuCopy, self.ui.actionMenuPaste],
                              enabled=False)
+        self.repaint()
 
     def block_editing(self, block):
         if block is None:
@@ -574,7 +576,7 @@ class UIController(QtWidgets.QMainWindow):
                 edit_dialog.update_interaction_block(self.selected_block.parent)
 
                 self.block_controller.store("Edited block")
-
+            self.repaint()
         except Exception as e:
             self._display_message(error="Error while attempting to edit the block! {}".format(e))
             self.repaint()

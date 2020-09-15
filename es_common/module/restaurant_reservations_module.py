@@ -31,6 +31,18 @@ class RestaurantReservationsModule(ESModule):
 
         return False
 
+    def update_next_block_fields(self):
+        if self.next_int_block:
+            keywords = self.next_int_block.answers
+            firstnames, _ = self.get_customers_names()
+
+            for i in range(len(keywords)):
+                if "{firstnames}" in keywords[i]:
+                    keywords[i] = keywords[i].format(firstnames=";".join(firstnames))
+
+            self.next_int_block.answers = keywords
+            self.logger.info("Keywords are set to: {}".format(self.next_int_block.answers))
+
     def get_customers_names(self):
         firstnames = []
         lastnames = []

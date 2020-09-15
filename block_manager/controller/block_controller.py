@@ -123,6 +123,8 @@ class BlockController(object):
         if type(block) is Block:
             self.logger.debug("Block '{}' is selected. | id = {}".format(block.title, block.id))
             self.on_block_selected_observable.notify_all(block)
+        else:
+            self.on_no_block_selected_observable.notify_all(block)
 
     def no_block_selected(self, event):
         item = self.get_item_at(event.pos())

@@ -201,6 +201,22 @@ class InteractionBlock(Serializable):
         self.speech_act.message = value
 
     @property
+    def answers(self):
+        return self.topic_tag.answers if self.topic_tag else None
+
+    @answers.setter
+    def answers(self, val):
+        self.topic_tag.answers = val
+
+    @property
+    def goto_ids(self):
+        return self.topic_tag.goto_ids if self.topic_tag else None
+
+    @goto_ids.setter
+    def goto_ids(self, val):
+        self.topic_tag.goto_ids = val
+
+    @property
     def gestures(self):
         return self.behavioral_parameters.gesture.gestures
 
@@ -285,7 +301,7 @@ class InteractionBlock(Serializable):
                 block.speech_act = SpeechAct.create_speech_act(block_dict["speech_act"])
 
             block.is_hidden = block_dict["is_hidden"] if "is_hidden" in block_dict.keys() else False
-            
+
             if "interaction_module_name" in block_dict.keys():
                 block.interaction_module_name = block_dict["interaction_module_name"]
 

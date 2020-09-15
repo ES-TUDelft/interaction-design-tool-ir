@@ -19,6 +19,7 @@ class ESModule(Serializable):
         self.design_file = INT_DESIGN_FILE
         self.block_controller = block_controller
         self.origin_block = origin_block
+        self.next_int_block = None
 
         self.block_controller.hidden_scene = BlockFactory.create_scene()
         self.blocks_data = None
@@ -51,46 +52,57 @@ class ESModule(Serializable):
             self.logger.error("Error while loading hidden blocks! {}".format(e))
 
     def get_next_interaction_block(self, current_interaction_block, execution_result=None):
-        self.logger.info("Searching for next interaction block...")
-        if current_interaction_block is None or self.blocks_data is None:
-            return None
+        try:
+            self.logger.info("Searching for next interaction block...")
+            if current_interaction_block is None or self.blocks_data is None:
+                return None
 
-        output_socket_id = self.get_socket_id(current_interaction_block.id, socket_lst_name="outputs")
-        input_sockets_id_lst = []
-        # get the list of attached edges
-        for edge in self.blocks_data["edges"]:
-            if output_socket_id == edge["start_socket"]:
-                input_sockets_id_lst.append(edge["end_socket"])
-            elif output_socket_id == edge["end_socket"]:
-                input_sockets_id_lst.append(edge["start_socket"])
+            output_socket_id = self.get_socket_id(current_interaction_block.id, socket_lst_name="outputs")
+            input_sockets_id_lst = []
+            # get the list of attached edges
+            for edge in self.blocks_data["edges"]:
+                if output_socket_id == edge["start_socket"]:
+                    input_sockets_id_lst.append(edge["end_socket"])
+                elif output_socket_id == edge["end_socket"]:
+                    input_sockets_id_lst.append(edge["start_socket"])
 
-        self.logger.info("Socket {} is connected to {} {}".format(output_socket_id,
-                                                                  len(input_sockets_id_lst), input_sockets_id_lst))
+            self.logger.info("Socket {} is connected to {} {}".format(output_socket_id,
+                                                                      len(input_sockets_id_lst), input_sockets_id_lst))
 
-        next_block_dict = None
-        next_int_block = None
-        if len(input_sockets_id_lst) > 0:
-            if execution_result is None:
-                # get output socket id
-                next_block_dict = self._get_interaction_block_by_socket_id(input_sockets_id_lst[0], socket_lst="inputs")
-            else:
-                # check the answers
-                for i in range(len(current_interaction_block.topic_tag.answers)):
-                    # if the result is in the answers ==> go to appropriate interaction block
-                    if execution_result.lower() in current_interaction_block.topic_tag.answers[i].lower():
-                        goto_id = current_interaction_block.goto_ids[i]
-                        next_block_dict = self._get_interaction_block_dict_by_id(goto_id)
+            next_block_dict = None
+            next_int_block = None
+            if len(input_sockets_id_lst) > 0:
+                if execution_result is None:
+                    # get output socket id
+                    next_block_dict = self._get_interaction_block_by_socket_id(input_sockets_id_lst[0],
+                                                                               socket_lst="inputs")
+                else:
+                    # check the answers
+                    for i in range(len(current_interaction_block.topic_tag.answers)):
+                        # if the result is in the answers ==> go to appropriate interaction block
+                        if execution_result.lower() in current_interaction_block.topic_tag.answers[i].lower():
+                            goto_id = current_interaction_block.goto_ids[i]
+                            next_block_dict = self._get_interaction_block_dict_by_id(goto_id)
 
-                # update the block's message, if any
+                    # update the block's message, if any
 
-        if next_block_dict:
-            next_int_block = InteractionBlock.create_interaction_block(next_block_dict)
-            if next_int_block:
-                next_int_block.id = next_block_dict["id"]
-                next_int_block.is_hidden = True
-                next_int_block.execution_result = execution_result
+            if next_block_dict:
+                next_int_block = InteractionBlock.create_interaction_block(next_block_dict)
+                if next_int_block:
+                    next_int_block.id = next_block_dict["id"]
+                    next_int_block.is_hidden = True
+                    next_int_block.execution_result = execution_result
 
-        return next_int_block
+            self.next_int_block = next_int_block
+            self.update_next_block_fields()
+        except Exception as e:
+            self.logger.error("Error while getting the next block: {}".format(e))
+        finally:
+            return self.next_int_block
+
+    def update_next_block_fields(self):
+        # TODO: implement in child classes
+        pass
 
     def get_starting_block(self):
         int_block = None

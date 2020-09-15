@@ -1,5 +1,5 @@
 {
-    "id": 140196464177888,
+    "id": 140514240392016,
     "blocks": [
         {
             "id": 140416296289280,
@@ -48,13 +48,17 @@
                     "image": "welcome.jpg"
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "Let's see",
+                    "message_type": "INFORMAL"
+                },
                 "behavioral_parameters": {
                     "voice": {
                         "name": "NAO_ENU",
                         "speed": 100.0,
                         "pitch": 1.0,
                         "prosody": "WEAK",
-                        "volume": 60
+                        "volume": 60.0
                     },
                     "gaze_pattern": "FIXATED",
                     "proxemics": 1.25,
@@ -68,7 +72,9 @@
                     "gestures_type": "OPEN"
                 },
                 "action_command": {},
+                "interaction_module_name": null,
                 "block": 140416296289280,
+                "is_hidden": false,
                 "interaction_start_time": 1600076905.234876,
                 "interaction_end_time": 1600076907.383883
             },
@@ -111,7 +117,7 @@
                     "name": "askQuestionTag",
                     "topic": "question",
                     "answers": [
-                        "john",
+                        "{firstnames}",
                         "repeat"
                     ],
                     "feedbacks": [],
@@ -127,13 +133,17 @@
                     "image": "welcome.jpg"
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "What is your name?",
+                    "message_type": "INFORMAL"
+                },
                 "behavioral_parameters": {
                     "voice": {
                         "name": "NAO_ENU",
                         "speed": 100.0,
                         "pitch": 1.0,
                         "prosody": "WEAK",
-                        "volume": 60
+                        "volume": 60.0
                     },
                     "gaze_pattern": "FIXATED",
                     "proxemics": 1.25,
@@ -147,7 +157,9 @@
                     "gestures_type": "OPEN"
                 },
                 "action_command": {},
+                "interaction_module_name": null,
                 "block": 140294543958080,
+                "is_hidden": false,
                 "interaction_start_time": 1600076930.2206788,
                 "interaction_end_time": 1600076934.009152
             },
@@ -206,13 +218,17 @@
                     "image": "welcome.jpg"
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "I heard {answer}, is that correct?",
+                    "message_type": "INFORMAL"
+                },
                 "behavioral_parameters": {
                     "voice": {
                         "name": "NAO_ENU",
                         "speed": 100.0,
                         "pitch": 1.0,
                         "prosody": "WEAK",
-                        "volume": 60
+                        "volume": 60.0
                     },
                     "gaze_pattern": "FIXATED",
                     "proxemics": 1.25,
@@ -226,7 +242,9 @@
                     "gestures_type": "OPEN"
                 },
                 "action_command": {},
+                "interaction_module_name": null,
                 "block": 140234789570880,
+                "is_hidden": false,
                 "interaction_start_time": 1600076934.010337,
                 "interaction_end_time": 1600076938.002311
             },
@@ -279,13 +297,17 @@
                     "image": "welcome.jpg"
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "Great. Welcome",
+                    "message_type": "INFORMAL"
+                },
                 "behavioral_parameters": {
                     "voice": {
                         "name": "NAO_ENU",
                         "speed": 100.0,
                         "pitch": 1.0,
                         "prosody": "WEAK",
-                        "volume": 60
+                        "volume": 60.0
                     },
                     "gaze_pattern": "FIXATED",
                     "proxemics": 1.25,
@@ -299,7 +321,9 @@
                     "gestures_type": "OPEN"
                 },
                 "action_command": {},
+                "interaction_module_name": null,
                 "block": 140234728701904,
+                "is_hidden": false,
                 "interaction_start_time": 1600076938.003548,
                 "interaction_end_time": 1600076941.074292
             },
@@ -349,16 +373,20 @@
                     "name": "index",
                     "heading": "",
                     "text": "",
-                    "image": ""
+                    "image": "welcome.jpg"
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "Ok, no worries, I will ask you again.",
+                    "message_type": "INFORMAL"
+                },
                 "behavioral_parameters": {
                     "voice": {
                         "name": "NAO_ENU",
                         "speed": 100.0,
                         "pitch": 1.0,
                         "prosody": "WEAK",
-                        "volume": 60
+                        "volume": 60.0
                     },
                     "gaze_pattern": "FIXATED",
                     "proxemics": 1.25,
@@ -372,7 +400,9 @@
                     "gestures_type": "OPEN"
                 },
                 "action_command": {},
+                "interaction_module_name": null,
                 "block": 140234728701040,
+                "is_hidden": false,
                 "interaction_start_time": 1600076925.42903,
                 "interaction_end_time": 1600076930.21912
             },
@@ -382,8 +412,8 @@
             "id": 140571069895200,
             "title": "Start",
             "icon": "block_manager/icons/blue/start.png",
-            "pos_x": -1527.0,
-            "pos_y": -1006.0,
+            "pos_x": -1563.0,
+            "pos_y": -1009.0,
             "inputs": [],
             "outputs": [
                 {
@@ -417,13 +447,17 @@
                     "image": ""
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "Hello",
+                    "message_type": "INFORMAL"
+                },
                 "behavioral_parameters": {
                     "voice": {
                         "name": "NAO_ENU",
                         "speed": 100.0,
                         "pitch": 1.0,
                         "prosody": "WEAK",
-                        "volume": 60
+                        "volume": 60.0
                     },
                     "gaze_pattern": "FIXATED",
                     "proxemics": 1.25,
@@ -437,7 +471,9 @@
                     "gestures_type": "OPEN"
                 },
                 "action_command": {},
+                "interaction_module_name": null,
                 "block": 140571069895200,
+                "is_hidden": false,
                 "interaction_start_time": 1600076897.6323688,
                 "interaction_end_time": 1600076905.2328792
             },

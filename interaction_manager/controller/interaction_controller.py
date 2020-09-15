@@ -214,7 +214,8 @@ class InteractionController(object):
 
             if self.current_interaction_block.is_hidden and self.interaction_module:
                 connecting_edge = None
-                next_block = self.interaction_module.get_next_interaction_block(self.current_interaction_block)
+                next_block = self.interaction_module.get_next_interaction_block(self.current_interaction_block,
+                                                                                self.animation_thread.execution_result)
             else:
                 next_block, connecting_edge = self.current_interaction_block.get_next_interaction_block(
                     execution_result=self.animation_thread.execution_result)
