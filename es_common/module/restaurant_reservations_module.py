@@ -52,21 +52,23 @@ class RestaurantReservationsModule(ESModule):
 
             # update message
             message = self.next_int_block.message
-            if message and self.execution_result:
-                if "{firstname}" in message:
-                    self.logger.info("Firstname: {}".format(self.execution_result))
-                    self.current_customer.firstname = self.execution_result
-                    message = message.replace("{firstname}", self.current_customer.firstname)
-                    indexes = [i for i in range(len(firstnames)) if
-                               firstnames[i].lower() == self.current_customer.firstname.lower()]
-                    if len(indexes) > 0:
-                        self.current_customer.lastname = lastnames[indexes[0]]
-                        self.logger.info("Lastname: {}".format(self.current_customer.lastname))
-                    else:
-                        self.current_customer.lastname = ""
-                    message = message.replace("{lastname}", self.current_customer.lastname)
-                    # message.format(firstname=self.current_customer.firstname, lastname=self.current_customer.lastname)
-                    self.update_current_reservation()
+            if message:
+                if self.execution_result:
+                    if "{firstname}" in message:
+                        self.logger.info("Firstname: {}".format(self.execution_result))
+                        self.current_customer.firstname = self.execution_result
+                        message = message.replace("{firstname}", self.current_customer.firstname)
+                        indexes = [i for i in range(len(firstnames)) if
+                                   firstnames[i].lower() == self.current_customer.firstname.lower()]
+                        if len(indexes) > 0:
+                            self.current_customer.lastname = lastnames[indexes[0]]
+                            self.logger.info("Lastname: {}".format(self.current_customer.lastname))
+                        else:
+                            self.current_customer.lastname = ""
+                        message = message.replace("{lastname}", self.current_customer.lastname)
+                        # message.format(firstname=self.current_customer.firstname,
+                        # lastname=self.current_customer.lastname)
+                        self.update_current_reservation()
 
                 if "{reservation_table}" in message:
                     message = message.replace("{reservation_table}", "{}".format(self.current_reservation.table))

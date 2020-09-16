@@ -45,6 +45,9 @@ class SpeechHandler(object):
             try:
                 if frame is None or len(frame) == 0:
                     yield self.logger.info("No frame received")
+                elif time.time() - frame["time"] >= 2:
+                    self.logger.info(frame)
+                    yield self.logger.info("Received an older frame: {}".format(time.time()-frame["time"]))
                 else:
                     certainty = frame["data"]["body"]["certainty"]
                     if certainty >= self.speech_certainty:
@@ -57,10 +60,10 @@ class SpeechHandler(object):
                         self.keyword_stream(start=False)
 
                         keyword = frame["data"]["body"]["text"]
-                        self.logger.info("Detected keyword is: {} | {}".format(keyword, certainty))
+                        self.logger.info("Detected keyword is: {} | {} | at".format(keyword, certainty))
                         yield self.keyword_observers.notify_all(keyword)
                     else:
-                        yield self.logger.info(frame["data"])
+                        yield self.logger.info(frame)
             except Exception as e:
                 yield self.logger.error("Error while getting the received answer! | {}".format(e))
         else:
