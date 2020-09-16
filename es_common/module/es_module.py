@@ -23,6 +23,7 @@ class ESModule(Serializable):
 
         self.block_controller.hidden_scene = BlockFactory.create_scene()
         self.blocks_data = None
+        self.execution_result = None
 
     def execute_module(self):
         success = self.start_module()
@@ -52,6 +53,7 @@ class ESModule(Serializable):
             self.logger.error("Error while loading hidden blocks! {}".format(e))
 
     def get_next_interaction_block(self, current_interaction_block, execution_result=None):
+        self.execution_result = execution_result
         try:
             self.logger.info("Searching for next interaction block...")
             if current_interaction_block is None or self.blocks_data is None:

@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 
 class Customer(object):
-    def __init__(self, customer_id, firstname, lastname):
+    def __init__(self, customer_id=0, firstname=None, lastname=None):
         self.logger = logging.getLogger("Customer")
         self.id = customer_id
         self.firstname = firstname

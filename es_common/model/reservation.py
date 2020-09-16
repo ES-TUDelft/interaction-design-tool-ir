@@ -4,7 +4,7 @@ from es_common.model.customer import Customer
 
 
 class Reservation(object):
-    def __init__(self, res_id=0, customer=None, guests=0, table=0, time=None):
+    def __init__(self, res_id=0, customer=None, guests=None, table=None, time=None):
         self.id = res_id
         self.customer = customer
         self.guests = guests
@@ -34,6 +34,6 @@ class Reservation(object):
                                           time=res_dict["time"])
                 return reservation
             except Exception as e:
-                self.logger.error("Error while creating reservation from {} | {}".format(res_dict, e))
+                print("Error while creating reservation from {} | {}".format(res_dict, e))
 
         return None

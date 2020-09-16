@@ -1,5 +1,5 @@
 {
-    "id": 140514240392016,
+    "id": 140686887393792,
     "blocks": [
         {
             "id": 140416296289280,
@@ -28,7 +28,7 @@
             "content": {
                 "id": 140416288401296,
                 "block": 140416296289280,
-                "description": ""
+                "description": "Preparation"
             },
             "parent": {
                 "id": 140416296288464,
@@ -107,7 +107,7 @@
             "content": {
                 "id": 140294585211200,
                 "block": 140294543958080,
-                "description": ""
+                "description": "Ask for name"
             },
             "parent": {
                 "id": 140294543960960,
@@ -169,8 +169,8 @@
             "id": 140234789570880,
             "title": "Question",
             "icon": "block_manager/icons/blue/question-mark.png",
-            "pos_x": -811.0,
-            "pos_y": -1022.0,
+            "pos_x": -815.0,
+            "pos_y": -1073.0,
             "inputs": [
                 {
                     "id": 140234789570448,
@@ -202,8 +202,8 @@
                     "name": "askQuestionTag",
                     "topic": "question",
                     "answers": [
-                        "yes",
-                        "no"
+                        "yes;yep;sure;yeah",
+                        "no;nope;nada;repeat"
                     ],
                     "feedbacks": [],
                     "goto_ids": [
@@ -219,7 +219,7 @@
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
                 "speech_act": {
-                    "message": "I heard {answer}, is that correct?",
+                    "message": "I see {firstname}, {lastname}, is that you?",
                     "message_type": "INFORMAL"
                 },
                 "behavioral_parameters": {
@@ -254,8 +254,8 @@
             "id": 140234728701904,
             "title": "Monologue",
             "icon": "block_manager/icons/blue/speaker.png",
-            "pos_x": -524.0,
-            "pos_y": -1164.0,
+            "pos_x": -540.0,
+            "pos_y": -1079.0,
             "inputs": [
                 {
                     "id": 140234790849456,
@@ -277,7 +277,7 @@
             "content": {
                 "id": 140234790880736,
                 "block": 140234728701904,
-                "description": "Welcome"
+                "description": "Display time"
             },
             "parent": {
                 "id": 140234768227536,
@@ -298,7 +298,7 @@
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
                 "speech_act": {
-                    "message": "Great. Welcome",
+                    "message": "Ok, you have a reservation at {reservation_time}, on table {reservation_table}",
                     "message_type": "INFORMAL"
                 },
                 "behavioral_parameters": {
@@ -333,8 +333,8 @@
             "id": 140234728701040,
             "title": "Monologue",
             "icon": "block_manager/icons/blue/speaker.png",
-            "pos_x": -688.0,
-            "pos_y": -669.0,
+            "pos_x": -820.0,
+            "pos_y": -760.0,
             "inputs": [
                 {
                     "id": 140234765455568,
@@ -412,8 +412,8 @@
             "id": 140571069895200,
             "title": "Start",
             "icon": "block_manager/icons/blue/start.png",
-            "pos_x": -1563.0,
-            "pos_y": -1009.0,
+            "pos_x": -1625.0,
+            "pos_y": -899.0,
             "inputs": [],
             "outputs": [
                 {
@@ -427,7 +427,7 @@
             "content": {
                 "id": 140571127685760,
                 "block": 140571069895200,
-                "description": ""
+                "description": "Start"
             },
             "parent": {
                 "id": 140571069895872,
@@ -444,11 +444,11 @@
                     "name": "index",
                     "heading": "",
                     "text": "",
-                    "image": ""
+                    "image": "welcome.jpg"
                 },
                 "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
                 "speech_act": {
-                    "message": "Hello",
+                    "message": "Alright",
                     "message_type": "INFORMAL"
                 },
                 "behavioral_parameters": {
@@ -478,6 +478,407 @@
                 "interaction_end_time": 1600076905.2328792
             },
             "bg_color": "056b4a"
+        },
+        {
+            "id": 140686893716192,
+            "title": "Monologue",
+            "icon": "block_manager/icons/blue/speaker.png",
+            "pos_x": -807.0,
+            "pos_y": -535.0,
+            "inputs": [
+                {
+                    "id": 140686893716432,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140686893715808,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140686895603776,
+                "block": 140686893716192,
+                "description": "Technical Issues"
+            },
+            "parent": {
+                "id": 140686893575040,
+                "name": "monologue",
+                "pattern": "monologue",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "Oops! I am having some technical difficulties.",
+                    "message_type": "INFORMAL"
+                },
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60.0
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "interaction_module_name": null,
+                "block": 140686893716192,
+                "is_hidden": false,
+                "interaction_start_time": 0,
+                "interaction_end_time": 0
+            },
+            "bg_color": null
+        },
+        {
+            "id": 140686893779744,
+            "title": "Monologue",
+            "icon": "block_manager/icons/blue/speaker.png",
+            "pos_x": -541.0,
+            "pos_y": -537.0,
+            "inputs": [
+                {
+                    "id": 140686893683616,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140686893683424,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140686893805136,
+                "block": 140686893779744,
+                "description": "Sorry"
+            },
+            "parent": {
+                "id": 140686893780272,
+                "name": "monologue",
+                "pattern": "monologue",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "I cannot access the table management system at this time, sorry!",
+                    "message_type": "INFORMAL"
+                },
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60.0
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "interaction_module_name": null,
+                "block": 140686893779744,
+                "is_hidden": false,
+                "interaction_start_time": 0,
+                "interaction_end_time": 0
+            },
+            "bg_color": null
+        },
+        {
+            "id": 140686893718448,
+            "title": "Question",
+            "icon": "block_manager/icons/blue/question-mark.png",
+            "pos_x": -262.0,
+            "pos_y": -1073.0,
+            "inputs": [
+                {
+                    "id": 140686893718544,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140686893718256,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 2
+                }
+            ],
+            "content": {
+                "id": 140686893801680,
+                "block": 140686893718448,
+                "description": "Confirm guests"
+            },
+            "parent": {
+                "id": 140686893719024,
+                "name": "question",
+                "pattern": "question",
+                "topic_tag": {
+                    "name": "askQuestionTag",
+                    "topic": "question",
+                    "answers": [
+                        "yes;yep;sure;yeah;right;correct",
+                        "no;nope;repeat"
+                    ],
+                    "feedbacks": [],
+                    "goto_ids": [
+                        140686895663808,
+                        140686893543632
+                    ]
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "And you will be {reservation_guests} people, is that correct?",
+                    "message_type": "INFORMAL"
+                },
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60.0
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "interaction_module_name": null,
+                "block": 140686893718448,
+                "is_hidden": false,
+                "interaction_start_time": 0,
+                "interaction_end_time": 0
+            },
+            "bg_color": "291a2d"
+        },
+        {
+            "id": 140686893544976,
+            "title": "Monologue",
+            "icon": "block_manager/icons/blue/speaker.png",
+            "pos_x": 19.0,
+            "pos_y": -1072.0,
+            "inputs": [
+                {
+                    "id": 140686893717632,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140686893685632,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140686924635152,
+                "block": 140686893544976,
+                "description": "Display table"
+            },
+            "parent": {
+                "id": 140686895663808,
+                "name": "monologue",
+                "pattern": "monologue",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": "welcome.jpg"
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "Perfect, I reserved table number {reservation_table} for you. You got it: it's table number {reservation_table}. Bon appetit my friend",
+                    "message_type": "INFORMAL"
+                },
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60.0
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "interaction_module_name": null,
+                "block": 140686893544976,
+                "is_hidden": false,
+                "interaction_start_time": 0,
+                "interaction_end_time": 0
+            },
+            "bg_color": null
+        },
+        {
+            "id": 140686918106416,
+            "title": "Monologue",
+            "icon": "block_manager/icons/blue/speaker.png",
+            "pos_x": -264.0,
+            "pos_y": -815.0,
+            "inputs": [
+                {
+                    "id": 140686918105792,
+                    "index": 0,
+                    "position": "BOTTOM_LEFT",
+                    "socket_type": "INPUT",
+                    "edge_limit": -1
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 140686918105936,
+                    "index": 0,
+                    "position": "TOP_RIGHT",
+                    "socket_type": "OUTPUT",
+                    "edge_limit": 1
+                }
+            ],
+            "content": {
+                "id": 140686924634864,
+                "block": 140686918106416,
+                "description": "Change guests"
+            },
+            "parent": {
+                "id": 140686893543632,
+                "name": "monologue",
+                "pattern": "monologue",
+                "topic_tag": {
+                    "name": "",
+                    "topic": "",
+                    "answers": [],
+                    "feedbacks": [],
+                    "goto_ids": []
+                },
+                "tablet_page": {
+                    "name": "index",
+                    "heading": "",
+                    "text": "",
+                    "image": ""
+                },
+                "icon_path": ":/hreresources/pepper-icons/pepper-standing.png",
+                "speech_act": {
+                    "message": "Oh, i cannot change the number of guests, my colleagues will help you.",
+                    "message_type": "INFORMAL"
+                },
+                "behavioral_parameters": {
+                    "voice": {
+                        "name": "NAO_ENU",
+                        "speed": 100.0,
+                        "pitch": 1.0,
+                        "prosody": "WEAK",
+                        "volume": 60.0
+                    },
+                    "gaze_pattern": "FIXATED",
+                    "proxemics": 1.25,
+                    "eye_color": "GREEN",
+                    "message": "",
+                    "message_type": "INFORMAL",
+                    "gestures": {
+                        "open": "",
+                        "close": ""
+                    },
+                    "gestures_type": "OPEN"
+                },
+                "action_command": {},
+                "interaction_module_name": null,
+                "block": 140686918106416,
+                "is_hidden": false,
+                "interaction_start_time": 0,
+                "interaction_end_time": 0
+            },
+            "bg_color": null
         }
     ],
     "edges": [
@@ -522,6 +923,36 @@
             "edge_type": "BEZIER",
             "start_socket": 140571069895824,
             "end_socket": 140416296289952
+        },
+        {
+            "id": 140686893779792,
+            "edge_type": "BEZIER",
+            "start_socket": 140686893715808,
+            "end_socket": 140686893683616
+        },
+        {
+            "id": 140686893717440,
+            "edge_type": "BEZIER",
+            "start_socket": 140234790847440,
+            "end_socket": 140686893718544
+        },
+        {
+            "id": 140686893683328,
+            "edge_type": "BEZIER",
+            "start_socket": 140686893718256,
+            "end_socket": 140686893717632
+        },
+        {
+            "id": 140686895593216,
+            "edge_type": "BEZIER",
+            "start_socket": 140686893718256,
+            "end_socket": 140686918105792
+        },
+        {
+            "id": 140686939957280,
+            "edge_type": "BEZIER",
+            "start_socket": 140686918105936,
+            "end_socket": 140686893717632
         }
     ]
 }
