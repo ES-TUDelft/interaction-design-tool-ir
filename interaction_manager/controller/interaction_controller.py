@@ -88,7 +88,7 @@ class InteractionController(object):
         self.stop_all_threads()
         try:
             self.logger.info("Disconnecting in 10s...")
-            time.sleep(2)
+            time.sleep(1)
             self.robot_controller = None
         except Exception as e:
             self.logger.error("Error while disconnecting from robot. | {}".format(e))
