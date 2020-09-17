@@ -21,6 +21,7 @@ from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
 from interaction_manager.model.behavioral_parameters import BehavioralParameters
 from interaction_manager.model.speech_act import SpeechAct
+from es_common.utils.data_helper import join_array
 
 
 class InteractionBlock(Serializable):
@@ -118,8 +119,6 @@ class InteractionBlock(Serializable):
             return next_int_block, connecting_edge
 
         # TODO: verify the returned user input from Pepper
-        #   ==> Issue: sometimes it returns something not in the list of answers
-        #   ==> Sol: replace input by the answer number (e.g., answer1 vs answer2)
         try:
             # in the absence of a condition
             if execution_result is None or execution_result == "":
@@ -130,7 +129,9 @@ class InteractionBlock(Serializable):
                 # check the answers
                 for i in range(len(self.topic_tag.answers)):
                     # if the result is in the answers ==> go to appropriate interaction block
-                    if execution_result.lower() in self.topic_tag.answers[i].lower():
+                    ans = join_array([self.topic_tag.answers[i]])
+                    ans = [s.strip().lower() for s in ans]
+                    if execution_result.strip().lower() in ans:
                         next_int_block = self._get_block_by_id(int_blocks, self.topic_tag.goto_ids[i])
                         break
                 # update the block's message, if any

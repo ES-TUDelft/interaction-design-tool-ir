@@ -24,3 +24,17 @@ def load_data_from_file(filename):
         logger.error("Error while writing to file {}".format(filename))
     finally:
         return data
+
+
+# HELPER METHOD
+# =============
+def join_array(arr, to_split=";"):
+    if arr is None or len(arr) == 0:
+        return []
+
+    result = []
+    for i in range(len(arr)):
+        keywords = [s.strip() for s in arr[i].split(to_split) if s.strip() != '']
+        result.extend(keywords)
+    # print("Result from join: {}".format(result))
+    return result

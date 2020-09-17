@@ -48,15 +48,19 @@ class SpeechHandler(object):
                 certainty = frame["data"]["body"]["certainty"]
 
                 if certainty >= self.speech_certainty:
-                    self.is_listening = False
-                    self.clear_keywords()
-
-                    self.keyword_stream(start=False)
-
                     keyword = frame["data"]["body"]["text"]
-                    self.logger.info("Detected keyword is: {} | {}".format(keyword, certainty))
 
-                    yield self.keyword_observers.notify_all(keyword)
+                    if keyword in self.current_keywords:
+                        self.logger.info("Detected keyword is in the list: {} | {}".format(keyword, certainty))
+                        self.is_listening = False
+                        self.clear_keywords()
+
+                        self.keyword_stream(start=False)
+
+                        yield self.keyword_observers.notify_all(keyword)
+                    else:
+                        yield self.logger.info("Keyword received '{}' is not in the list {}".format(
+                            keyword, self.current_keywords))
                 else:
                     yield self.logger.info("{} | at {}".format(frame, self.get_time_ms()))
             except Exception as e:
@@ -135,7 +139,7 @@ class SpeechHandler(object):
             self.logger.info("Finished executing the block.")
             speech_event.addCallback(self.on_block_completed)
         else:
-            self.clear_keywords()
+            # self.clear_keywords()
             keywords = interaction_block.topic_tag.get_combined_answers()
             self.current_keywords = keywords
             self.logger.info("Keywords: {}".format(keywords))
