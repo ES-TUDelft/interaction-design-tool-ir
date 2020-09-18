@@ -1,5 +1,4 @@
 requests
-enum34
 pyyaml
 spotipy==2.9.0
 pymongo
