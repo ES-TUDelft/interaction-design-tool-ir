@@ -82,9 +82,8 @@ class InteractionController(object):
 
     def disconnect_from_robot(self):
         self.engagement_counter = 0
-
-        self.stop_all_threads()
         try:
+            self.stop_all_threads()
             self.logger.info("Disconnecting in 10s...")
             time.sleep(1)
             self.robot_controller = None
@@ -104,6 +103,7 @@ class InteractionController(object):
                 self.logger.error("Error while stopping thread: {} | {}".format(thread, e))
             finally:
                 continue
+        self.threads = []
 
     def is_connected(self):
         return False if self.robot_controller is None else True
@@ -111,7 +111,6 @@ class InteractionController(object):
     def update_threads(self):
         self.threads = []
 
-        # if self.animation_thread is None:
         self.animation_thread = AnimateRobotThread(robot_controller=self.robot_controller)
         self.animation_thread.customized_say_completed_observers.add_observer(self.customized_say)
         self.animation_thread.animate_completed_observers.add_observer(self.on_animation_completed)
@@ -119,28 +118,16 @@ class InteractionController(object):
 
         self.threads.append(self.animation_thread)
 
-        # else:
-        #     self.animation_thread.robot_controller = self.robot_controller
-
-        # if self.face_detection_thread is None:
         self.face_detection_thread = RobotFaceDetectionThread(robot_controller=self.robot_controller)
         self.face_detection_thread.is_disconnected.connect(self.disconnect_from_robot)
 
         self.threads.append(self.face_detection_thread)
 
-        # else:
-        #     # update the robot controller
-        #     self.face_detection_thread.robot_controller = self.robot_controller
-
-        # if self.engagement_thread is None:
         self.engagement_thread = RobotEngagementThread(robot_controller=self.robot_controller)
         self.engagement_thread.is_disconnected.connect(self.disconnect_from_robot)
         self.robot_controller.is_engaged_observers.add_observer(self.interaction)
 
         self.threads.append(self.engagement_thread)
-        # else:
-        #     # update the robot controller
-        #     self.engagement_thread.robot_controller = self.robot_controller
 
     def update_detection_certainty(self, speech_certainty=None, face_certainty=None):
         if self.robot_controller is not None:
