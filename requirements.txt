@@ -4,4 +4,4 @@ spotipy==2.9.0
 pymongo
 pyOpenSSL
 autobahn[twisted,serialization]
-PyQt5
+PySide2

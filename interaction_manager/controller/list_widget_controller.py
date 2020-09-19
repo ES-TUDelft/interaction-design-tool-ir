@@ -10,8 +10,7 @@
 # @author ES
 # **
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import pyqtSignal
+from es_common.utils.qt import QtCore, QtGui, QtWidgets, Signal
 
 from es_common.model.interaction_block import InteractionBlock
 
@@ -19,8 +18,8 @@ GUI_NAME = "DialogGUI"
 
 
 class HREListWidget(QtWidgets.QListWidget):
-    check_drop_table = pyqtSignal(bool)
-    no_item_selected = pyqtSignal(bool)
+    check_drop_table = Signal(bool)
+    no_item_selected = Signal(bool)
 
     def __init__(self, parent=None, allow_duplicates=True):
         super(HREListWidget, self).__init__(parent)

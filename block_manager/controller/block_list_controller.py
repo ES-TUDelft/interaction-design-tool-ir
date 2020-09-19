@@ -12,9 +12,9 @@
 
 import logging
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from es_common.utils.qt import QSize, Qt, QByteArray, QDataStream, QIODevice, QMimeData, QPoint
+from es_common.utils.qt import QPixmap, QDrag, QIcon
+from es_common.utils.qt import QListWidget, QAbstractItemView, QListWidgetItem
 
 from block_manager.utils import config_helper as bconfig_helper
 
@@ -23,7 +23,7 @@ class BlockListWidget(QListWidget):
     def __init__(self, parent=None):
         super(BlockListWidget, self).__init__(parent)
 
-        self.logger = logging.getLogger("BlockList Widget")
+        self.logger = logging.getLogger("BlockListWidget")
 
         self.icon_dim = bconfig_helper.get_block_size_settings()["list_icon_dim"]
         self._init_ui()
@@ -65,7 +65,13 @@ class BlockListWidget(QListWidget):
             item_data = QByteArray()
             data_stream = QDataStream(item_data, QIODevice.WriteOnly)
             data_stream << item_pixmap
-            data_stream.writeInt(op_code)
+
+            try:
+                data_stream.writeInt(op_code)
+            except Exception as e:
+                self.logger.warning("'writeInt' does not exist in QDataStream, using writeInt64 instead. | {}".format(e))
+                data_stream.writeInt64(op_code)
+
             data_stream.writeQString(item.text())
 
             mime_data = QMimeData()

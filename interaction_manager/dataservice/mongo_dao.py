@@ -10,12 +10,12 @@
 # @author ES
 # **
 
-from pymongo import MongoClient
 import datetime
 import logging
-import es_common.hre_config as pconfig
+
+from pymongo import MongoClient
+
 from interaction_manager.utils import config_helper
-import six
 
 
 class MongoDAO(object):

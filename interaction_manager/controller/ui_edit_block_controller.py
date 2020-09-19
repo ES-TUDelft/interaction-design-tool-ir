@@ -12,19 +12,19 @@
 
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from es_common.utils.qt import QtCore, QtWidgets
 
+import es_common.hre_config as pconfig
 from block_manager.enums.block_enums import SocketType
 from es_common.enums.command_enums import ActionCommand
 from es_common.enums.module_enums import InteractionModule
 from es_common.factory.command_factory import CommandFactory
-from interaction_manager.utils import config_helper
-import es_common.hre_config as pconfig
 from es_common.model.interaction_block import InteractionBlock
-from interaction_manager.model.speech_act import SpeechAct
-from interaction_manager.view.ui_editblock_dialog import Ui_EditBlockDialog
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
+from interaction_manager.model.speech_act import SpeechAct
+from interaction_manager.utils import config_helper
+from interaction_manager.view.ui_editblock_dialog import Ui_EditBlockDialog
 
 
 class UIEditBlockController(QtWidgets.QDialog):

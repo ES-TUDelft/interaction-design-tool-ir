@@ -3,7 +3,7 @@
 # **
 #
 # ==================== #
-# ESBLOCK_CONTROLLER #
+# ES_BLOCK_CONTROLLER #
 # ==================== #
 # Class for controlling the interactions blocks.
 #
@@ -12,13 +12,13 @@
 
 import logging
 
-from PyQt5 import QtCore, QtGui
+from es_common.utils.qt import QtCore, QtGui
 
 from block_manager.controller.block_controller import BlockController
 from block_manager.model.block import Block
+from es_common.model.interaction_block import InteractionBlock
 from es_common.utils import block_helper
 from interaction_manager.controller.block_list_controller import ESBlockListWidget
-from es_common.model.interaction_block import InteractionBlock
 from interaction_manager.utils import config_helper
 
 
@@ -51,7 +51,13 @@ class ESBlockController(BlockController):
 
             item_pixmap = QtGui.QPixmap()
             data_stream >> item_pixmap
-            op_code = data_stream.readInt()
+
+            try:
+                op_code = data_stream.readInt()
+            except Exception as e:
+                self.logger.warning("'readInt' does not exist in QDataStream, using readInt64 instead. | {}".format(e))
+                op_code = data_stream.readInt64()
+
             item_text = data_stream.readQString()
 
             # check if the block has a "start" pattern and the scene already contains one:

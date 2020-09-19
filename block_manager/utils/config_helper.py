@@ -14,8 +14,8 @@ import logging
 import sys
 
 import yaml
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QApplication
+
+from es_common.utils.qt import QApplication, QFont
 
 
 def _setup_logger():

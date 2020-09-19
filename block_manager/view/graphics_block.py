@@ -1,11 +1,9 @@
 import logging
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-
 from block_manager.utils import config_helper
 from es_common.model.observable import Observable
+from es_common.utils.qt import QGraphicsItem, QGraphicsPixmapItem, QGraphicsTextItem, QGraphicsProxyWidget
+from es_common.utils.qt import Qt, QRectF, QPen, QBrush, QColor, QPixmap, QPainterPath
 
 
 class ESGraphicsBlock(QGraphicsItem, Observable, object):

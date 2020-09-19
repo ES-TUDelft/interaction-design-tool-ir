@@ -11,14 +11,13 @@
 # **
 
 import logging
-import random
 
 import es_common.hre_config as pconfig
 from es_common.enums.led_enums import LedColor
-from es_common.model.robot_voice import RobotVoice
 from es_common.enums.speech_enums import GesturesType, GazePattern, SpeechActsType
-from interaction_manager.model.speech_act import SpeechAct
+from es_common.model.robot_voice import RobotVoice
 from interaction_manager.model.gesture import Gesture
+from interaction_manager.model.speech_act import SpeechAct
 
 
 class BehavioralParameters(object):

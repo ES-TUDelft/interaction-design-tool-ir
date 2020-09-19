@@ -13,7 +13,7 @@
 import logging
 import time
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from es_common.utils.qt import QThread, Signal
 
 from es_common.model.observable import Observable
 
@@ -23,7 +23,7 @@ MOVE ROBOT THREAD
 
 
 class MoveRobotThread(QThread):
-    movement_completed = pyqtSignal(bool)
+    movement_completed = Signal(bool)
 
     def __init__(self, robot_controller):
         QThread.__init__(self)
@@ -59,7 +59,7 @@ ROBOT ANIMATION THREAD
 
 
 class AnimateRobotThread(QThread):
-    is_disconnected = pyqtSignal(bool)
+    is_disconnected = Signal(bool)
 
     def __init__(self, robot_controller):
         QThread.__init__(self)

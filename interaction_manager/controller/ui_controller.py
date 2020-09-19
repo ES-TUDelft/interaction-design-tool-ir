@@ -13,7 +13,7 @@
 import logging
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from es_common.utils.qt import QtCore, QtGui, QtWidgets
 
 import es_common.hre_config as pconfig
 from block_manager.utils import config_helper as bconfig_helper
@@ -206,7 +206,7 @@ class UIController(QtWidgets.QMainWindow):
     def robot_connect(self):
         try:
             if self.interaction_controller is None:
-                self.interaction_controller = InteractionController()
+                self.interaction_controller = InteractionController(self.block_controller)
 
             connection_dialog = UIRobotConnectionController(self.interaction_controller)
 
@@ -237,7 +237,7 @@ class UIController(QtWidgets.QMainWindow):
 
     def robot_disconnect(self):
         try:
-            success = self.interaction_controller.disconnect_from_robot()
+            self.interaction_controller.disconnect_from_robot()
 
             # update GUI
             self._toggle_buttons(is_awake=False)
@@ -691,8 +691,9 @@ class UIController(QtWidgets.QMainWindow):
 
     def insert_interaction_design(self, design):
         success = self.database_controller.insert_interaction_design(design=design)
-
-        self._display_message(message="Successfully inserted the selected interaction blocks.") if success is True else \
+        if success is True:
+            self._display_message(message="Successfully inserted the selected interaction blocks.")
+        else:
             self._display_message(error="Error while inserting interaction blocks.")
 
     def export_blocks(self):

@@ -11,7 +11,7 @@ with open("README.md", "r") as readme_file:
 
 setuptools.setup(
     name="robot-interaction-tool-ES",
-    version="2.0.1",
+    version="3.0.1",
     author="ES",
     author_email="e.saad@tudelft.nl",
     long_description=long_description,
@@ -23,16 +23,19 @@ setuptools.setup(
         "pyyaml",
         "pymongo",
         "spotipy",
-        "qi"
+        "requests",
+        "pyOpenSSL",
+        "autobahn[twisted,serialization]",
+        "PyQt5"
     ],
     classifiers=[
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     packages=["idtool"],
     include_package_data=True,
-    python_requires='>=2.7',
+    python_requires='>=3.6',
     entry_points={"console_scripts": ["idtool=interaction_manager.__main__:main"]}
 )

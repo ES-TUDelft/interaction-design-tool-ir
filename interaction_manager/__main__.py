@@ -15,7 +15,7 @@
 import logging
 import sys
 
-from PyQt5 import QtWidgets
+from es_common.utils.qt import QtWidgets
 
 from interaction_manager.controller.ui_controller import UIController
 

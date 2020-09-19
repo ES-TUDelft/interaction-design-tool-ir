@@ -13,9 +13,8 @@
 import datetime
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from es_common.utils.qt import QtCore, QtWidgets
 
-import es_common.hre_config as pconfig
 from interaction_manager.view.ui_db_dialog import Ui_DBDialog
 
 

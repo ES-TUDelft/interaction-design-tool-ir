@@ -12,11 +12,10 @@
 
 import logging
 
-from PyQt5 import QtGui, QtWidgets
+from es_common.utils.qt import QtGui, QtWidgets
 
 from es_common.utils import data_helper
 from interaction_manager.view.ui_importblocks_dialog import Ui_ImportBlocksDialog
-from interaction_manager.utils import config_helper
 
 
 class UIImportBlocksController(QtWidgets.QDialog):
@@ -47,7 +46,8 @@ class UIImportBlocksController(QtWidgets.QDialog):
                                                              options=options)
 
         self.ui.fileNameLineEdit.setText(file_path)
-        if file_path is None: return
+        if file_path is None:
+            return
 
         self.import_blocks()
 

@@ -13,7 +13,7 @@
 import logging
 import time
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from es_common.utils.qt import QThread, Signal
 
 from robot_manager.pepper.handler.connection_handler import ConnectionHandler
 
@@ -23,7 +23,7 @@ ROBOT CONNECTION THREAD
 
 
 class RobotConnectionThread(QThread):
-    is_connected = pyqtSignal(bool)
+    is_connected = Signal(bool)
 
     def __init__(self):
         QThread.__init__(self)

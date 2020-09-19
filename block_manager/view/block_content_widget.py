@@ -1,15 +1,14 @@
 import logging
 from collections import OrderedDict
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from es_common.utils.qt import Qt, Signal, QPixmap
+from es_common.utils.qt import QWidget, QGridLayout, QSizePolicy, QSpacerItem, QTextEdit, QLineEdit, QLabel
 
 from block_manager.utils import config_helper
 from es_common.datasource.serializable import Serializable
 
 
-class ESBlockContentWidget(QWidget, Serializable ):
+class ESBlockContentWidget(QWidget, Serializable):
     def __init__(self, block, parent=None):
         super(ESBlockContentWidget, self).__init__(parent=parent)
         Serializable.__init__(self)
@@ -137,7 +136,7 @@ class ESQTextEdit(QTextEdit):
 
 
 class ESQLabel(QLabel):
-    clicked = pyqtSignal(str)
+    clicked = Signal(str)
 
     def __init__(self, image_path, width, height, parent=None):
         super(ESQLabel, self).__init__(parent)

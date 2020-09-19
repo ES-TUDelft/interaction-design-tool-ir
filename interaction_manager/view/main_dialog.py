@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from es_common.utils.qt import QtWidgets
 
 from interaction_manager.view.ui_dialog import Ui_DialogGUI
 

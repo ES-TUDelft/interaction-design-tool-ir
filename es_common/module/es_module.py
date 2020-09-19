@@ -1,6 +1,5 @@
 import logging
 
-from block_manager.enums.block_enums import SocketType
 from block_manager.factory.block_factory import BlockFactory
 from es_common.datasource.serializable import Serializable
 from es_common.model.interaction_block import InteractionBlock
@@ -27,7 +26,7 @@ class ESModule(Serializable):
 
     def execute_module(self):
         success = self.start_module()
-        self.logger.info("Module execution was{}successful".format(" " if success else "not"))
+        self.logger.info("Module execution was{}successful".format(" " if success else " not "))
 
         if success is False:
             return self.origin_block

@@ -12,7 +12,7 @@
 
 import logging
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from es_common.utils.qt import QtWidgets, QtCore, QtGui
 
 from block_manager.controller.block_list_controller import BlockListWidget
 from block_manager.enums.block_enums import EdgeType
@@ -76,7 +76,13 @@ class BlockController(object):
 
             item_pixmap = QtGui.QPixmap()
             data_stream >> item_pixmap
-            op_code = data_stream.readInt()
+
+            try:
+                op_code = data_stream.readInt()
+            except Exception as e:
+                self.logger.warning("'readInt' does not exist in QDataStream, using readInt64 instead. | {}".format(e))
+                op_code = data_stream.readInt64()
+
             item_text = data_stream.readQString()
 
             mouse_position = event.pos()
@@ -244,7 +250,7 @@ class BlockController(object):
         return None
 
     def get_block_widget(self):
-        return self.block_widget;
+        return self.block_widget
 
     ###
     # DRAG and DROP OBSERVERS

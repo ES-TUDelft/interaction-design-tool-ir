@@ -17,8 +17,7 @@ import time
 from threading import Lock
 
 import numpy as np
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import QThread, pyqtSignal
+from es_common.utils.qt import QtCore, QtGui, QThread, Signal
 
 import es_common.hre_config as pconfig
 from es_common.controller.image_controller import ImageController
@@ -31,7 +30,7 @@ IMAGE THREAD
 
 
 class ImageControllerThread(QThread):
-    changePixmap = pyqtSignal(QtGui.QImage)
+    changePixmap = Signal(QtGui.QImage)
     current_image_id = 0
 
     def __init__(self, mongo_dao, robot_controller, camera_id=pconfig.camera_id,
@@ -139,7 +138,7 @@ CAMERA THREAD
 
 
 class CameraThread(QThread):
-    image = pyqtSignal(float, np.ndarray, float, float)
+    image = Signal(float, np.ndarray, float, float)
 
     def __init__(self, robot_controller):
         QThread.__init__(self)

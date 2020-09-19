@@ -19,9 +19,9 @@ from es_common.enums.command_enums import ActionCommand
 from es_common.factory.command_factory import CommandFactory
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
+from es_common.utils.data_helper import join_array
 from interaction_manager.model.behavioral_parameters import BehavioralParameters
 from interaction_manager.model.speech_act import SpeechAct
-from es_common.utils.data_helper import join_array
 
 
 class InteractionBlock(Serializable):

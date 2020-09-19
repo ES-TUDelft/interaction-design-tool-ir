@@ -1,6 +1,6 @@
 import logging
 
-from PyQt5.Qt import *
+from es_common.utils.qt import QWidget, QVBoxLayout
 
 from block_manager.controller.graphics_view_controller import ESGraphicsViewController
 from es_common.model.observable import Observable

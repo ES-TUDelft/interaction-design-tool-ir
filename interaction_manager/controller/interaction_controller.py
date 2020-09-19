@@ -13,22 +13,20 @@
 import logging
 import time
 
-from PyQt5.QtCore import QTimer
+from es_common.utils.qt import QTimer
 
 from block_manager.enums.block_enums import ExecutionMode
 from es_common.enums.command_enums import ActionCommand
-from es_common.enums.module_enums import InteractionModule
 from es_common.factory.module_factory import ModuleFactory
 from es_common.model.observable import Observable
-from es_common.module.restaurant_reservations_module import RestaurantReservationsModule
 from es_common.utils.timer_helper import TimerHelper
 from interaction_manager.utils import config_helper
 from robot_manager.pepper.controller.robot_controller import RobotController
 from thread_manager.robot_animation_threads import AnimateRobotThread
 from thread_manager.robot_connection_thread import RobotConnectionThread
-from thread_manager.wakeup_robot_thread import WakeUpRobotThread
 from thread_manager.robot_engagement_thread import RobotEngagementThread
 from thread_manager.robot_face_detection_thread import RobotFaceDetectionThread
+from thread_manager.wakeup_robot_thread import WakeUpRobotThread
 
 
 class InteractionController(object):

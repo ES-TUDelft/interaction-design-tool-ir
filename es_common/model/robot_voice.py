@@ -11,7 +11,6 @@
 # **
 
 import logging
-import random
 
 import es_common.hre_config as pconfig
 from es_common.enums.voice_enums import VoiceName, VoiceProsody, VoiceStyle

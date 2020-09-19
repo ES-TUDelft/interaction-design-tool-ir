@@ -11,9 +11,8 @@
 # **
 
 import logging
-import time
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from es_common.utils.qt import QThread, Signal
 
 """
 WAKE UP ROBOT THREAD
@@ -21,7 +20,7 @@ WAKE UP ROBOT THREAD
 
 
 class WakeUpRobotThread(QThread):
-    awake_signal = pyqtSignal(bool)
+    awake_signal = Signal(bool)
 
     def __init__(self, robot_controller):
         QThread.__init__(self)

@@ -1,7 +1,6 @@
 import logging
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QTimer
+from es_common.utils.qt import QtWidgets, QtCore, QtGui, QTimer
 
 from es_common.enums.command_enums import ActionCommand
 from es_common.model.observable import Observable

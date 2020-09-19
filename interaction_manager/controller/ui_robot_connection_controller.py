@@ -11,14 +11,11 @@
 # **
 
 import logging
-import time
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from es_common.utils.qt import QtWidgets, QtGui
 
-import es_common.hre_config as pconfig
 from es_common.enums.robot_name import RobotName
 from interaction_manager.view.ui_connection_dialog import Ui_ConnectionDialog
-from es_common.utils import ip_helper
 
 
 class UIRobotConnectionController(QtWidgets.QDialog):
@@ -45,7 +42,7 @@ class UIRobotConnectionController(QtWidgets.QDialog):
         self.ui.setupUi(self)
 
         # connect listener
-        self.ui.connectPushButton.clicked.connect(self.connect)
+        self.ui.connectPushButton.clicked.connect(self.on_connect)
 
         if self.interaction_controller is None:
             self.ui.connectPushButton.setEnabled(False)
@@ -53,7 +50,7 @@ class UIRobotConnectionController(QtWidgets.QDialog):
 
         self.repaint()
 
-    def connect(self):
+    def on_connect(self):
         self.success = False
         try:
             self.robot_realm = "{}".format(str(self.ui.robotRealmLineEdit.text()).strip())

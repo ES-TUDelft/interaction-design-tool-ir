@@ -10,10 +10,7 @@
 # @author ES
 # **
 
-from PyQt5 import Qt
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+from es_common.utils.qt import Qt, QPainter, QGraphicsView, QApplication
 
 from es_common.model.observable import Observable
 from block_manager.model.edge import Edge

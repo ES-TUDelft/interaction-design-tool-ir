@@ -12,7 +12,6 @@
 
 import logging
 import time
-import es_common.hre_config as pconfig
 
 
 class TimerHelper(object):

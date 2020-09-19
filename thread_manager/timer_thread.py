@@ -14,7 +14,7 @@ import logging
 import time
 from timeit import default_timer as timer
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from es_common.utils.qt import QThread, Signal
 
 """
 TIMER THREAD
@@ -22,7 +22,7 @@ TIMER THREAD
 
 
 class TimerThread(QThread):
-    time_is_up_signal = pyqtSignal(bool)
+    time_is_up_signal = Signal(bool)
 
     def __init__(self):
         QThread.__init__(self)

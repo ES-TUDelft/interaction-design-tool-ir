@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from es_common.utils.qt import QtCore, QtGui, QtWidgets
 
 from block_manager.view import resources_rc
 

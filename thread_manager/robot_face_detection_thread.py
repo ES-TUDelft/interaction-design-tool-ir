@@ -13,7 +13,7 @@
 import logging
 import time
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from es_common.utils.qt import QThread, Signal
 
 
 """
@@ -22,7 +22,7 @@ ROBOT FACE DETECTION THREAD
 
 
 class RobotFaceDetectionThread(QThread):
-    is_disconnected = pyqtSignal(bool)
+    is_disconnected = Signal(bool)
 
     def __init__(self, robot_controller):
         QThread.__init__(self)

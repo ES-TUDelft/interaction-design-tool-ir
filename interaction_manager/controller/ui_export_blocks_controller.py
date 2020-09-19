@@ -15,7 +15,7 @@ import os
 import time
 from os.path import expanduser
 
-from PyQt5 import QtGui, QtWidgets
+from es_common.utils.qt import QtGui, QtWidgets
 
 from es_common.utils import data_helper
 from interaction_manager.view.ui_exportblocks_dialog import Ui_ExportBlocksDialog
@@ -58,8 +58,8 @@ class UIExportBlocksController(QtWidgets.QDialog):
         )
         self.ui.folderNameLineEdit.setText(folder_name)
 
-    def check_fields(self, foldername=None, filename=None):
-        if foldername is None or foldername == "":
+    def check_fields(self, folder_name=None, filename=None):
+        if folder_name is None or folder_name == "":
             self.display_message(error="ERROR: Please select a folder to save the file.")
             return False
 
@@ -71,13 +71,13 @@ class UIExportBlocksController(QtWidgets.QDialog):
 
     def export_blocks(self):
         filename = self.ui.fileNameLineEdit.text()
-        foldername = self.ui.folderNameLineEdit.text()
+        folder_name = self.ui.folderNameLineEdit.text()
 
-        if self.check_fields(foldername=foldername, filename=filename) is False:
+        if self.check_fields(folder_name=folder_name, filename=filename) is False:
             return False
 
         try:
-            data_helper.save_to_file(filename="{}/{}.json".format(foldername, filename),
+            data_helper.save_to_file(filename="{}/{}.json".format(folder_name, filename),
                                      serialized_data=self.serialized_data)
             self.display_message(message="Successfully exported the design.")
             return True

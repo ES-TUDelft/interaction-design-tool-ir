@@ -12,7 +12,6 @@
 
 import logging
 
-import es_common.hre_config as pconfig
 from es_common.enums.speech_enums import SpeechActsType
 
 

@@ -1,7 +1,6 @@
 import logging
 
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from es_common.utils.qt import QPen, QColor, QGraphicsScene
 
 from block_manager.utils import config_helper
 

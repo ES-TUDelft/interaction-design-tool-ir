@@ -12,7 +12,7 @@
 
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from es_common.utils.qt import QtCore, QtWidgets
 
 from interaction_manager.view.ui_confirmation_dialog import Ui_ConfirmationDialog
 

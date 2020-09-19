@@ -9,11 +9,10 @@
 #
 # @author ES
 # **
-import json
 import logging
 
 import spotipy
-from PyQt5 import QtWidgets, QtGui
+from es_common.utils.qt import QtWidgets, QtGui
 
 import es_common.hre_config as pconfig
 from interaction_manager.utils import config_helper
@@ -49,7 +48,7 @@ class UISpotifyConnectionController(QtWidgets.QDialog):
         self.ui.setupUi(self)
 
         # connect listener
-        self.ui.connectButton.clicked.connect(self.connect)
+        self.ui.connectButton.clicked.connect(self.on_connect)
         self.ui.playButton.clicked.connect(self.play)
 
         self.ui.playlistComboBox.currentIndexChanged.connect(self.update_tracks_combo)
@@ -79,7 +78,7 @@ class UISpotifyConnectionController(QtWidgets.QDialog):
             return default
         return val
 
-    def connect(self):
+    def on_connect(self):
         self._display_message(message="Connecting...")
         self.set_spotify_settings()
 

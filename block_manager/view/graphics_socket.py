@@ -1,8 +1,6 @@
 import logging
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import QGraphicsItem
+from es_common.utils.qt import QRectF, QPen, QColor, QBrush, QGraphicsItem
 
 from block_manager.enums.block_enums import SocketType
 from block_manager.utils import config_helper

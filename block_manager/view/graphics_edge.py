@@ -1,11 +1,9 @@
+import logging
 import math
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from block_manager.utils import config_helper
 from block_manager.enums.block_enums import Position
-import logging
+from block_manager.utils import config_helper
+from es_common.utils.qt import Qt, QPointF, QColor, QPen, QPainterPath, QGraphicsPathItem, QGraphicsItem
 
 
 class ESGraphicsEdge(QGraphicsPathItem):
