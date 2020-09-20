@@ -20,14 +20,14 @@ try:
 except ImportError:
     logger.info("Importing PyQt5")
     # PyQt5
-    from PyQt5 import QtGui, QtWidgets, QtCore
-    from PyQt5.QtCore import pyqtSignal as Signal, QTimer
-    from PyQt5.QtCore import Qt, QThread, QRectF, QPointF
-    from PyQt5.QtCore import QSize, Qt, QByteArray, QDataStream, QIODevice, QMimeData, QPoint
-    from PyQt5.QtGui import QPen, QBrush, QPainter, QPainterPath, QFont
-    from PyQt5.QtGui import QDrag, QIcon, QPixmap, QColor
-    from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsProxyWidget, QVBoxLayout
-    from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
-    from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QGraphicsTextItem, QGraphicsPathItem
-    from PyQt5.QtWidgets import QGridLayout, QSizePolicy, QSpacerItem, QTextEdit, QLineEdit, QLabel
-    from PyQt5.QtWidgets import QListWidget, QAbstractItemView, QListWidgetItem
+    # from PyQt5 import QtGui, QtWidgets, QtCore
+    # from PyQt5.QtCore import pyqtSignal as Signal, QTimer
+    # from PyQt5.QtCore import Qt, QThread, QRectF, QPointF
+    # from PyQt5.QtCore import QSize, Qt, QByteArray, QDataStream, QIODevice, QMimeData, QPoint
+    # from PyQt5.QtGui import QPen, QBrush, QPainter, QPainterPath, QFont
+    # from PyQt5.QtGui import QDrag, QIcon, QPixmap, QColor
+    # from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsProxyWidget, QVBoxLayout
+    # from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
+    # from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPixmapItem, QGraphicsTextItem, QGraphicsPathItem
+    # from PyQt5.QtWidgets import QGridLayout, QSizePolicy, QSpacerItem, QTextEdit, QLineEdit, QLabel
+    # from PyQt5.QtWidgets import QListWidget, QAbstractItemView, QListWidgetItem

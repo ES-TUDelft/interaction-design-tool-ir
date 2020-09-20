@@ -101,7 +101,6 @@ class InteractionController(object):
                 thread.wait()
             except Exception as e:
                 self.logger.error("Error while stopping thread: {} | {}".format(thread, e))
-            finally:
                 continue
         self.threads = []
 

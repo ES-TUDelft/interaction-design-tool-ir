@@ -10,7 +10,7 @@ with open("README.md", "r") as readme_file:
     long_description = readme_file.read()
 
 setuptools.setup(
-    name="robot-interaction-tool-ES",
+    name="interaction-design-tool-ir",
     version="3.0.1",
     author="ES",
     author_email="e.saad@tudelft.nl",
@@ -18,7 +18,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     description="A design tool for prototyping human-robot interactions",
     license="MIT",
-    url="https://github.com/ES-TUDelft/robot-interaction-tool",
+    url="https://github.com/ES-TUDelft/interaction-design-tool-ir",
     install_requires=[
         "pyyaml",
         "pymongo",
@@ -36,6 +36,6 @@ setuptools.setup(
     ],
     packages=["idtool"],
     include_package_data=True,
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     entry_points={"console_scripts": ["idtool=interaction_manager.__main__:main"]}
 )
