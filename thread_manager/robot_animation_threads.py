@@ -17,6 +17,8 @@ from es_common.utils.qt import QThread, Signal
 
 from es_common.model.observable import Observable
 
+APP_NAME = "hre_dialog"
+
 """
 MOVE ROBOT THREAD
 """
@@ -126,7 +128,7 @@ class AnimateRobotThread(QThread):
                     # load the web application if it's the first block
                     # TODO: use the "start" pattern as a trigger
                     if self.is_first_block is True:
-                        # self.robot_controller.load_application(pconfig.app_name)
+                        # self.robot_controller.load_application(APP_NAME)
                         self.is_first_block = False
                     self.logger.info("Interaction block is: {}".format(self.interaction_block))
                     self.robot_controller.customized_say(interaction_block=self.interaction_block)

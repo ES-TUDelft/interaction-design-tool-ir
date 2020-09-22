@@ -1,8 +1,6 @@
 topic: ~index()
 language: enu
 
-include: general.top
-
 u: (e:pageLoaded $pageLoaded=="index") "back to $pageLoaded"
 
 u: (e:loadPage) $pageName=$loadPage ^gotoReactivate(loadPageTag)

@@ -24,6 +24,7 @@ from robot_manager.pepper.handler.animation_handler import AnimationHandler
 from robot_manager.pepper.handler.engagement_handler import EngagementHandler
 from robot_manager.pepper.handler.sensor_handler import SensorHandler
 from robot_manager.pepper.handler.speech_handler import SpeechHandler
+from robot_manager.pepper.handler.tablet_handler import TabletHandler
 
 
 class RobotController(object):
@@ -42,7 +43,7 @@ class RobotController(object):
         self.last_input = None
         self.is_engaged_signal, self.block_completed_signal, self.user_answer_signal = (None,) * 3
         self.animation_handler, self.sensor_handler, self.engagement_handler = (None,) * 3
-        self.speech_handler, self.screen_handler = (None,) * 2
+        self.speech_handler, self.tablet_handler = (None,) * 2
 
         self.session = None
         self.is_engaged_observers = Observable()
@@ -62,8 +63,8 @@ class RobotController(object):
     def _init_handlers(self):
         self.animation_handler = AnimationHandler(session=self.session)
         self.speech_handler = SpeechHandler(session=self.session)
-        # if self.name is None or self.name is RobotName.PEPPER:
-        #     self.screen_handler = ScreenHandler(session=self.session)
+        if self.robot_name is None or self.robot_name is RobotName.PEPPER:
+            self.tablet_handler = TabletHandler(session=self.session)
         self.sensor_handler = SensorHandler(session=self.session)
         self.engagement_handler = EngagementHandler(session=self.session)
 
@@ -106,6 +107,7 @@ class RobotController(object):
         self.speech_handler.keyword_observers.add_observer(self.raise_user_answer_event)
 
     def raise_block_completed_event(self, val=None):
+        self.logger.debug("Completed event value = {}".format(val))
         if self.block_completed_signal is not None:
             self.block_completed_signal.emit(True)
 
@@ -197,6 +199,10 @@ class RobotController(object):
         self.speech_handler.animated_say(message=message, animation_name=animation_name)
 
     def customized_say(self, interaction_block=None):
+        # update the html page fields
+        self.load_html_page(interaction_block.tablet_page)
+
+        # say the message
         self.speech_handler.customized_say(interaction_block=interaction_block)
 
     def set_volume(self, level=50.0):
@@ -216,22 +222,30 @@ class RobotController(object):
     """
 
     def tablet_image(self, hide=False, action_name=TabletAction.IMAGE, action_url=pconfig.welcome_image):
-        if self.screen_handler is not None:
-            try:
-                if action_name is TabletAction.IMAGE:
-                    self.screen_handler.set_image(image_path=action_url, hide=hide)
-                elif action_name is TabletAction.WEBVIEW:
-                    self.screen_handler.set_webview(webpage=action_url, hide=hide)
-            except Exception as e:
-                self.logger.error("Error while setting the tablet: {}".format(e))
+        if self.tablet_handler is None:
+            return
+        try:
+            if action_name is TabletAction.IMAGE:
+                self.tablet_handler.set_image(image_path=action_url, hide=hide)
+            elif action_name is TabletAction.WEBVIEW:
+                self.tablet_handler.show_webview(url=action_url, hide=hide)
+        except Exception as e:
+            self.logger.error("Error while setting the tablet: {}".format(e))
 
     def load_application(self, app_name):
-        if self.screen_handler is not None:
-            self.screen_handler.load_application(app_name)
+        if self.tablet_handler is not None:
+            self.tablet_handler.load_application(app_name)
 
-    def load_html_page(self, page_name="index"):
-        self.logger.info("Not Implemented!")
-        # self.speech_handler.raise_event(event_name="loadPage", event_value=page_name.lower())
+    def load_html_page(self, tablet_page=None):
+        if self.tablet_handler is None or tablet_page is None:
+            return
+
+        params = {
+            "pageHeading": "{}".format(tablet_page.heading),
+            "pageText": "{}".format(tablet_page.text),
+            "pageImage": "{}".format("pepper-standing.png" if tablet_page.image is None else tablet_page.image)
+        }
+        self.tablet_handler.show_offline_page(name=tablet_page.name, params=params)
 
     """
     LED CONTROL

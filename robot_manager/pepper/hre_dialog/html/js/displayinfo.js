@@ -1,69 +1,26 @@
-$(document).ready(function () {
-    // Create qi session
-    QiSession(function (session) {
-        console.log("Created a session and connected!");
-
-        // Load the ALmemory service and raise an event that shows that the greeting page was loaded
-        session.service("ALMemory").then(function (mem) {
-            mem.raiseEvent("pageLoaded", "displayinfo");
-
-        }, function(error) {
-            console.log("An error occurred:", error);
-        });
-    }, function () {
-        console.log("disconnected");
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
     });
-})
+    return vars;
+}
 
-function raiseEvent(name, value) {
-    QiSession(function (session) {
-        session.service("ALMemory").then(function (mem) {
-            mem.raiseEvent(name, value);
-        }, function (error) {
-            console.log("An error occurred:", error);
-        });
-    });
+function getUrlParam(parameter, defaultvalue){
+    var urlparameter = defaultvalue;
+    if(window.location.href.indexOf(parameter) > -1){
+        urlparameter = getUrlVars()[parameter];
+        }
+    return urlparameter;
 }
 
 function displayPageInformation() {
-    //alert("Inside display: " + localStorage.getItem("pageHeading"));
-    imageName = localStorage.getItem("pageImage");
+    imageName = getUrlParam("image", "");
     if (imageName) {
-        document.getElementById("pageImage").src = "../pics/" + localStorage.getItem("pageImage");
+        document.getElementById("pageImage").src = "../pics/" + imageName;
     }
-    document.getElementById("pageHeading").innerHTML = localStorage.getItem("pageHeading");
-    document.getElementById("pageText").innerHTML  = localStorage.getItem("pageText");
-}
-
-function getAndFillPage(pageName, pageHeading, pageText, pageImage) {
-    //alert("From displayinfo: pageName = " + pageName);
-
-    localStorage.setItem("pageHeading", pageHeading);
-    localStorage.setItem("pageText", pageText);
-    localStorage.setItem("pageImage", pageImage);
-
-    pageName = pageName.toLowerCase();
-    
-    switch(pageName) {
-        case "index":
-            window.location = "../index.html";
-            break;
-        case "help":
-            window.location = "help.html";
-            break;
-        case "displayinfo":
-            window.location = "displayinfo.html";
-            break;
-        case "confirmation":
-            window.location = "confirmation.html";
-            break;
-        case "displayimage":
-            window.location = "displayimage.html";
-            break;
-        default:
-            window.location = "../index.html";
-            return;
-    }
+    document.getElementById("pageHeading").innerHTML = decodeURI(getUrlParam("pageHeading", ""));
+    document.getElementById("pageText").innerHTML  = decodeURI(getUrlParam("pageText", ""));
 }
 
 function getPage(pageName) {

@@ -1,6 +1,6 @@
 function displayPageImage() {
-    imageName = localStorage.getItem("pageImage");
+    imageName = getUrlParam("pageImage", "");
     if (imageName) {
-        document.getElementById("pageImage").src = "../pics/" + localStorage.getItem("pageImage");
+        document.getElementById("pageImage").src = "../pics/" + imageName;
     }
 }

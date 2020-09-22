@@ -1,0 +1,12 @@
+tablet:
+  pages: {
+    index: "apps/hre_dialog/index.html",
+    displayinfo: "apps/hre_dialog/pages/displayinfo.html",
+    displayimage: "apps/hre_dialog/pages/displayimage.html",
+    displaytext: "apps/hre_dialog/pages/displaytext.html"
+  }
+  images:
+    - welcome.jpg
+    - pepper-standing.png
+    - pepper-question.png
+    - blank.jpg

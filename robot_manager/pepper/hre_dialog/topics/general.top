@@ -1,21 +1,6 @@
 topic: ~general()
 language: enu
 
-include: lexicon_enu.top
-include: concepts.top
-
-u: (reset) %resetTag ^clear(name) ^clear(iAmFine) ^clear(customMessage) ^clear(customAnimation) ^clear(pageName)
-
-u: ([exit stop quit]) Ok, i'm exiting ^gotoReactivate(exitTag)
-
-u: (["I am" "I'm"] in a hurry) Oh, OK, let us continue. ^gotoReactivate(exitTag)
-
-u: (e:loadPage) $pageName=$loadPage ^gotoReactivate(loadPageTag)
-
-u: ({please} repeat {please}) Ok, no problem. ^gotoReactivate(lastTagName)
-
-proposal: %exitTag $pageName="index" $blockCompleted=1 ^gotoReactivate(loadPageTag)
-
 # Execute the selected page using javascript. This needs to run ON the robot
 proposal: %loadPageTag ^gotoReactivate(getPageTag)
 

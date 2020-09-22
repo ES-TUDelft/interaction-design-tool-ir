@@ -156,6 +156,28 @@ class SpeechHandler(object):
         self.session.call(u'rom.optional.tts.language', lang="en")
         self.session.call("rie.dialogue.config.language", lang="{}".format(name))
 
+    # Dialog
+    def goto_tag(self, tag_name="loadAndFillPageTag", topic="general"):
+        self.session.call("rom.optional.tts.goto", tag=tag_name, topic=topic)
+
+    # MEMORY
+    def insert(self, data_dict=None):
+        if data_dict is None:
+            return
+        try:
+            self.session.call("rom.optional.tts.insert_data", data_dict=data_dict)
+        except Exception as e:
+            print("Error while inserting '{}' into memory: {}".format(data_dict, e))
+
+    # MEMORY
+    def get_data(self, name=None):
+        if name is None:
+            return
+        try:
+            self.session.call("rom.optional.tts.get_data", name=name)
+        except Exception as e:
+            print("Error while getting data '{}' from memory: {}".format(name, e))
+
     def log(self, value):
         self.logger.info("Pepper heard: {}".format(value))
 

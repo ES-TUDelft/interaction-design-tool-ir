@@ -72,3 +72,15 @@ def get_robot_settings():
         logger.error("Error while loading TableBooker config! {}".format(e))
     finally:
         return robot_settings
+
+
+def get_tablet_settings():
+    tablet = []
+    try:
+        with open("es_common/properties/tablet.yaml", 'r') as ymlfile:
+            props = yaml.load(ymlfile, Loader=yaml.SafeLoader)
+            tablet = props["tablet"]
+    except Exception as e:
+        logger.error("Error while opening the app properties file! {}".format(e))
+    finally:
+        return tablet

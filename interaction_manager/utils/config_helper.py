@@ -45,11 +45,19 @@ app_properties = _get_app_properties()
 def get_tags():
     # returns dict of gestures:
     # names are the keys and path are values
-    return _get_property(app_properties, "tags")
+    return _get_property(_get_app_properties(), "tags")
 
 
 def get_tablet_properties():
-    return _get_property(app_properties, "tablet")
+    tablet = []
+    try:
+        with open("es_common/properties/tablet.yaml", 'r') as ymlfile:
+            props = yaml.load(ymlfile, Loader=yaml.SafeLoader)
+            tablet = props["tablet"]
+    except Exception as e:
+        logger.error("Error while opening the app properties file! {}".format(e))
+    finally:
+        return tablet
 
 
 ####

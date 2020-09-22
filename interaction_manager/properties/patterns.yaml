@@ -10,6 +10,7 @@ start:
         - index
         - displayinfo
         - displayimage
+        - displaytext
 end:
     inputs: 1
     outputs: 0
@@ -22,6 +23,7 @@ end:
         - index
         - displayinfo
         - displayimage
+        - displaytext
 question:
     inputs: 1
     outputs: 1
@@ -35,6 +37,7 @@ question:
         - index
         - displayinfo
         - displayimage
+        - displaytext
 confirmation:
     inputs: 1
     outputs: 1
@@ -48,6 +51,7 @@ confirmation:
         - index
         - displayinfo
         - displayimage
+        - displaytext
 instructions:
     inputs: 1
     outputs: 1
@@ -60,6 +64,7 @@ instructions:
         - index
         - displayinfo
         - displayimage
+        - displaytext
 monologue:
     inputs: 1
     outputs: 1
@@ -71,6 +76,7 @@ monologue:
         - index
         - displayinfo
         - displayimage
+        - displaytext
 action_wait:
     inputs: 1
     outputs: 1
@@ -83,6 +89,7 @@ action_wait:
         - index
         - displayinfo
         - displayimage
+        - displaytext
     action: 1
 module:
     inputs: 1
@@ -96,6 +103,7 @@ module:
         - index
         - displayinfo
         - displayimage
+        - displaytext
     module: 1
 #condition:
 #    inputs: 1

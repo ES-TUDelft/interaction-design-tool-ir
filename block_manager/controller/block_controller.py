@@ -176,6 +176,8 @@ class BlockController(object):
     def store(self, description):
         self.scene.store(description=description)
 
+        self.block_widget.repaint()
+
     def save_blocks(self, filename):
         self.scene.save_scene(filename=filename)
 
