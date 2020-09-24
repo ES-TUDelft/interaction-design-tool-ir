@@ -33,4 +33,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO,
                         format="%(levelname)s %(filename)s:%(lineno)4d: %(message)s",
                         stream=sys.stdout)
-    main()
+    try:
+        main()
+    except RuntimeError:
+        pass

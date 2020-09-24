@@ -3,7 +3,7 @@
 # **
 #
 # =========================== #
-# DATABASE_CONTROLLER #
+# INTERACTION_CONTROLLER #
 # =========================== #
 # Class for managing the interaction flow with the robot.
 #
@@ -13,20 +13,15 @@
 import logging
 import time
 
-from es_common.utils.qt import QTimer
-
 from block_manager.enums.block_enums import ExecutionMode
 from es_common.enums.command_enums import ActionCommand
 from es_common.factory.module_factory import ModuleFactory
 from es_common.model.observable import Observable
+from es_common.utils.db_helper import DBHelper
+from es_common.utils.qt import QTimer
 from es_common.utils.timer_helper import TimerHelper
 from interaction_manager.utils import config_helper
-from robot_manager.pepper.controller.robot_controller import RobotController
-from thread_manager.robot_animation_threads import AnimateRobotThread
-from thread_manager.robot_connection_thread import RobotConnectionThread
-from thread_manager.robot_engagement_thread import RobotEngagementThread
-from thread_manager.robot_face_detection_thread import RobotFaceDetectionThread
-from thread_manager.wakeup_robot_thread import WakeUpRobotThread
+from thread_manager.db_thread import DBChangeStreamQThread
 
 
 class InteractionController(object):
@@ -35,12 +30,8 @@ class InteractionController(object):
 
         self.block_controller = block_controller
         self.music_controller = music_controller
-        self.robot_controller = None
-        self.wakeup_thread = None
-        self.animation_thread = None
-        self.engagement_thread = None
-        self.face_detection_thread = None
-        self.connection_thread = None
+        self.db_change_thread = None
+        self.db_helper = DBHelper()
         self.timer_helper = TimerHelper()
         self.music_command = None
         self.animations_lst = []
@@ -51,7 +42,6 @@ class InteractionController(object):
         self.robot_name = None
         self.robot_realm = None
 
-        self.engagement_counter = 0
         self.is_ready_to_interact = False
         self.current_interaction_block = None
         self.previous_interaction_block = None
@@ -69,24 +59,37 @@ class InteractionController(object):
         self.robot_name = robot_name
         self.robot_realm = robot_realm
 
-        self.connection_thread = RobotConnectionThread()
-        self.connection_thread.connect_to_robot(session_observer=self.on_connected,
-                                                robot_name=robot_name, robot_realm=robot_realm)
-
-    def on_connected(self, session):
-        self.logger.debug("Received session: {}".format(session))
-        self.robot_controller = RobotController()  # self.connection_thread.robot_controller
-        self.robot_controller.set_session(session=session)
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="connectRobot",
+                                  data_dict={"connectRobot": {"robotName": self.robot_name,
+                                                              "robotRealm": self.robot_realm},
+                                             "timestamp": time.time()})
         self.update_threads()
-        self.on_connected_observers.notify_all(True)
+
+    def on_connect(self, data_dict=None):
+        try:
+            self.logger.info("Connect data received: {}".format(data_dict))
+            if data_dict and data_dict["isConnected"] is True:
+                self.logger.debug("Connected...")
+                self.on_connected_observers.notify_all(True)
+            else:
+                self.logger.info("Robot is not connected!")
+        except Exception as e:
+            self.logger.error("Error while extracting isConnected: {} | {}".format(data_dict, e))
+            self.execution_result = None
 
     def disconnect_from_robot(self):
-        self.engagement_counter = 0
         try:
-            self.stop_all_threads()
+            if self.db_change_thread is not None:
+                self.db_change_thread.stop_running()
+            self.db_helper.update_one(self.db_helper.robot_collection,
+                                      data_key="isDisconnected",
+                                      data_dict={"isDisconnected": True, "timestamp": time.time()})
             self.logger.info("Disconnecting in 10s...")
             time.sleep(1)
-            self.robot_controller = None
+            self.db_helper.update_one(self.db_helper.interaction_collection,
+                                      data_key="disconnectRobot",
+                                      data_dict={"disconnectRobot": True, "timestamp": time.time()})
         except Exception as e:
             self.logger.error("Error while disconnecting from robot. | {}".format(e))
 
@@ -102,50 +105,66 @@ class InteractionController(object):
             except Exception as e:
                 self.logger.error("Error while stopping thread: {} | {}".format(thread, e))
                 continue
+
         self.threads = []
 
     def is_connected(self):
-        return False if self.robot_controller is None else True
+        success = False
+        conn = None
+        try:
+            conn = self.db_helper.find_one(self.db_helper.robot_collection, "isConnected")
+            if conn and conn["isConnected"] is True:
+                success = True
+        except Exception as e:
+            self.logger.error("Error while extracting isConnected: {} | {}".format(conn, e))
+        finally:
+            return success
 
     def update_threads(self):
         self.threads = []
+        # start DB listener
+        self.db_change_thread = DBChangeStreamQThread()
+        self.db_change_thread.add_data_observers(
+            observers_dict={
+                "isConnected": self.on_connect,
+                "isExecuted": self.on_block_executed,
+                "isEngaged": self.on_engaged
+            }
+        )
+        self.db_change_thread.start_listening(self.db_helper.robot_collection)
 
-        self.animation_thread = AnimateRobotThread(robot_controller=self.robot_controller)
-        self.animation_thread.customized_say_completed_observers.add_observer(self.customized_say)
-        self.animation_thread.animate_completed_observers.add_observer(self.on_animation_completed)
-        self.animation_thread.is_disconnected.connect(self.disconnect_from_robot)
+        self.threads.append(self.db_change_thread)
 
-        self.threads.append(self.animation_thread)
+    def on_block_executed(self, data_dict=None):
+        try:
+            self.logger.info("isExecuted data received: {}".format(data_dict))
+            self.execution_result = data_dict["isExecuted"]["executionResult"]
+            self.execute_next_block()
+        except Exception as e:
+            self.logger.error("Error while extracting isExecuted block: {} | {}".format(data_dict, e))
+            self.execution_result = None
 
-        self.face_detection_thread = RobotFaceDetectionThread(robot_controller=self.robot_controller)
-        self.face_detection_thread.is_disconnected.connect(self.disconnect_from_robot)
+    def on_engaged(self, data_dict=None):
+        try:
+            self.logger.info("isEngaged data received: {}".format(data_dict))
+            start = data_dict["isEngaged"]
+            self.interaction(start=start)
+        except Exception as e:
+            self.logger.error("Error while extracting isEngaged: {} | {}".format(data_dict, e))
+            self.execution_result = None
 
-        self.threads.append(self.face_detection_thread)
-
-        self.engagement_thread = RobotEngagementThread(robot_controller=self.robot_controller)
-        self.engagement_thread.is_disconnected.connect(self.disconnect_from_robot)
-        self.robot_controller.is_engaged_observers.add_observer(self.interaction)
-
-        self.threads.append(self.engagement_thread)
-
-    def update_detection_certainty(self, speech_certainty=None, face_certainty=None):
-        if self.robot_controller is not None:
-            self.robot_controller.update_detection_certainty(speech_certainty=speech_certainty,
-                                                             face_certainty=face_certainty)
-
-    def update_delay_between_blocks(self, delay=None):
-        if self.robot_controller is not None:
-            self.robot_controller.update_delay_between_blocks(delay=delay)
+    def update_speech_certainty(self, speech_certainty=None):
+        if speech_certainty is not None:
+            self.db_helper.update_one(self.db_helper.interaction_collection,
+                                      data_key="speechCertainty",
+                                      data_dict={"speechCertainty": speech_certainty, "timestamp": time.time()})
 
     def wakeup_robot(self):
         success = False
         try:
-            if self.wakeup_thread is None:
-                self.wakeup_thread = WakeUpRobotThread(robot_controller=self.robot_controller)
-                self.threads.append(self.wakeup_thread)
-
-            self.wakeup_thread.stand()
-
+            self.db_helper.update_one(self.db_helper.interaction_collection,
+                                      data_key="wakeUpRobot",
+                                      data_dict={"wakeUpRobot": True, "timestamp": time.time()})
             success = True
         except Exception as e:
             self.logger.error("Error while waking up the robot! | {}".format(e))
@@ -154,149 +173,43 @@ class InteractionController(object):
 
     def rest_robot(self):
         try:
-            if self.wakeup_thread is None:
-                self.wakeup_thread = WakeUpRobotThread(robot_controller=self.robot_controller)
-                self.threads.append(self.wakeup_thread)
-
-            self.wakeup_thread.rest()
+            self.db_helper.update_one(self.db_helper.interaction_collection,
+                                      data_key="restRobot",
+                                      data_dict={"restRobot": True, "timestamp": time.time()})
         except Exception as e:
             self.logger.error("Error while setting the robot posture to rest: {}".format(e))
 
     # TOUCH
     # ------
     def enable_touch(self):
-        self.robot_controller.touch()
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="enableTouch",
+                                  data_dict={"enableTouch": True, "timestamp": time.time()})
 
     # BEHAVIORS
     # ---------
     def animate(self, animation_name=None):
-        self.animation_thread.animate(animation_name=animation_name)
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="animateRobot",
+                                  data_dict={"animateRobot": {"animation": animation_name, "message": ""},
+                                             "timestamp": time.time()})
 
     def animated_say(self, message=None, animation_name=None):
-        self.animation_thread.animated_say(message=message, animation_name=animation_name)
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="animateRobot",
+                                  data_dict={"animateRobot": {"animation": animation_name, "message": message},
+                                             "timestamp": time.time()})
+
+    def customized_say(self, interaction_block):
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="interactionBlock",
+                                  data_dict={"interactionBlock": interaction_block.to_dict, "timestamp": time.time()})
 
     # SPEECH
     # ------
-    def say(self, message=None):
-        to_say = "Hello!" if message is None else message
-        if message is None:
-            self.logger.info(to_say)
-        self.animated_say(message=to_say)
-
-    def start_playing(self, int_block, engagement_counter=0):
-        if int_block is None:
-            return False
-
-        self.stop_playing = False
-        self.previous_interaction_block = None
-        self.current_interaction_block = int_block
-        self.current_interaction_block.execution_mode = ExecutionMode.NEW
-        self.logger.debug("Started playing the blocks")
-
-        # set the engagement counter
-        self.engagement_counter = int(engagement_counter)  # int(self.ui.engagementRepetitionsSpinBox.value())
-
-        # ready to interact
-        self.is_ready_to_interact = True
-
-        # start engagement
-        self.engagement(start=True)
-        return True
-
-    def get_next_interaction_block(self):
-        if self.current_interaction_block is None:
-            return None
-
-        next_block = None
-        connecting_edge = None
-        self.logger.debug("Getting the next interaction block...")
-        try:
-            self.logger.debug("Execution Result: {}".format(self.animation_thread.execution_result))
-            self.logger.info("Module Name: {} | Mode: {}\n\n".
-                             format(self.current_interaction_block.interaction_module_name,
-                                    self.current_interaction_block.execution_mode))
-            if self.current_interaction_block.interaction_module_name and \
-                    self.current_interaction_block.execution_mode is ExecutionMode.EXECUTING:
-                self.execute_interaction_module()
-
-            if self.current_interaction_block.is_hidden and self.interaction_module:
-                connecting_edge = None
-                next_block = self.interaction_module.get_next_interaction_block(self.current_interaction_block,
-                                                                                self.animation_thread.execution_result)
-            else:
-                next_block, connecting_edge = self.current_interaction_block.get_next_interaction_block(
-                    execution_result=self.animation_thread.execution_result)
-
-            # complete execution
-            self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
-
-            # update previous block
-            self.previous_interaction_block = self.current_interaction_block
-
-        except Exception as e:
-            self.logger.error("Error while getting the next block! {}".format(e))
-        finally:
-            return next_block, connecting_edge
-
-    def interaction(self, start=False):
-        self.logger.info("Interaction called with start = {}".format(start))
-
-        if start is False:  # stop the interaction
-            self.tablet_image(hide=True)
-            self.is_ready_to_interact = False
-            self.interaction_blocks = []  # empty the blocks
-            self.engagement(start=False)
-
-            self.robot_controller.is_interacting = False
-
-            self.logger.info("Successfully stopped the interaction")
-
-        elif self.is_ready_to_interact is True:  # start is True
-            self.robot_controller.is_interacting = True
-            self.customized_say()  # start interacting
-
-    def stop_engagement_callback(self):
-        # stop!
-        self.engagement_counter = 0
-        self.interaction(start=False)
-
-    def engagement(self, start=False):
-        """
-        @param start = bool
-        """
-        self.logger.info("Engagement called with start = {} and counter = {}".format(start, self.engagement_counter))
-        if start is True:
-            self.engagement_thread.engagement(start=True)
-            # self.face_detection_thread.face_detection(start=True)
-        else:
-            # decrease the engagement counter
-            self.engagement_counter -= 1
-            # stop the engagement if the counter is <= 0
-            if self.engagement_counter <= 0:
-                self.engagement_thread.engagement(start=False)
-                # self.face_detection_thread.face_detection(start=False)
-
-                self.has_finished_playing_observers.notify_all(True)
-
-            else:  # continue
-                self.is_ready_to_interact = True
-
-    def verify_current_interaction_block(self):
-        # if there are no more blocks, stop interacting
-        if self.current_interaction_block is None or self.stop_playing is True:
-            self.animation_thread.customized_say(reset=True)
-            # stop interacting
-            self.interaction(start=False)
-            return False
-        return True
-
-    def customized_say(self, val=None):
+    def execute_next_block(self, val=None):
         if self.verify_current_interaction_block() is False:
             return False
-
-        # if self.animation_thread.isRunning():
-        #     self.logger.debug("*** Animation Thread is still running!")
-        #     return QTimer.singleShot(1000, self.customized_say)  # wait for the thread to finish
 
         self.block_controller.clear_selection()
         connecting_edge = None
@@ -331,12 +244,108 @@ class InteractionController(object):
 
         self.current_interaction_block.volume = self.robot_volume
 
-        # TODO:
-        # self.face_detection_thread.face_detection()
-
         # get the result from the execution
-        self.animation_thread.customized_say(interaction_block=self.current_interaction_block)
+        self.customized_say(interaction_block=self.current_interaction_block)
 
+        return True
+
+    def say(self, message=None):
+        to_say = "Hello!" if message is None else message
+        if message is None:
+            self.logger.info(to_say)
+        self.animated_say(message=to_say)
+
+    def start_playing(self, int_block):
+        if int_block is None:
+            return False
+
+        self.stop_playing = False
+        self.previous_interaction_block = None
+        self.current_interaction_block = int_block
+        self.current_interaction_block.execution_mode = ExecutionMode.NEW
+        self.logger.debug("Started playing the blocks")
+
+        # ready to interact
+        self.is_ready_to_interact = True
+
+        # start engagement
+        self.engagement(start=True)
+        return True
+
+    def get_next_interaction_block(self):
+        if self.current_interaction_block is None:
+            return None
+
+        next_block = None
+        connecting_edge = None
+        self.logger.debug("Getting the next interaction block...")
+        try:
+            self.logger.info("Module Name: {} | Mode: {}\n\n".
+                             format(self.current_interaction_block.interaction_module_name,
+                                    self.current_interaction_block.execution_mode))
+            if self.current_interaction_block.interaction_module_name and \
+                    self.current_interaction_block.execution_mode is ExecutionMode.EXECUTING:
+                self.execute_interaction_module()
+
+            if self.current_interaction_block.is_hidden and self.interaction_module:
+                connecting_edge = None
+                next_block = self.interaction_module.get_next_interaction_block(self.current_interaction_block,
+                                                                                self.execution_result)
+            else:
+                next_block, connecting_edge = self.current_interaction_block.get_next_interaction_block(
+                    execution_result=self.execution_result)
+
+            # complete execution
+            self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
+
+            # update previous block
+            self.previous_interaction_block = self.current_interaction_block
+
+        except Exception as e:
+            self.logger.error("Error while getting the next block! {}".format(e))
+        finally:
+            return next_block, connecting_edge
+
+    def interaction(self, start=False):
+        self.logger.info("Interaction called with start = {}".format(start))
+
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="startInteraction",
+                                  data_dict={"startInteraction": start, "timestamp": time.time()})
+
+        if start is False:  # stop the interaction
+            self.tablet_image(hide=True)
+            self.is_ready_to_interact = False
+            self.interaction_blocks = []  # empty the blocks
+            self.engagement(start=False)
+
+            self.logger.info("Successfully stopped the interaction")
+
+        elif self.is_ready_to_interact is True:  # start is True
+            self.execute_next_block()  # start interacting
+
+    def stop_engagement_callback(self):
+        # stop!
+        self.interaction(start=False)
+
+    def engagement(self, start=False):
+        """
+        @param start = bool
+        """
+        self.logger.info("Engagement called with start = {}".format(start))
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="startEngagement",
+                                  data_dict={"startEngagement": start, "timestamp": time.time()})
+
+        if not start:
+            self.has_finished_playing_observers.notify_all(True)
+
+    def verify_current_interaction_block(self):
+        # if there are no more blocks, stop interacting
+        if self.current_interaction_block is None or self.stop_playing is True:
+            # stop interacting
+            self.interaction(start=False)
+            return False
         return True
 
     def execute_interaction_module(self):
@@ -386,7 +395,7 @@ class InteractionController(object):
             self.logger.error("Error while setting wait time! {}".format(e))
         finally:
             self.logger.debug("Waiting for {} s".format(wait_time))
-            QTimer.singleShot(wait_time * 1000, self.customized_say)
+            QTimer.singleShot(wait_time * 1000, self.execute_next_block)
 
     def on_music_mode(self):
         if self.music_controller is None:
@@ -423,11 +432,7 @@ class InteractionController(object):
         self.execute_next_animation()
 
     def on_animation_completed(self, val=None):
-        if self.animation_thread.isRunning():
-            self.logger.debug("*** Animation Thread is still running!")
-            QTimer.singleShot(2000, self.on_animation_completed)  # wait for the thread to finish
-        else:
-            QTimer.singleShot(3000, self.execute_next_animation)
+        QTimer.singleShot(3000, self.execute_next_animation)
 
     def execute_next_animation(self):
         if self.music_command is None or len(self.animations_lst) == 0:
@@ -439,10 +444,10 @@ class InteractionController(object):
                 self.animation_counter = 0
             animation, message = self.get_next_animation(self.animation_counter)
             if message is None or message == "":
-                self.animation_thread.animate(animation_name=animation)
+                self.animate(animation_name=animation)
             else:
-                self.animation_thread.animated_say(message=message,
-                                                   animation_name=animation)
+                self.animated_say(message=message,
+                                  animation_name=animation)
         else:
             remaining_time = self.animation_time - self.timer_helper.elapsed_time()
             QTimer.singleShot(1000 if remaining_time < 0 else remaining_time * 1000, self.on_music_stop)
@@ -459,12 +464,6 @@ class InteractionController(object):
         finally:
             return anim, msg
 
-    def get_robot_voice(self):
-        if self.current_interaction_block is None:
-            return None
-
-        return self.current_interaction_block.behavioral_parameters.voice
-
     def on_music_stop(self):
         self.logger.debug("Finished playing music.")
         try:
@@ -475,18 +474,11 @@ class InteractionController(object):
         except Exception as e:
             self.logger.error("Error while stopping the music! {}".format(e))
         finally:
-            self.customized_say()
+            self.execute_next_block()
 
     # TABLET
     # ------
     def tablet_image(self, hide=False):
-        self.robot_controller.tablet_image(hide=hide)
-
-    # MOVEMENT
-    # --------
-    def enable_moving(self):
-        if self.animation_thread is None:
-            return
-
-        # self.animation_thread.moving_enabled = self.ui.enableMovingCheckBox.isChecked()
-        self.logger.info("#### MOVING: {}".format(self.animation_thread.moving_enabled))
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="hideTabletImage",
+                                  data_dict={"hideTabletImage": True, "timestamp": time.time()})

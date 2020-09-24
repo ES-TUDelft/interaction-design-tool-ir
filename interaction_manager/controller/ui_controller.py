@@ -67,7 +67,7 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         # init controllers
-        self._setup_block_controller()
+        self._setup_block_manager()
         self._setup_interaction_controller()
         self._setup_simulation_controller()
 
@@ -109,9 +109,7 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuVolumeDown.triggered.connect(self.volume_down)
 
         # SETTINGS
-        self.ui.speechCertaintySpinBox.valueChanged.connect(self.update_detection_certainty)
-        self.ui.faceDetectionCertaintySpinBox.valueChanged.connect(self.update_detection_certainty)
-        self.ui.blocksDelaySpinBox.valueChanged.connect(self.update_delay_between_blocks)
+        self.ui.speechCertaintySpinBox.valueChanged.connect(self.update_speech_certainty)
 
         # UNDO/REDO
         # ---------
@@ -140,15 +138,7 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuImportBlocks.triggered.connect(self.import_blocks)
         self.ui.actionMenuExportBlocks.triggered.connect(self.export_blocks)
 
-        # CREATE BLOCK
-        # -------------
-        # TODO: MOVING!!!
-        # Enable Moving
-        # -------------
-        # TODO: replace by action menu
-        # self.ui.enableMovingCheckBox.clicked.connect(self.enable_moving)
-
-    def _setup_block_controller(self):
+    def _setup_block_manager(self):
         self.block_controller = ESBlockController(parent_widget=self)
 
         # remove tmp widget and setup the blocks controller
@@ -205,9 +195,6 @@ class UIController(QtWidgets.QMainWindow):
     # ---------- #
     def robot_connect(self):
         try:
-            if self.interaction_controller is None:
-                self.interaction_controller = InteractionController(self.block_controller)
-
             connection_dialog = UIRobotConnectionController(self.interaction_controller)
 
             if connection_dialog.exec_():
@@ -218,8 +205,7 @@ class UIController(QtWidgets.QMainWindow):
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=False)
                     self._enable_buttons([self.ui.actionMenuDisconnect], enabled=True)
 
-                    self.update_detection_certainty()
-                    self.update_delay_between_blocks()
+                    self.update_speech_certainty()
                     self._display_message(message="Successfully connected to the robot.")
                 else:
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=True)
@@ -227,8 +213,8 @@ class UIController(QtWidgets.QMainWindow):
                     self._display_message(error="Unable to connect!")
             else:
                 self._display_message(error="Connection is canceled!")
-                if self.interaction_controller.robot_controller is not None:
-                    self.robot_disconnect()
+                # if self.interaction_controller.is_connected() is False:
+                #     self.robot_disconnect()
 
             self.repaint()
         except Exception as e:
@@ -407,23 +393,12 @@ class UIController(QtWidgets.QMainWindow):
 
     # DETECTION CERTAINTY
     #####################
-    def update_detection_certainty(self, val=None):
+    def update_speech_certainty(self, val=None):
         self.logger.info("Updating detection certainties.")
         speech_certainty = float(self.ui.speechCertaintySpinBox.value())
-        face_certainty = float(self.ui.faceDetectionCertaintySpinBox.value())
-        self.logger.info("Updating detection certainties to: {} | {}".format(speech_certainty, face_certainty))
+        self.logger.info("Updating detection certainties to: {}".format(speech_certainty))
         if self.interaction_controller:
-            self.interaction_controller.update_detection_certainty(speech_certainty=speech_certainty,
-                                                                   face_certainty=face_certainty)
-
-    # DELAY BETWEEN BLOCKS
-    # ====================
-    def update_delay_between_blocks(self, val=None):
-        delay = int(self.ui.blocksDelaySpinBox.value())
-        self.logger.info("Updating delay between blocks to: {}".format(delay))
-
-        if self.interaction_controller:
-            self.interaction_controller.update_delay_between_blocks(delay=delay)
+            self.interaction_controller.update_speech_certainty(speech_certainty=speech_certainty)
 
     # ----------- #
     # Robot Start
@@ -476,11 +451,6 @@ class UIController(QtWidgets.QMainWindow):
         self._enable_buttons([self.ui.actionMenuShowImage], enabled=True)
         self._enable_buttons([self.ui.actionMenuHideImage], enabled=False)
         self.repaint()
-
-    # MOVEMENT
-    # --------
-    def enable_moving(self):
-        self.interaction_controller.enable_moving()
 
     def verify_interaction_setup(self):
         # check if the scene contains a valid start block
@@ -734,7 +704,7 @@ class UIController(QtWidgets.QMainWindow):
     def get_robot_controller(self):
         if self.interaction_controller is None:
             return None
-        return self.interaction_controller.robot_controller
+        return None  # self.interaction_controller.robot_controller
 
     def _check_value(self, value, start, stop):
         if start <= value <= (stop + 1):

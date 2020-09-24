@@ -20,13 +20,11 @@ from es_common.factory.command_factory import CommandFactory
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
 from es_common.utils.data_helper import join_array
-from interaction_manager.model.behavioral_parameters import BehavioralParameters
 from interaction_manager.model.speech_act import SpeechAct
 
 
 class InteractionBlock(Serializable):
-    def __init__(self, name=None, pattern=None, topic_tag=None, tablet_page=None, icon_path=None,
-                 behavioral_parameters=None, block=None):
+    def __init__(self, name=None, pattern=None, topic_tag=None, tablet_page=None, icon_path=None, block=None):
         super(InteractionBlock, self).__init__()
 
         self.logger = logging.getLogger("Interaction Block")
@@ -39,7 +37,6 @@ class InteractionBlock(Serializable):
         self.icon_path = None
         self.set_icon_path(icon_path)
 
-        self.behavioral_parameters = BehavioralParameters() if behavioral_parameters is None else behavioral_parameters
         self.speech_act = SpeechAct()
         self.block = block
 
@@ -61,8 +58,8 @@ class InteractionBlock(Serializable):
         block.message = self.message
         block.topic_tag = self.topic_tag.clone()
         block.tablet_page = self.tablet_page.clone()
+        block.speech_act = self.speech_act.clone()
         block.icon_path = self.icon_path
-        block.behavioral_parameters = self.behavioral_parameters.clone()
         block.block = copy.copy(self.block)
 
         block.interaction_start_time = self.interaction_start_time
@@ -218,30 +215,6 @@ class InteractionBlock(Serializable):
         self.topic_tag.goto_ids = val
 
     @property
-    def gestures(self):
-        return self.behavioral_parameters.gesture.gestures
-
-    @gestures.setter
-    def gestures(self, value):
-        """
-        Dict of gestures: {"open": "the open gesture", "close", "the close gesture"}
-        :param value:
-        :return:
-        """
-        self.behavioral_parameters.gesture.gestures = value
-
-    def set_gestures(self, open_gesture, close_gesture):
-        self.behavioral_parameters.gesture.set_gestures(open_gesture, close_gesture)
-
-    @property
-    def gestures_type(self):
-        return self.behavioral_parameters.gestures_type
-
-    @gestures_type.setter
-    def gestures_type(self, gestures_type):
-        self.behavioral_parameters.gestures_type = gestures_type
-
-    @property
     def description(self):
         return "" if self.block is None else self.block.description
 
@@ -255,14 +228,6 @@ class InteractionBlock(Serializable):
         return "" if self.block is None else self.block.title
 
     @property
-    def volume(self):
-        return self.behavioral_parameters.voice.volume
-
-    @volume.setter
-    def volume(self, val):
-        self.behavioral_parameters.voice.volume = val
-
-    @property
     def to_dict(self):
         block_dict = OrderedDict([
             ("id", self.id),
@@ -272,7 +237,6 @@ class InteractionBlock(Serializable):
             ("tablet_page", self.tablet_page.to_dict),
             ("icon_path", self.icon_path),
             ("speech_act", self.speech_act.to_dict),
-            ("behavioral_parameters", self.behavioral_parameters.to_dict),
             ("action_command", self.action_command.serialize() if self.action_command is not None else {}),
             ("interaction_module_name", self.interaction_module_name),
             ("block", self.block.id if self.block is not None else 0),
@@ -295,10 +259,7 @@ class InteractionBlock(Serializable):
                                      )
             if 'behavioral_parameters' in block_dict.keys():  # otherwise, keep default values
                 block.speech_act = SpeechAct.create_speech_act(block_dict['behavioral_parameters'])
-                block.behavioral_parameters = BehavioralParameters.create_behavioral_parameters(
-                    beh_dict=block_dict['behavioral_parameters'])
             if "speech_act" in block_dict.keys():
-                print("\nFound speech_act in keys.")
                 block.speech_act = SpeechAct.create_speech_act(block_dict["speech_act"])
 
             block.is_hidden = block_dict["is_hidden"] if "is_hidden" in block_dict.keys() else False

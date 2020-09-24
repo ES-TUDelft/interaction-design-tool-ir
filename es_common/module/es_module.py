@@ -119,7 +119,6 @@ class ESModule(Serializable):
                         break
                 except Exception as e:
                     self.logger.error("Error while creating a block. {}".format(e))
-                finally:
                     continue
             # check if the scene contains a valid start block
             # block = self.block_controller.get_hidden_block(pattern="start")

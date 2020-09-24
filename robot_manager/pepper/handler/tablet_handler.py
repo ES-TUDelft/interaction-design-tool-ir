@@ -83,4 +83,4 @@ class TabletHandler(object):
             pass
             # self.session.call("rom.optional.tablet.insert", data_dict=data_dict)
         except Exception as e:
-            print("Error while inserting '{}' into memory: {}".format(data_dict, e))
+            self.logger.error("Error while inserting '{}' into memory: {}".format(data_dict, e))

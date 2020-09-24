@@ -13,8 +13,6 @@
 import logging
 
 from es_common.utils.qt import QtWidgets, QtGui
-
-from es_common.enums.robot_name import RobotName
 from interaction_manager.view.ui_connection_dialog import Ui_ConnectionDialog
 
 
@@ -59,7 +57,8 @@ class UIRobotConnectionController(QtWidgets.QDialog):
 
             self._display_message(message="Connecting...")
 
-            robot_name = RobotName[self.ui.robotNameComboBox.currentText().upper()]
+            robot_name = self.ui.robotNameComboBox.currentText()
+            # RobotName[self.ui.robotNameComboBox.currentText().upper()]
 
             self.interaction_controller.connect_to_robot(robot_name=robot_name, robot_realm=self.robot_realm)
 

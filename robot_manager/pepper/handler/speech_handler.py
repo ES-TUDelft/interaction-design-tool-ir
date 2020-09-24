@@ -30,7 +30,6 @@ class SpeechHandler(object):
         self.block_completed_observers = Observable()
 
         self.speech_certainty = 0.5
-        self.delay_between_blocks = 1  # in seconds
 
         # add a listener to the keyword stream
         self.session.subscribe(self.on_keyword, "rom.optional.keyword.stream")
@@ -62,7 +61,7 @@ class SpeechHandler(object):
                         yield self.logger.info("Keyword received '{}' is not in the list {}".format(
                             keyword, self.current_keywords))
                 else:
-                    yield self.logger.info("{} | at {}".format(frame, self.get_time_ms()))
+                    yield self.logger.info("Frame {} | at {}".format(frame, self.get_time_ms()))
             except Exception as e:
                 yield self.logger.error("Error while getting the received answer! | {}".format(e))
 
@@ -135,7 +134,7 @@ class SpeechHandler(object):
         # check if answers are needed
         # TODO: switch to another check
         if interaction_block.topic_tag.topic == "":
-            time.sleep(self.delay_between_blocks)  # to keep the API happy :)
+            # time.sleep(1)  # to keep the API happy :)
             self.logger.info("Finished executing the block.")
             speech_event.addCallback(self.on_block_completed)
         else:
@@ -167,7 +166,7 @@ class SpeechHandler(object):
         try:
             self.session.call("rom.optional.tts.insert_data", data_dict=data_dict)
         except Exception as e:
-            print("Error while inserting '{}' into memory: {}".format(data_dict, e))
+            self.logger.error("Error while inserting '{}' into memory: {}".format(data_dict, e))
 
     # MEMORY
     def get_data(self, name=None):
@@ -176,7 +175,7 @@ class SpeechHandler(object):
         try:
             self.session.call("rom.optional.tts.get_data", name=name)
         except Exception as e:
-            print("Error while getting data '{}' from memory: {}".format(name, e))
+            self.logger.error("Error while getting data '{}' from memory: {}".format(name, e))
 
     def log(self, value):
         self.logger.info("Pepper heard: {}".format(value))
@@ -189,15 +188,6 @@ class SpeechHandler(object):
     def speech_certainty(self, val):
         val = abs(float(val))
         self.__speech_certainty = val if (0 <= val <= 1) else (val / 100.0)
-
-    @property
-    def delay_between_blocks(self):
-        return self.__delay_between_blocks
-
-    @delay_between_blocks.setter
-    def delay_between_blocks(self, val):
-        val = abs(int(val))
-        self.__delay_between_blocks = val if val >= 1 else 1
 
     # =======
     # HELPERS

@@ -52,19 +52,6 @@ confirmation:
         - displayinfo
         - displayimage
         - displaytext
-instructions:
-    inputs: 1
-    outputs: 1
-    output_edges: 1
-    icon: block_manager/icons/blue/instructions.png
-    bg_color: 00243f
-    topic: ""
-    tags: []
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
 monologue:
     inputs: 1
     outputs: 1
@@ -77,20 +64,6 @@ monologue:
         - displayinfo
         - displayimage
         - displaytext
-action_wait:
-    inputs: 1
-    outputs: 1
-    output_edges: 1
-    icon: block_manager/icons/blue/action-wait.png
-    bg_color: 057389
-    topic: ""
-    tags: []
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
-    action: 1
 module:
     inputs: 1
     outputs: 1
@@ -105,6 +78,33 @@ module:
         - displayimage
         - displaytext
     module: 1
+#action_wait:
+#    inputs: 1
+#    outputs: 1
+#    output_edges: 1
+#    icon: block_manager/icons/blue/action-wait.png
+#    bg_color: 057389
+#    topic: ""
+#    tags: [ ]
+#    tablet:
+#        - index
+#        - displayinfo
+#        - displayimage
+#        - displaytext
+#    action: 1
+#instructions:
+#    inputs: 1
+#    outputs: 1
+#    output_edges: 1
+#    icon: block_manager/icons/blue/instructions.png
+#    bg_color: 00243f
+#    topic: ""
+#    tags: [ ]
+#    tablet:
+#        - index
+#        - displayinfo
+#        - displayimage
+#        - displaytext
 #condition:
 #    inputs: 1
 #    outputs: 1

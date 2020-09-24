@@ -108,7 +108,6 @@ class RestaurantReservationsModule(ESModule):
                     lastnames.append(res["customer"]["lastname"])
             except Exception as e:
                 self.logger.error("Error while fetching customers: {}".format(e))
-            finally:
                 continue
 
         return firstnames, lastnames

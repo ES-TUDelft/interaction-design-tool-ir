@@ -29,19 +29,15 @@ from robot_manager.pepper.handler.tablet_handler import TabletHandler
 
 class RobotController(object):
 
-    def __init__(self):
+    def __init__(self, robot_name=RobotName.PEPPER.name):
         self.logger = logging.getLogger("RobotController")
 
-        self.robot_name = RobotName.PEPPER
-
+        self.robot_name = robot_name
         self.last_time_touched = 0
         self.timer_helper = TimerHelper()
 
-        self.touch = None
         self.is_interacting = False
         self.is_in_engagement_mode = False
-        self.last_input = None
-        self.is_engaged_signal, self.block_completed_signal, self.user_answer_signal = (None,) * 3
         self.animation_handler, self.sensor_handler, self.engagement_handler = (None,) * 3
         self.speech_handler, self.tablet_handler = (None,) * 2
 
@@ -63,7 +59,7 @@ class RobotController(object):
     def _init_handlers(self):
         self.animation_handler = AnimationHandler(session=self.session)
         self.speech_handler = SpeechHandler(session=self.session)
-        if self.robot_name is None or self.robot_name is RobotName.PEPPER:
+        if self.robot_name.lower() == RobotName.PEPPER.name.lower():
             self.tablet_handler = TabletHandler(session=self.session)
         self.sensor_handler = SensorHandler(session=self.session)
         self.engagement_handler = EngagementHandler(session=self.session)
@@ -74,8 +70,7 @@ class RobotController(object):
 
     def subscribe_to_touch_events(self):
         pass
-        # if self.touch is None:
-        #     self.touch = self.sensor_handler.memory.subscriber("TouchChanged")
+        # self.touch = self.sensor_handler.memory.subscriber("TouchChanged")
 
     def react_to_touch(self, message, led_name):
         self.sensor_handler.set_leds(led_name=led_name, led_color=LedColor.RED)
@@ -100,20 +95,8 @@ class RobotController(object):
         self.speech_handler.block_completed_observers.add_observer(block_completed_callback)
         self.speech_handler.keyword_observers.add_observer(keyword_callback)
 
-    def subscribe_to_dialog_events(self, block_completed_signal, user_answer_signal):
-        self.block_completed_signal = block_completed_signal
-        self.user_answer_signal = user_answer_signal
-        self.speech_handler.block_completed_observers.add_observer(self.raise_block_completed_event)
-        self.speech_handler.keyword_observers.add_observer(self.raise_user_answer_event)
-
-    def raise_block_completed_event(self, val=None):
-        self.logger.debug("Completed event value = {}".format(val))
-        if self.block_completed_signal is not None:
-            self.block_completed_signal.emit(True)
-
-    def raise_user_answer_event(self, val=None):
-        if self.user_answer_signal is not None:
-            self.user_answer_signal.emit(val)
+    def observe_engagement_events(self, observer):
+        self.is_engaged_observers.add_observer(observer=observer)
 
     """
     Motion control methods
@@ -177,16 +160,9 @@ class RobotController(object):
     def face_detection(self, start=False):
         self.engagement_handler.face_detection(start=start)
 
-    def update_detection_certainty(self, speech_certainty=None, face_certainty=None):
+    def update_speech_certainty(self, speech_certainty=None):
         if self.speech_handler and speech_certainty is not None:
             self.speech_handler.speech_certainty = speech_certainty
-
-        if self.engagement_handler and face_certainty is not None:
-            self.engagement_handler.face_certainty = face_certainty
-
-    def update_delay_between_blocks(self, delay=None):
-        if delay is not None:
-            self.speech_handler.delay_between_blocks = delay
 
     """
     Speech control methods

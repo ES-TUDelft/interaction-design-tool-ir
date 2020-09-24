@@ -137,7 +137,10 @@ class Scene(Serializable, Observable):
 
             # create block
             for b_data in data["blocks"]:
-                Block(self, bg_color=self.get_property(b_data, "bg_color")).deserialize(b_data, hashmap)
+                try:
+                    Block(self, bg_color=self.get_property(b_data, "bg_color")).deserialize(b_data, hashmap)
+                except Exception as e:
+                    self.logger.error("Error while creating block: {}".format(e))
 
             # create edges
             for e_data in data["edges"]:
