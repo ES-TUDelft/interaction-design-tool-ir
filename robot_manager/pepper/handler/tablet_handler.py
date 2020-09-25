@@ -49,7 +49,7 @@ class TabletHandler(object):
             url = "http://{}/{}{}".format(TABLET_IP, tablet_pages[name], url_params)
             self.logger.info("URL: {}".format(url))
 
-            self.show_webview(url=url)
+            self.session.call("rom.optional.tablet.view", url=url)
         except Exception as e:
             self.logger.error("Error while setting offline tablet page: {} | {}".format(params, e))
 

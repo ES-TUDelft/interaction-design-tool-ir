@@ -146,7 +146,6 @@ class RobotWorker(object):
         except Exception as e:
             self.logger.error("Error while extracting tablet image: {} | {}".format(data_dict, e))
 
-    @inlineCallbacks
     def on_interaction_block(self, data_dict=None):
         try:
             self.logger.info("Received Interaction Block data.")
@@ -158,8 +157,8 @@ class RobotWorker(object):
 
                 # self.logger.info("Received block after: {}s\n".format(time.clock() - self.start_time))
 
-                yield self.robot_controller.load_html_page(tablet_page=interaction_block.tablet_page)
-                yield self.robot_controller.customized_say(interaction_block=interaction_block)
+                self.robot_controller.load_html_page(tablet_page=interaction_block.tablet_page)
+                self.robot_controller.customized_say(interaction_block=interaction_block)
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
 
