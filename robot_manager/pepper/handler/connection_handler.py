@@ -33,7 +33,7 @@ class ConnectionHandler(object):
         self.logger.debug("Created session: {}".format(session))
         yield self.session_observers.notify_all(session)
 
-    def start_rie_session(self, robot_name=None, robot_realm=None):
+    def start_rie_session(self, robot_name=None, robot_realm=None, callback=None):
         try:
             if robot_realm is None:
                 # get the realm from config
@@ -51,7 +51,7 @@ class ConnectionHandler(object):
                 realm=robot_realm
             )
             self.logger.info("** {}\n\n".format(threading.current_thread().name))
-            self.rie.on_join(self.on_connect)
+            self.rie.on_join(self.on_connect if callback is None else callback)
 
             self.logger.info("Running the rie component")
             run([self.rie])

@@ -1,6 +1,8 @@
 import logging
 import time
 
+from twisted.internet.defer import inlineCallbacks
+
 from es_common.model.interaction_block import InteractionBlock
 from es_common.utils.db_helper import DBHelper
 from robot_manager.pepper.controller.robot_controller import RobotController
@@ -22,6 +24,7 @@ class RobotWorker(object):
         self.connection_handler = None
         self.interaction_block = None
         self.is_running = True
+        self.start_time = time.clock()
 
     def start(self):
         if not self.is_running:
@@ -30,11 +33,12 @@ class RobotWorker(object):
     def connect_robot(self, data_dict=None):
         try:
             self.connection_handler = ConnectionHandler()
-            self.connection_handler.session_observers.add_observer(self.on_connect)
+            # self.connection_handler.session_observers.add_observer(self.on_connect)
 
             self.logger.info("Connecting...")
             self.connection_handler.start_rie_session(robot_name=self.robot_name,
-                                                      robot_realm=self.robot_realm)
+                                                      robot_realm=self.robot_realm,
+                                                      callback=self.on_connect)
 
             self.logger.info("Successfully connected to the robot")
         except Exception as e:
@@ -60,22 +64,34 @@ class RobotWorker(object):
         finally:
             self.db_change_thread = None
 
-    def on_connect(self, session):
+    @inlineCallbacks
+    def on_connect(self, session, details=None):
         try:
-            self.logger.debug("Received session: {}".format(session))
+            yield self.logger.debug("Received session: {}".format(session))
             self.robot_controller = RobotController(robot_name=self.robot_name)
             self.robot_controller.set_session(session=session)
+            self.logger.info("Finished setting the session")
             self.robot_controller.observe_interaction_events(self.on_block_executed, self.on_user_answer)
             self.robot_controller.observe_engagement_events(observer=self.on_engaged)
+
             # update speech certainty
             self.on_speech_certainty(data_dict=self.db_helper.find_one(self.db_helper.interaction_collection,
                                                                        "speechCertainty"))
+            self.logger.info("Session is successfully set")
+            self.setup_db_stream()
+        except Exception as e:
+            yield self.logger.error("Error while setting the robot controller {}: {}".format(session, e))
+
+    def setup_db_stream(self):
+        try:
             self.db_helper.update_one(self.db_helper.robot_collection,
                                       data_key="isConnected",
                                       data_dict={"isConnected": True, "timestamp": time.time()})
+
             self.start_listening_to_db_stream()
+            self.logger.info("Finished")
         except Exception as e:
-            self.logger.error("Error while setting the session {}: {}".format(session, e))
+            self.logger.error("Error while setting up db stream: {}".format(e))
 
     def on_user_answer(self, val=None):
         try:
@@ -87,6 +103,7 @@ class RobotWorker(object):
 
     def on_block_executed(self, val=None, execution_result=""):
         try:
+            # self.start_time = time.clock()
             self.db_helper.update_one(self.db_helper.robot_collection,
                                       data_key="isExecuted",
                                       data_dict={"isExecuted": {"value": True, "executionResult": execution_result},
@@ -129,6 +146,7 @@ class RobotWorker(object):
         except Exception as e:
             self.logger.error("Error while extracting tablet image: {} | {}".format(data_dict, e))
 
+    @inlineCallbacks
     def on_interaction_block(self, data_dict=None):
         try:
             self.logger.info("Received Interaction Block data.")
@@ -137,7 +155,11 @@ class RobotWorker(object):
             if interaction_block:
                 interaction_block.id = block_dict["id"]
                 interaction_block.is_hidden = True
-                self.robot_controller.customized_say(interaction_block=interaction_block)
+
+                # self.logger.info("Received block after: {}s\n".format(time.clock() - self.start_time))
+
+                yield self.robot_controller.load_html_page(tablet_page=interaction_block.tablet_page)
+                yield self.robot_controller.customized_say(interaction_block=interaction_block)
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
 
@@ -145,6 +167,7 @@ class RobotWorker(object):
         try:
             self.logger.info("Data received: {}".format(data_dict))
             self.robot_controller.is_interacting = data_dict["startInteraction"]
+            # self.robot_controller.reset()
         except Exception as e:
             self.logger.error("Error while extracting interaction data: {} | {}".format(data_dict, e))
 

@@ -35,6 +35,10 @@ class SpeechHandler(object):
         self.session.subscribe(self.on_keyword, "rom.optional.keyword.stream")
         self.current_keywords = []
         self.is_listening = False
+        self.start_time = time.clock()
+
+    def reset(self):
+        pass
 
     # KEYWORDS
     # ========
@@ -66,7 +70,7 @@ class SpeechHandler(object):
                 yield self.logger.error("Error while getting the received answer! | {}".format(e))
 
     def get_time_ms(self):
-        return time.time() * 1000
+        return time.clock() * 1000
 
     def add_keywords(self, keywords=None):
         # add keywords to listen to
@@ -98,7 +102,7 @@ class SpeechHandler(object):
     # =======
     @inlineCallbacks
     def on_block_completed(self, result):
-        self.logger.info("Result received: {}".format(result))
+        self.logger.info("BlockCompleted callback - results received: {}".format(result))
         yield self.block_completed_observers.notify_all(True)
 
     @inlineCallbacks
@@ -117,33 +121,34 @@ class SpeechHandler(object):
         self.logger.info("Message to animate: {}".format(message))
         return self.session.call("rom.optional.tts.animate", text="{}".format(message))
 
+    @inlineCallbacks
     def customized_say(self, interaction_block=None):
         if interaction_block is None:
             return False
-
-        # update the tablet page
-        self._set_page_fields(interaction_block.tablet_page)
 
         # say the message
         message = interaction_block.message
         # update the block's message, if any
         if "{answer}" in message and interaction_block.execution_result:
             message = message.format(answer=interaction_block.execution_result.lower())
-        speech_event = self.animated_say(message=message)
+
+        self.logger.info("Block's execution is in progress...")
+        self.logger.info("Message to say: {}".format(message))
+        speech_event = self.session.call("rom.optional.tts.animate", text="{}".format(message))
 
         # check if answers are needed
         # TODO: switch to another check
         if interaction_block.topic_tag.topic == "":
             # time.sleep(1)  # to keep the API happy :)
-            self.logger.info("Finished executing the block.")
-            speech_event.addCallback(self.on_block_completed)
+            # self.block_completed_observers.notify_all(True)
+            # self.start_time = time.clock()
+            yield speech_event.addCallback(self.on_block_completed)
         else:
-            # self.clear_keywords()
             keywords = interaction_block.topic_tag.get_combined_answers()
             self.current_keywords = keywords
             self.logger.info("Keywords: {}".format(keywords))
 
-            speech_event.addCallback(self.on_start_listening)
+            yield speech_event.addCallback(self.on_start_listening)
 
     def set_volume(self, level=50.0):
         vol = int(level) if level > 1 else int(level * 100)
@@ -202,9 +207,6 @@ class SpeechHandler(object):
     def raise_event(self, event_name, event_value):
         self.logger.info("Raised event '{}' to load '{}'".format(event_name, event_value))
         # self.memory.raiseEvent(event_name, event_value)
-
-    def _set_page_fields(self, tablet_page):
-        pass
 
     @inlineCallbacks
     def print_data(self, result):

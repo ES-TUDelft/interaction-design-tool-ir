@@ -123,6 +123,10 @@ class RobotController(object):
     def is_awake(self):
         return self.animation_handler.is_awake()
 
+    def reset(self):
+        self.posture(reset=True)
+        self.speech_handler.reset()
+
     """
     ENGAGEMENT
     """
@@ -175,9 +179,6 @@ class RobotController(object):
         self.speech_handler.animated_say(message=message, animation_name=animation_name)
 
     def customized_say(self, interaction_block=None):
-        # update the html page fields
-        self.load_html_page(interaction_block.tablet_page)
-
         # say the message
         self.speech_handler.customized_say(interaction_block=interaction_block)
 
@@ -198,15 +199,16 @@ class RobotController(object):
     """
 
     def tablet_image(self, hide=False, action_name=TabletAction.IMAGE, action_url=pconfig.welcome_image):
-        if self.tablet_handler is None:
-            return
-        try:
-            if action_name is TabletAction.IMAGE:
-                self.tablet_handler.set_image(image_path=action_url, hide=hide)
-            elif action_name is TabletAction.WEBVIEW:
-                self.tablet_handler.show_webview(url=action_url, hide=hide)
-        except Exception as e:
-            self.logger.error("Error while setting the tablet: {}".format(e))
+        pass
+        # if self.tablet_handler is None:
+        #     return
+        # try:
+        #     if action_name is TabletAction.IMAGE:
+        #         self.tablet_handler.set_image(image_path=action_url, hide=hide)
+        #     elif action_name is TabletAction.WEBVIEW:
+        #         self.tablet_handler.show_webview(url=action_url, hide=hide)
+        # except Exception as e:
+        #     self.logger.error("Error while setting the tablet: {}".format(e))
 
     def load_application(self, app_name):
         if self.tablet_handler is not None:
@@ -221,6 +223,7 @@ class RobotController(object):
             "pageText": "{}".format(tablet_page.text),
             "pageImage": "{}".format("pepper-standing.png" if tablet_page.image is None else tablet_page.image)
         }
+        self.logger.info("Setting tablet page: {}".format(tablet_page.name))
         self.tablet_handler.show_offline_page(name=tablet_page.name, params=params)
 
     """

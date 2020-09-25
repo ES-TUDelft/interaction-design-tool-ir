@@ -40,7 +40,8 @@ class TabletHandler(object):
             if params and len(params) > 0:
                 url_params = "?"
                 for p in params:
-                    url_params = "{}{}={}&".format(url_params, p, params[p])
+                    if params[p] != "":
+                        url_params = "{}{}={}&".format(url_params, p, params[p])
                 # url_params = "?{}".format(urllib.parse.urlencode(params))
 
             tablet_pages = config_helper.get_tablet_settings()["pages"]
