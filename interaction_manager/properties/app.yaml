@@ -4,6 +4,7 @@ tags:
       - index
       - displayinfo
       - displayimage
+      - displaytext
   confirmationTag:
     pages:
       - index

@@ -6,11 +6,6 @@ start:
     bg_color: 056b4a
     topic: ""
     tags: []
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
 end:
     inputs: 1
     outputs: 0
@@ -19,11 +14,6 @@ end:
     bg_color: 202022
     topic: ""
     tags: []
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
 question:
     inputs: 1
     outputs: 1
@@ -33,25 +23,6 @@ question:
     topic: "question"
     tags:
         - askQuestionTag
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
-confirmation:
-    inputs: 1
-    outputs: 1
-    output_edges: 2
-    icon: block_manager/icons/blue/check.png
-    bg_color: 2b4a4a
-    topic: "question"
-    tags:
-        - confirmationTag
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
 monologue:
     inputs: 1
     outputs: 1
@@ -59,11 +30,6 @@ monologue:
     icon: block_manager/icons/blue/speaker.png
     topic: ""
     tags: []
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
 module:
     inputs: 1
     outputs: 1
@@ -72,12 +38,16 @@ module:
     bg_color: 057389
     topic: ""
     tags: []
-    tablet:
-        - index
-        - displayinfo
-        - displayimage
-        - displaytext
     module: 1
+#confirmation:
+#    inputs: 1
+#    outputs: 1
+#    output_edges: 2
+#    icon: block_manager/icons/blue/check.png
+#    bg_color: 2b4a4a
+#    topic: "question"
+#    tags:
+#        - confirmationTag
 #action_wait:
 #    inputs: 1
 #    outputs: 1
@@ -85,12 +55,7 @@ module:
 #    icon: block_manager/icons/blue/action-wait.png
 #    bg_color: 057389
 #    topic: ""
-#    tags: [ ]
-#    tablet:
-#        - index
-#        - displayinfo
-#        - displayimage
-#        - displaytext
+#    tags: []
 #    action: 1
 #instructions:
 #    inputs: 1
@@ -99,18 +64,10 @@ module:
 #    icon: block_manager/icons/blue/instructions.png
 #    bg_color: 00243f
 #    topic: ""
-#    tags: [ ]
-#    tablet:
-#        - index
-#        - displayinfo
-#        - displayimage
-#        - displaytext
+#    tags: []
 #condition:
 #    inputs: 1
 #    outputs: 1
 #    icon: block_manager/icons/blue/condition.png
 #    topic: ""
 #    tags: []
-#    tablet:
-#        - index
-#        - displayinfo

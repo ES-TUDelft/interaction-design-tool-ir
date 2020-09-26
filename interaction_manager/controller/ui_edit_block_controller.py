@@ -11,6 +11,7 @@
 # **
 
 import logging
+import os
 
 from es_common.utils.qt import QtCore, QtWidgets
 
@@ -88,11 +89,13 @@ class UIEditBlockController(QtWidgets.QDialog):
         if not tablet_page.name == "":
             self.ui.tabletPageNameComboBox.setCurrentIndex(
                 self.ui.tabletPageNameComboBox.findText(tablet_page.name, QtCore.Qt.MatchFixedString))
+
         self.ui.tabletImageComboBox.clear()
-        self.ui.tabletImageComboBox.addItems(config_helper.get_tablet_properties()["images"])
+        self.ui.tabletImageComboBox.addItems(os.listdir(config_helper.get_tablet_properties()["pics_folder"]))
         if not tablet_page.image == "":
             self.ui.tabletImageComboBox.setCurrentIndex(
                 self.ui.tabletImageComboBox.findText(tablet_page.image, QtCore.Qt.MatchFixedString))
+
         self.ui.tabletHeadingTextEdit.setText(tablet_page.heading)
         self.ui.tabletInfoTextEdit.setText(tablet_page.text)
 
@@ -264,24 +267,21 @@ class UIEditBlockController(QtWidgets.QDialog):
         self.update_pages()
 
     def update_pages(self):
-        self.ui.tabletPageNameComboBox.clear()
-        self.ui.tabletPageNameComboBox.addItems([pconfig.SELECT_OPTION])
+        pages = config_helper.get_tablet_properties()["pages"].keys()
 
-        # No topic ==> use default pages
-        # Topic with no tag ==> use default
-        # Topic with tag ==> check options
-        if self.pattern_settings["topic"] == "":
-            self.ui.tabletPageNameComboBox.addItems(self.pattern_settings["tablet"])
-        else:
+        if self.pattern_settings["topic"] != "":
             # check topic tag pages
             tag = "{}".format(self.ui.topicTagComboBox.currentText())
             tags = config_helper.get_tags()
+            if tag in tags:
+                pages = tags[tag]["pages"]
 
-            if (pconfig.SELECT_OPTION in tag) or (tag == "") or tag not in tags:
-                # use default pages
-                self.ui.tabletPageNameComboBox.addItems(self.pattern_settings["tablet"])
-            else:
-                self.ui.tabletPageNameComboBox.addItems(tags[tag]["pages"])
+        self.set_tablet_page_combo(pages=pages)
+
+    def set_tablet_page_combo(self, pages):
+        self.ui.tabletPageNameComboBox.clear()
+        self.ui.tabletPageNameComboBox.addItems([pconfig.SELECT_OPTION])
+        self.ui.tabletPageNameComboBox.addItems(pages)
 
         tablet_page = self.interaction_block.tablet_page
         if not tablet_page.name == "":

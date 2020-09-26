@@ -23,12 +23,6 @@ class RobotWorker(object):
         self.robot_controller = None
         self.connection_handler = None
         self.interaction_block = None
-        self.is_running = True
-        self.start_time = time.clock()
-
-    def start(self):
-        if not self.is_running:
-            self.is_running = True
 
     def connect_robot(self, data_dict=None):
         try:
@@ -103,7 +97,6 @@ class RobotWorker(object):
 
     def on_block_executed(self, val=None, execution_result=""):
         try:
-            # self.start_time = time.clock()
             self.db_helper.update_one(self.db_helper.robot_collection,
                                       data_key="isExecuted",
                                       data_dict={"isExecuted": {"value": True, "executionResult": execution_result},
@@ -154,8 +147,6 @@ class RobotWorker(object):
             if interaction_block:
                 interaction_block.id = block_dict["id"]
                 interaction_block.is_hidden = True
-
-                # self.logger.info("Received block after: {}s\n".format(time.clock() - self.start_time))
 
                 self.robot_controller.load_html_page(tablet_page=interaction_block.tablet_page)
                 self.robot_controller.customized_say(interaction_block=interaction_block)

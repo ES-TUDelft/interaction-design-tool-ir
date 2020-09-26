@@ -5,8 +5,4 @@ tablet:
     displayimage: "apps/hre_dialog/pages/displayimage.html",
     displaytext: "apps/hre_dialog/pages/displaytext.html"
   }
-  images:
-    - welcome.jpg
-    - pepper-standing.png
-    - pepper-question.png
-    - blank.jpg
+  pics_folder: "robot_manager/pepper/hre_dialog/html/pics"
