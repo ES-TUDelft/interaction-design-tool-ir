@@ -11,8 +11,6 @@ from robot_manager.pepper.handler.speech_handler import SpeechHandler
 from robot_manager.pepper.handler.tablet_handler import TabletHandler
 from thread_manager.db_thread import DBChangeStreamThread
 
-TABLET_IP = "198.18.0.1"
-
 
 class RobotWorker(object):
     def __init__(self, robot_name=None, robot_realm=None):
