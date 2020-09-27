@@ -19,31 +19,38 @@ class ModuleFactory(object):
     logger = logging.getLogger("ModuleFactory")
 
     @staticmethod
-    def create_module(module_type_key, *args):
-        new_module = None
+    def create_module(design_module, *args):
+        if design_module is None:
+            return None
+
+        interaction_module = None
 
         try:
-            if module_type_key not in InteractionModule.keys():
-                return new_module
+            folder_name = "es_common.module.{}_module"
+            class_name = "{}Module"
+            if design_module.name in InteractionModule.keys():
+                folder_name = folder_name.format(design_module.name.lower())
+                class_name = class_name.format(InteractionModule[design_module.name.upper()].value)
+            else:
+                folder_name = folder_name.format("es_interaction")
+                class_name = class_name.format("ESInteraction")
 
-            module_class = ModuleFactory.get_class(
-                module_name="es_common.module.{}_module".format(module_type_key.lower()),
-                class_name="{}Module".format(InteractionModule[module_type_key].value))
+            module_class = ModuleFactory.get_class(folder_name=folder_name, class_name=class_name)
 
-            new_module = module_class(*args)
+            interaction_module = module_class(*args)
 
         except Exception as e:
-            ModuleFactory.logger.error("Error while creating module: {} | {}".format(module_type_key, e))
+            ModuleFactory.logger.error("Error while creating module: {}".format(e))
         finally:
-            return new_module
+            return interaction_module
 
     @staticmethod
-    def get_class(module_name, class_name):
+    def get_class(folder_name, class_name):
         the_class = None
         try:
-            the_class = getattr(importlib.import_module(module_name), class_name)
+            the_class = getattr(importlib.import_module(folder_name), class_name)
         except Exception as e:
             ModuleFactory.logger.error("Error while creating class for: {} | {} | {}".format(
-                module_name, class_name, e))
+                folder_name, class_name, e))
         finally:
             return the_class

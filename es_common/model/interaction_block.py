@@ -17,6 +17,7 @@ from block_manager.enums.block_enums import SocketType, ExecutionMode
 from es_common.datasource.serializable import Serializable
 from es_common.enums.command_enums import ActionCommand
 from es_common.factory.command_factory import CommandFactory
+from es_common.model.design_module import DesignModule
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
 from es_common.utils.data_helper import join_array
@@ -43,6 +44,7 @@ class InteractionBlock(Serializable):
         # action command
         self.action_command = None  # ESCommand()
         self.interaction_module_name = None
+        self.design_module = None
 
         self.execution_mode = ExecutionMode.NEW  # by default
 
@@ -139,7 +141,7 @@ class InteractionBlock(Serializable):
             self.logger.error("Error while attempting to get the next block! {}".format(e))
         finally:
             self.logger.debug("Next block is: {} | {}".format(0 if next_int_block is None else next_int_block.title,
-                                                              next_int_block))
+                                                              next_int_block.message))
             return next_int_block, connecting_edge
 
     def set_selected(self, val):
@@ -239,6 +241,7 @@ class InteractionBlock(Serializable):
             ("speech_act", self.speech_act.to_dict),
             ("action_command", self.action_command.serialize() if self.action_command is not None else {}),
             ("interaction_module_name", self.interaction_module_name),
+            ('design_module', {} if self.design_module is None else self.design_module.to_dict),
             ("block", self.block.id if self.block is not None else 0),
             ("is_hidden", self.is_hidden),
             ("interaction_start_time", self.interaction_start_time),
@@ -266,6 +269,9 @@ class InteractionBlock(Serializable):
 
             if "interaction_module_name" in block_dict.keys():
                 block.interaction_module_name = block_dict["interaction_module_name"]
+
+            if "design_module" in block_dict.keys():
+                block.design_module = DesignModule.create_design_module(block_dict["design_module"])
 
             if any('interaction' in k for k in block_dict.keys()):
                 block.interaction_start_time = block_dict['interaction_start_time']

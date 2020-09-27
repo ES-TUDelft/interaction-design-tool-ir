@@ -21,7 +21,6 @@ class AnimationHandler(object):
         self.logger.info("Created animation handler")
 
     def wakeup(self):
-        self.logger.info("Waking up now!")
         self.session.call("rom.optional.behavior.play", name="BlocklyStand")
 
     def reset_posture(self):
@@ -31,14 +30,12 @@ class AnimationHandler(object):
         return True
 
     def rest(self):
-        self.logger.info("Resting zzzz")
         self.session.call("rom.optional.behavior.play", name="BlocklyCrouch")
 
     def set_posture(self, posture_name):
         self.session.call("rom.optional.posture.goto", name="Stand" if posture_name is None else posture_name)
 
     def execute_animation(self, animation_name):
-        self.logger.info("Executing animation: {}".format(animation_name))
         self.session.call("rom.optional.behavior.play", name="{}".format(animation_name))
 
     def move_to(self, x=0, y=0, theta=0):

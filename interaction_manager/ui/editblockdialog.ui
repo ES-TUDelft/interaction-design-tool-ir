@@ -175,15 +175,15 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="behaviorsTab">
+     <widget class="QWidget" name="moduleTab">
       <attribute name="title">
-       <string>Behaviors</string>
+       <string>Module</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_22">
+      <layout class="QGridLayout" name="gridLayout_32">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_16">
-         <item row="1" column="0">
-          <spacer name="verticalSpacer_3">
+        <layout class="QGridLayout" name="gridLayout_27">
+         <item row="4" column="0">
+          <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -195,190 +195,27 @@
            </property>
           </spacer>
          </item>
-         <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_6">
-           <property name="title">
-            <string>Gestures</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_21">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_15">
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_19">
-                <property name="font">
-                 <font>
-                  <family>Courier New</family>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Close Gesture</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="Line" name="line_11">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLineEdit" name="closeGestureLineEdit"/>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="openGestureLineEdit"/>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_20">
-                <property name="font">
-                 <font>
-                  <family>Courier New</family>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Open Gesture</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="openGestureComboBox"/>
-              </item>
-              <item row="5" column="1">
-               <widget class="Line" name="line_4">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QComboBox" name="closeGesturesComboBox"/>
-              </item>
-              <item row="1" column="0">
-               <widget class="QPushButton" name="testOpenGesturesPushButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Test</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QPushButton" name="testCloseGesturePushButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Test</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="moduleTab">
-      <attribute name="title">
-       <string>Module</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_32">
-       <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_27">
-         <item row="2" column="0">
-          <widget class="QGroupBox" name="moduleGoToGroupBox">
-           <property name="font">
-            <font>
-             <family>Courier New</family>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="title">
-            <string>GoTo</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_23">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_25">
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_24">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Courier New</family>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>On Failure</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_22">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Courier New</family>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>On Success</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="failureModuleGoToComboBox"/>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="successModuleGoToComboBox"/>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
+         <item row="3" column="0">
           <widget class="Line" name="line_8">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
+         <item row="2" column="0">
           <layout class="QGridLayout" name="gridLayout_26">
-           <item row="0" column="1">
-            <widget class="QComboBox" name="moduleNameComboBox"/>
+           <item row="0" column="1" colspan="2">
+            <widget class="QComboBox" name="moduleNameComboBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
            </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label_25">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -399,18 +236,90 @@
            </item>
           </layout>
          </item>
-         <item row="3" column="0">
-          <spacer name="verticalSpacer_4">
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="moduleInteractionGroupBox">
+           <property name="font">
+            <font>
+             <family>Courier New</family>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="title">
+            <string>Interaction module(s)</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_23">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_25">
+              <item row="3" column="0">
+               <widget class="QRadioButton" name="moduleRandomizeRadioButton">
+                <property name="text">
+                 <string>Randomize</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLineEdit" name="moduleFileNameLineEdit">
+                <property name="placeholderText">
+                 <string>Select File</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLineEdit" name="moduleFolderNameLineEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="placeholderText">
+                 <string>Select Folder</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="moduleFileRadioButton">
+                <property name="text">
+                 <string>File Name</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QToolButton" name="moduleSelectFolderToolButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QToolButton" name="moduleSelectFileToolButton">
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="Line" name="line_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="Line" name="line_12">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
+          </widget>
          </item>
         </layout>
        </item>
@@ -423,18 +332,68 @@
       <layout class="QGridLayout" name="gridLayout_31">
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_30">
-         <item row="5" column="2">
-          <spacer name="verticalSpacer_6">
+         <item row="0" column="0" colspan="3">
+          <layout class="QGridLayout" name="gridLayout_17">
+           <item row="0" column="1">
+            <widget class="QComboBox" name="actionComboBox"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_16">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Courier</family>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Action Name</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0" colspan="3">
+          <widget class="Line" name="line_3">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
+          </widget>
+         </item>
+         <item row="3" column="1" colspan="2">
+          <widget class="QGroupBox" name="timeGroupBox">
+           <property name="title">
+            <string>Time</string>
            </property>
-          </spacer>
+           <layout class="QGridLayout" name="gridLayout_12">
+            <item row="0" column="0">
+             <widget class="QSpinBox" name="timeSpinBox">
+              <property name="maximum">
+               <number>600</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+              <property name="value">
+               <number>30</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label_21">
+              <property name="text">
+               <string>sec</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item row="2" column="0" colspan="3">
           <widget class="QGroupBox" name="musicGroupBox">
@@ -562,12 +521,18 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="Line" name="line_3">
+         <item row="4" column="2">
+          <spacer name="verticalSpacer_6">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Vertical</enum>
            </property>
-          </widget>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item row="3" column="0">
           <spacer name="horizontalSpacer_3">
@@ -581,134 +546,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item row="0" column="0" colspan="3">
-          <layout class="QGridLayout" name="gridLayout_17">
-           <item row="0" column="1">
-            <widget class="QComboBox" name="actionComboBox"/>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_16">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="font">
-              <font>
-               <family>Courier</family>
-               <weight>50</weight>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Action Name</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="3" column="1" colspan="2">
-          <widget class="QGroupBox" name="timeGroupBox">
-           <property name="title">
-            <string>Time</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_12">
-            <item row="0" column="0">
-             <widget class="QSpinBox" name="timeSpinBox">
-              <property name="maximum">
-               <number>600</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-              <property name="value">
-               <number>30</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>sec</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="4" column="0" colspan="3">
-          <widget class="QGroupBox" name="reservationsGroupBox">
-           <property name="font">
-            <font>
-             <family>Courier New</family>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="title">
-            <string>Confirm Reservation</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_18">
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_23">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Courier New</family>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>On Failure</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_17">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="font">
-                 <font>
-                  <family>Courier New</family>
-                  <weight>50</weight>
-                  <bold>false</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>On Success</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="failureReservationGoToComboBox"/>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="successReservationGoToComboBox"/>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
          </item>
         </layout>
        </item>

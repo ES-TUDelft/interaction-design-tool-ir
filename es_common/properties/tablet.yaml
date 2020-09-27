@@ -1,4 +1,5 @@
 tablet:
+  ip: "198.18.0.1"
   pages: {
     index: "apps/hre_dialog/index.html",
     displayinfo: "apps/hre_dialog/pages/displayinfo.html",

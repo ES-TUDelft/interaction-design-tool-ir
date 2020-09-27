@@ -218,13 +218,23 @@ class RobotController(object):
         if self.tablet_handler is None or tablet_page is None:
             return
 
-        params = {
-            "pageHeading": "{}".format(tablet_page.heading),
-            "pageText": "{}".format(tablet_page.text),
-            "pageImage": "{}".format("pepper-standing.png" if tablet_page.image is None else tablet_page.image)
-        }
+        # params = {
+        #     "pageHeading": "{}".format(tablet_page.heading),
+        #     "pageText": "{}".format(tablet_page.text),
+        #     "pageImage": "{}".format("pepper-standing.png" if tablet_page.image is None else tablet_page.image)
+        # }
+        url_params = "?{}{}{}".format(self.check_url_parameter("pageHeading", tablet_page.heading),
+                                      self.check_url_parameter("pageText", tablet_page.text),
+                                      self.check_url_parameter("pageImage", tablet_page.image))
+
         self.logger.info("Setting tablet page: {}".format(tablet_page.name))
-        self.tablet_handler.show_offline_page(name=tablet_page.name, params=params)
+        self.tablet_handler.show_offline_page(name=tablet_page.name, params=url_params)
+
+    def check_url_parameter(self, param_name, param_value):
+        if param_value is not None and param_value != "":
+            return "{}={}&".format(param_name, param_value)
+
+        return ""
 
     """
     LED CONTROL

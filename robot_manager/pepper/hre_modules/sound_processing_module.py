@@ -60,7 +60,7 @@ class SoundProcessingModule(object):
         Start processing
         """
         # ask for the front microphone signal sampled at 16kHz
-        # if you want the 4 channels call setClientPreferences(self.module_name, 48000, 0, 0)
+        # if you want the 4 channels call setClientPreferences(self.folder_name, 48000, 0, 0)
         self.audio_service.setClientPreferences(self.module_name, 16000, 3, 0)
         self.audio_service.subscribe(self.module_name)
         self.logger.info("Starting Sound Processing")

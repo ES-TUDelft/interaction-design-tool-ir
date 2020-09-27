@@ -109,7 +109,12 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuVolumeDown.triggered.connect(self.volume_down)
 
         # SETTINGS
-        self.ui.speechCertaintySpinBox.valueChanged.connect(self.update_speech_certainty)
+        self.ui.speechCertaintySpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="speechCertainty", value=float(self.ui.speechCertaintySpinBox.value())))
+        self.ui.voicePitchSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value())))
+        self.ui.voiceSpeedSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value())))
 
         # UNDO/REDO
         # ---------
@@ -205,7 +210,9 @@ class UIController(QtWidgets.QMainWindow):
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=False)
                     self._enable_buttons([self.ui.actionMenuDisconnect], enabled=True)
 
-                    self.update_speech_certainty()
+                    self.update_setting(key="speechCertainty", value=float(self.ui.speechCertaintySpinBox.value()))
+                    self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value()))
+                    self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value()))
                     self._display_message(message="Successfully connected to the robot.")
                 else:
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=True)
@@ -394,11 +401,17 @@ class UIController(QtWidgets.QMainWindow):
     # DETECTION CERTAINTY
     #####################
     def update_speech_certainty(self, val=None):
-        self.logger.info("Updating detection certainties.")
         speech_certainty = float(self.ui.speechCertaintySpinBox.value())
         self.logger.info("Updating detection certainties to: {}".format(speech_certainty))
         if self.interaction_controller:
             self.interaction_controller.update_speech_certainty(speech_certainty=speech_certainty)
+
+    def update_setting(self, key, value):
+        try:
+            self.interaction_controller.update_db_data(data_key=key, data_value=value)
+            self.logger.info("Updated {} to {}".format(key, value))
+        except Exception as e:
+            self.logger.error("Error while updating {} to {} | {}".format(key, value, e))
 
     # ----------- #
     # Robot Start

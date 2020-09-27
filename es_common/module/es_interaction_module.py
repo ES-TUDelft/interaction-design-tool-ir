@@ -1,26 +1,20 @@
 import logging
 
-from block_manager.factory.block_factory import BlockFactory
 from es_common.datasource.serializable import Serializable
 from es_common.model.interaction_block import InteractionBlock
-from es_common.utils import data_helper
-
-INT_DESIGN_FILE = "es_common/module/interaction_design/reservations.json"
 
 
-class ESModule(Serializable):
-    def __init__(self, block_controller, origin_block=None):
-        super(ESModule, self).__init__()
+class ESInteractionModule(Serializable):
+    def __init__(self, origin_block, block_controller=None):
+        super(ESInteractionModule, self).__init__()
 
-        self.logger = logging.getLogger("ESModule")
+        self.logger = logging.getLogger("ESInteractionModule")
 
         self.module_type = None
-        self.design_file = INT_DESIGN_FILE
         self.block_controller = block_controller
         self.origin_block = origin_block
         self.next_int_block = None
 
-        self.block_controller.hidden_scene = BlockFactory.create_scene()
         self.blocks_data = None
         self.execution_result = None
 
@@ -36,18 +30,13 @@ class ESModule(Serializable):
         return next_block
 
     def start_module(self):
-        raise NotImplementedError
+        # To be implemented in child classes
+        return True
 
     def load_blocks_data(self):
         try:
-            self.blocks_data = data_helper.load_data_from_file(self.design_file)
-            # if self.blocks_data:
-            #     self.block_controller.hidden_scene.load_scene_data(self.blocks_data)
-            #     # mark them as hidden
-            #     for block in self.block_controller.get_hidden_blocks():
-            #         if block and block.parent:
-            #             block.parent.is_hidden = True
-            #     self.logger.info("Successfully loaded data into hidden scene.")
+            # self.blocks_data = data_helper.load_data_from_file(self.design_file)
+            self.blocks_data = self.origin_block.design_module.get_file_data()
         except Exception as e:
             self.logger.error("Error while loading hidden blocks! {}".format(e))
 
@@ -73,10 +62,11 @@ class ESModule(Serializable):
             next_block_dict = None
             next_int_block = None
             if len(input_sockets_id_lst) > 0:
-                if execution_result is None:
+                if execution_result is None or execution_result == "":
                     # get output socket id
                     next_block_dict = self._get_interaction_block_by_socket_id(input_sockets_id_lst[0],
                                                                                socket_lst="inputs")
+                    # self.logger.info("Next block dict: {}".format(next_block_dict))
                 else:
                     # check the answers
                     for i in range(len(current_interaction_block.topic_tag.answers)):
@@ -85,10 +75,9 @@ class ESModule(Serializable):
                             goto_id = current_interaction_block.goto_ids[i]
                             next_block_dict = self._get_interaction_block_dict_by_id(goto_id)
 
-                    # update the block's message, if any
-
             if next_block_dict:
                 next_int_block = InteractionBlock.create_interaction_block(next_block_dict)
+                self.logger.info("Next int block: {}".format(next_int_block.to_dict))
                 if next_int_block:
                     next_int_block.id = next_block_dict["id"]
                     next_int_block.is_hidden = True
@@ -96,13 +85,14 @@ class ESModule(Serializable):
 
             self.next_int_block = next_int_block
             self.update_next_block_fields()
+            self.logger.info("Found another block: {}".format(self.next_int_block.message))
         except Exception as e:
             self.logger.error("Error while getting the next block: {}".format(e))
         finally:
             return self.next_int_block
 
     def update_next_block_fields(self):
-        # TODO: implement in child classes
+        # To be implemented in child classes
         pass
 
     def get_starting_block(self):

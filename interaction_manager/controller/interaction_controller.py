@@ -153,11 +153,15 @@ class InteractionController(object):
             self.logger.error("Error while extracting isEngaged: {} | {}".format(data_dict, e))
             self.execution_result = None
 
-    def update_speech_certainty(self, speech_certainty=None):
-        if speech_certainty is not None:
-            self.db_helper.update_one(self.db_helper.interaction_collection,
-                                      data_key="speechCertainty",
-                                      data_dict={"speechCertainty": speech_certainty, "timestamp": time.time()})
+    def update_speech_certainty(self, speech_certainty=40.0):
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key="speechCertainty",
+                                  data_dict={"speechCertainty": speech_certainty, "timestamp": time.time()})
+
+    def update_db_data(self, data_key, data_value):
+        self.db_helper.update_one(self.db_helper.interaction_collection,
+                                  data_key=data_key,
+                                  data_dict={data_key: data_value, "timestamp": time.time()})
 
     def wakeup_robot(self):
         success = False
@@ -281,9 +285,9 @@ class InteractionController(object):
         self.logger.debug("Getting the next interaction block...")
         try:
             self.logger.info("Module Name: {} | Mode: {}\n\n".
-                             format(self.current_interaction_block.interaction_module_name,
+                             format(self.current_interaction_block.design_module,
                                     self.current_interaction_block.execution_mode))
-            if self.current_interaction_block.interaction_module_name and \
+            if self.current_interaction_block.design_module and \
                     self.current_interaction_block.execution_mode is ExecutionMode.EXECUTING:
                 self.execute_interaction_module()
 
@@ -300,10 +304,10 @@ class InteractionController(object):
 
             # update previous block
             self.previous_interaction_block = self.current_interaction_block
-
+            # self.logger.info("Next block is: {}".format(next_block.message))
+            return next_block, connecting_edge
         except Exception as e:
             self.logger.error("Error while getting the next block! {}".format(e))
-        finally:
             return next_block, connecting_edge
 
     def interaction(self, start=False):
@@ -349,9 +353,10 @@ class InteractionController(object):
         return True
 
     def execute_interaction_module(self):
-        self.interaction_module = ModuleFactory.create_module(self.current_interaction_block.interaction_module_name,
-                                                              self.block_controller,
-                                                              self.current_interaction_block)
+        self.interaction_module = ModuleFactory.create_module(self.current_interaction_block.design_module,
+                                                              self.current_interaction_block,
+                                                              self.block_controller)
+        self.logger.info("Interaction module: {}".format(self.interaction_module))
         if self.interaction_module is None:
             return
 

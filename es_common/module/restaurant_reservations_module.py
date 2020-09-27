@@ -5,13 +5,13 @@ from es_common.command.get_reservations_command import GetReservationsCommand
 from es_common.enums.module_enums import InteractionModule
 from es_common.model.customer import Customer
 from es_common.model.reservation import Reservation
-from es_common.module.es_module import ESModule
+from es_common.module.es_interaction_module import ESInteractionModule
 
 INT_DESIGN_FILE = "es_common/module/interaction_design/reservations.json"
 
 
-class RestaurantReservationsModule(ESModule):
-    def __init__(self, block_controller, origin_block=None):
+class RestaurantReservationsModule(ESInteractionModule):
+    def __init__(self, origin_block, block_controller=None):
         super().__init__(block_controller, origin_block)
         self.logger = logging.getLogger("RestaurantReservationsModule")
 

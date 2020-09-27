@@ -12,9 +12,9 @@
 
 import logging
 
-from es_common.utils import config_helper
+from twisted.internet.defer import inlineCallbacks
 
-TABLET_IP = "198.18.0.1"
+from es_common.utils import config_helper
 
 
 class TabletHandler(object):
@@ -33,25 +33,17 @@ class TabletHandler(object):
         except Exception as e:
             self.logger.error(e)
 
-    def show_offline_page(self, name="index", params=None):
-        # param is a dict
-        url_params = ""
+    @inlineCallbacks
+    def show_offline_page(self, name="index", url_params=None):
         try:
-            if params and len(params) > 0:
-                url_params = "?"
-                for p in params:
-                    if params[p] != "":
-                        url_params = "{}{}={}&".format(url_params, p, params[p])
-                # url_params = "?{}".format(urllib.parse.urlencode(params))
+            tablet_settings = config_helper.get_tablet_settings()
 
-            tablet_pages = config_helper.get_tablet_settings()["pages"]
-
-            url = "http://{}/{}{}".format(TABLET_IP, tablet_pages[name], url_params)
+            url = "http://{}/{}{}".format(tablet_settings["ip"], tablet_settings["pages"][name], url_params)
             self.logger.info("URL: {}".format(url))
 
-            self.session.call("rom.optional.tablet.view", url=url)
+            yield self.session.call("rom.optional.tablet.view", url=url)
         except Exception as e:
-            self.logger.error("Error while setting offline tablet page: {} | {}".format(params, e))
+            self.logger.error("Error while setting offline tablet page: {} | {}".format(url_params, e))
 
     def set_image(self, image_path="img/help_charger.png", hide=False):
         try:

@@ -21,7 +21,7 @@ def load_data_from_file(filename):
             data = json.loads(r_file.read(), object_pairs_hook=OrderedDict, encoding="utf-8")
             logger.info("Successfully loaded data from '{}'".format(filename))
     except (IOError, Exception) as e:
-        logger.error("Error while writing to file {}".format(filename))
+        logger.error("Error while loading data from file {} : {}".format(filename, e))
     finally:
         return data
 

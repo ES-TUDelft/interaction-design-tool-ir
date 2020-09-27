@@ -29,7 +29,9 @@ class SpeechHandler(object):
         self.keyword_observers = Observable()
         self.block_completed_observers = Observable()
 
-        self.speech_certainty = 0.5
+        self.speech_certainty = 0.4
+        self.voice_pitch = 100
+        self.voice_speed = 85
 
         # add a listener to the keyword stream
         self.session.subscribe(self.on_keyword, "rom.optional.keyword.stream")
@@ -123,12 +125,12 @@ class SpeechHandler(object):
     # SPEECH
     # ======
     def say(self, message="Hi"):
-        self.logger.info("Message to say: {}".format(message))
-        self.session.call("rom.optional.tts.say", text="{}".format(message))
+        text = "\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed), message)
+        self.session.call("rom.optional.tts.say", text=text)
 
     def animated_say(self, message="", animation_name=None):
-        self.logger.info("Message to animate: {}".format(message))
-        return self.session.call("rom.optional.tts.animate", text="{}".format(message))
+        text = "\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed), message)
+        return self.session.call("rom.optional.tts.animate", text=text)
 
     def customized_say(self, interaction_block=None):
         if interaction_block is None:
@@ -148,8 +150,8 @@ class SpeechHandler(object):
                 message = message.format(answer=interaction_block.execution_result.lower())
 
             self.logger.info("Message to say: {}".format(message))
-            self.speech_event = self.session.call("rom.optional.tts.animate", text="{}".format(message))
-            self.logger.info("Called animate...")
+            self.speech_event = self.animated_say(message=message)
+
             # check if answers are needed
             # TODO: switch to another check
             if interaction_block.topic_tag.topic == "":

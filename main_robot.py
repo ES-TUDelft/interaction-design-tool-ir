@@ -2,7 +2,7 @@ import logging
 import sys
 
 from es_common.utils.db_helper import DBHelper
-from robot_manager.robot_worker import RobotWorker
+from robot_manager.robot_worker_ir import RobotWorker
 
 ROBOT_NAME = "NAO"
 ROBOT_REALM = None

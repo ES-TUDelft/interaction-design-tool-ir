@@ -53,7 +53,7 @@ class UIExportBlocksController(QtWidgets.QDialog):
         folder_name = QtWidgets.QFileDialog.getExistingDirectory(
             self,
             "Select a folder",
-            expanduser("~"),
+            os.getcwd(),  # expanduser("~"),
             QtWidgets.QFileDialog.ShowDirsOnly
         )
         self.ui.folderNameLineEdit.setText(folder_name)

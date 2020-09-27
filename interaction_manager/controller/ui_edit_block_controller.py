@@ -13,16 +13,16 @@
 import logging
 import os
 
-from es_common.utils.qt import QtCore, QtWidgets
-
 import es_common.hre_config as pconfig
 from block_manager.enums.block_enums import SocketType
 from es_common.enums.command_enums import ActionCommand
 from es_common.enums.module_enums import InteractionModule
 from es_common.factory.command_factory import CommandFactory
+from es_common.model.design_module import DesignModule
 from es_common.model.interaction_block import InteractionBlock
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
+from es_common.utils.qt import QtCore, QtWidgets
 from interaction_manager.model.speech_act import SpeechAct
 from interaction_manager.utils import config_helper
 from interaction_manager.view.ui_editblock_dialog import Ui_EditBlockDialog
@@ -118,18 +118,34 @@ class UIEditBlockController(QtWidgets.QDialog):
     def set_modules(self):
         if "module" in self.pattern_settings.keys():
             try:
-                modules = [m for m in InteractionModule.keys()]
                 self.toggle_module_tab(enable=True)
+
+                # button listeners
+                self.ui.moduleFileRadioButton.clicked.connect(lambda: self.enable_module_selection(enable_file=True))
+                self.ui.moduleRandomizeRadioButton.clicked.connect(lambda: self.enable_module_selection(False))
+                self.ui.moduleSelectFileToolButton.clicked.connect(self.select_file)
+                self.ui.moduleSelectFolderToolButton.clicked.connect(self.select_folder)
+
+                # TODO: check if needed
+                modules = [m for m in InteractionModule.keys()]
 
                 self.ui.moduleNameComboBox.addItems([pconfig.SELECT_OPTION])
                 self.ui.moduleNameComboBox.addItems(modules)
 
                 # check if the block contains a module
-                module_name = self.interaction_block.interaction_module_name
-                if module_name:
-                    # update combobox current item
-                    self.ui.moduleNameComboBox.setCurrentIndex(
-                        self.ui.moduleNameComboBox.findText(module_name, QtCore.Qt.MatchFixedString))
+                design_module = self.interaction_block.design_module
+                if design_module:
+                    if design_module.randomize:
+                        self.ui.moduleRandomizeRadioButton.setChecked(True)
+                        self.enable_module_selection(enable_file=False)
+                        self.ui.moduleFolderNameLineEdit.setText(design_module.folder_name)
+                    else:
+                        self.ui.moduleFileNameLineEdit.setText(design_module.filename)
+
+                    if design_module.name:
+                        # update combobox current item
+                        self.ui.moduleNameComboBox.setCurrentIndex(
+                            self.ui.moduleNameComboBox.findText(design_module.name, QtCore.Qt.MatchFixedString))
 
                 self.logger.info("Module tab is setup")
             except Exception as e:
@@ -140,12 +156,32 @@ class UIEditBlockController(QtWidgets.QDialog):
     def toggle_module_tab(self, enable=False):
         tab_index = self.ui.tabWidget.indexOf(self.ui.tabWidget.findChild(QtWidgets.QWidget, 'moduleTab'))
         self.ui.tabWidget.setTabEnabled(tab_index, enable)
-        self.ui.moduleGoToGroupBox.setEnabled(enable)
 
         if enable is False:
-            self.ui.moduleNameComboBox.setHidden(True)
-            self.ui.moduleGoToGroupBox.setHidden(False)
             self.ui.tabWidget.removeTab(tab_index)
+
+    def enable_module_selection(self, enable_file=False):
+        self.ui.moduleFileNameLineEdit.setEnabled(enable_file)
+        self.ui.moduleSelectFileToolButton.setEnabled(enable_file)
+
+        self.ui.moduleFolderNameLineEdit.setEnabled(not enable_file)
+        self.ui.moduleSelectFolderToolButton.setEnabled(not enable_file)
+
+    def select_file(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        file_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Select JSON file", "", "JSON Files (*.json)",
+                                                             options=options)
+        self.ui.moduleFileNameLineEdit.setText(file_path)
+
+    def select_folder(self):
+        folder_name = QtWidgets.QFileDialog.getExistingDirectory(
+            self,
+            "Select a folder",
+            os.getcwd(),
+            QtWidgets.QFileDialog.ShowDirsOnly
+        )
+        self.ui.moduleFolderNameLineEdit.setText(folder_name)
 
     def set_actions(self):
         # TODO: Use the action property defined in the pattern
@@ -202,7 +238,7 @@ class UIEditBlockController(QtWidgets.QDialog):
     def toggle_action_tab(self, enable=False):
         tab_index = self.ui.tabWidget.indexOf(self.ui.tabWidget.findChild(QtWidgets.QWidget, 'actionTab'))
         self.ui.tabWidget.setTabEnabled(tab_index, enable)
-        self.ui.reservationsGroupBox.setHidden(True)
+
         self.ui.musicGroupBox.setHidden(True)
         self.ui.timeGroupBox.setHidden(True)
 
@@ -220,7 +256,6 @@ class UIEditBlockController(QtWidgets.QDialog):
             hide_music = False
             self.update_playlist_combo()
 
-        self.ui.reservationsGroupBox.setHidden(hide_reservations)
         self.ui.timeGroupBox.setHidden(hide_time)
         self.ui.musicGroupBox.setHidden(hide_music)
 
@@ -287,14 +322,6 @@ class UIEditBlockController(QtWidgets.QDialog):
         if not tablet_page.name == "":
             self.ui.tabletPageNameComboBox.setCurrentIndex(
                 self.ui.tabletPageNameComboBox.findText(tablet_page.name, QtCore.Qt.MatchFixedString))
-
-    def test_animation(self, animation_name=None):
-        if self.robot_controller is None or animation_name is None or animation_name.strip() == "":
-            return
-        try:
-            self.robot_controller.execute_animation(animation_name=animation_name)
-        except Exception as e:
-            self.logger.error("Error while testing animation: {}! {}".format(animation_name, e))
 
     def _set_topic_tab(self, reset=False):
         # clear the combo-boxes
@@ -392,13 +419,27 @@ class UIEditBlockController(QtWidgets.QDialog):
                           )
 
     def get_module(self):
-        if self.ui.moduleNameComboBox.isHidden():
-            return None
+        tab_index = self.ui.tabWidget.indexOf(self.ui.tabWidget.findChild(QtWidgets.QWidget, 'moduleTab'))
+        if self.ui.tabWidget.isTabEnabled(tab_index):
+            design_module = DesignModule()
 
-        module_name = "{}".format(self.ui.moduleNameComboBox.currentText())
-        if module_name in InteractionModule.keys():
-            self.logger.info(f"Module set to: {module_name}")
-            return module_name
+            # name
+            module_name = "{}".format(self.ui.moduleNameComboBox.currentText())
+            if module_name in InteractionModule.keys():
+                self.logger.info(f"Module name set to: {module_name}")
+                design_module.name = module_name
+
+            # filename
+            if self.ui.moduleFileRadioButton.isChecked():
+                design_module.filename = "{}".format(self.ui.moduleFileNameLineEdit.text())
+            elif self.ui.moduleRandomizeRadioButton.isChecked():
+                design_module.randomize = True
+                design_module.folder_name = "{}".format(self.ui.moduleFolderNameLineEdit.text())
+
+            self.logger.info(design_module.to_dict)
+            return design_module
+
+        return None
 
     def get_command(self):
         if self.ui.actionComboBox.isHidden():
@@ -454,7 +495,8 @@ class UIEditBlockController(QtWidgets.QDialog):
         d_block.topic_tag = self.get_topic_tag()
         d_block.tablet_page = self.get_tablet_page()
         d_block.action_command = self.get_command()
-        d_block.interaction_module_name = self.get_module()
+        d_block.design_module = self.get_module()
+        # d_block.interaction_module_name = self.get_module()
 
         return d_block
 
@@ -467,7 +509,8 @@ class UIEditBlockController(QtWidgets.QDialog):
         int_block.speech_act = self.get_speech_act()
         int_block.topic_tag = self.get_topic_tag()
         int_block.tablet_page = self.get_tablet_page()
-        int_block.interaction_module_name = self.get_module()
+        int_block.design_module = self.get_module()
+        # int_block.interaction_module_name = self.get_module()
 
         # don't update music command if there is no connection to the music service
         if "{}".format(self.ui.actionComboBox.currentText()) == ActionCommand.PLAY_MUSIC.name:
