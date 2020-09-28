@@ -1,19 +1,59 @@
 import logging
 import os
+import time
 
 import pymongo
+
+from thread_manager.db_thread import DBChangeStreamThread, DBChangeStreamQThread
 
 env_name = "CHANGE_STREAM_ROBOT_DB"
 os.environ[env_name] = "mongodb://localhost:27017"
 
 
-class DBHelper(object):
+class DBController(object):
     def __init__(self):
-        self.logger = logging.getLogger("DBHelper")
+        self.logger = logging.getLogger("DBController")
         self.client = pymongo.MongoClient(os.environ[env_name])
         self.db = self.client["RobotDB"]
         self.robot_collection = self.db.collection["RobotCollection"]
         self.interaction_collection = self.db.collection["InteractionCollection"]
+        self.db_change_thread = None
+
+    def start_db_stream(self, observers_dict, db_collection, target_thread=None):
+        """
+        Observers_dict:
+            key = name of the data being observed
+            value =  observer, i.e., callback to notify
+        Target_Thread: use "qt" to create a QThread; and None otherwise
+        """
+        self.stop_db_stream()  # just in case it was already running
+
+        if target_thread == "qt":
+            self.db_change_thread = DBChangeStreamQThread()
+        else:
+            self.db_change_thread = DBChangeStreamThread()
+
+        self.db_change_thread.add_data_observers(observers_dict=observers_dict)
+
+        self.db_change_thread.start_listening(db_collection)
+        self.logger.info("Started listening to DB change stream.")
+
+    def stop_db_stream(self):
+        try:
+            if self.db_change_thread is not None:
+                self.db_change_thread.stop_running()
+                self.update_one(self.interaction_collection,
+                                data_key="dbChangeStream",
+                                data_dict={"dbChangeStream": False, "timestamp": time.time()})
+                time.sleep(2)
+                # if self.db_change_thread and self.db_change_thread.is_alive():
+                #     self.logger.info("DB Thread is still alive!")
+
+                self.logger.info("DB Thread is stopped.")
+        except Exception as e:
+            self.logger.error("Error while stopping thread: {} | {}".format(self.db_change_thread, e))
+        finally:
+            self.db_change_thread = None
 
     def drop(self, coll=None):
         try:

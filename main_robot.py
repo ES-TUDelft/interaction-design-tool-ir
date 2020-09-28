@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from es_common.utils.db_helper import DBHelper
+from data_manager.controller.db_controller import DBController
 from robot_manager.robot_worker_ir import RobotWorker
 
 ROBOT_NAME = "NAO"
@@ -16,8 +16,8 @@ def main():
     robot_name = ROBOT_NAME
     robot_realm = ROBOT_REALM
 
-    db_helper = DBHelper()
-    conn_data = db_helper.find_one(coll=db_helper.interaction_collection, data_key="connectRobot")
+    db_controller = DBController()
+    conn_data = db_controller.find_one(coll=db_controller.interaction_collection, data_key="connectRobot")
     if conn_data:
         try:
             robot_name = conn_data["connectRobot"]["robotName"]

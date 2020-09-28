@@ -195,6 +195,11 @@ class UIController(QtWidgets.QMainWindow):
         # observer
         self.simulation_controller.finished_simulation_observable.add_observer(self.on_finished_simulation)
 
+    def exit_gracefully(self):
+        self.logger.info("Exiting...")
+        # add any other disconnection calls...
+        self.interaction_controller.disconnect()
+
     # ---------- #
     # Connection
     # ---------- #
@@ -230,7 +235,7 @@ class UIController(QtWidgets.QMainWindow):
 
     def robot_disconnect(self):
         try:
-            self.interaction_controller.disconnect_from_robot()
+            self.interaction_controller.disconnect()
 
             # update GUI
             self._toggle_buttons(is_awake=False)

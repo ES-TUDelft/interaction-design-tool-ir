@@ -18,7 +18,6 @@ from twisted.internet.defer import inlineCallbacks
 
 import es_common.utils.config_helper as config_helper
 from es_common.model.observable import Observable
-from es_common.utils.db_helper import DBHelper
 
 
 class ConnectionHandler(object):
@@ -26,14 +25,15 @@ class ConnectionHandler(object):
         self.logger = logging.getLogger("Connection Handler")
         self.rie = None
         self.session_observers = Observable()
-        self.db_helper = DBHelper()
+        self.session = None
 
     @inlineCallbacks
     def on_connect(self, session, details=None):
         self.logger.debug("Created session: {}".format(session))
+        self.session = session
         yield self.session_observers.notify_all(session)
 
-    def start_rie_session(self, robot_name=None, robot_realm=None, callback=None):
+    def start_rie_session(self, robot_name=None, robot_realm=None):
         try:
             if robot_realm is None:
                 # get the realm from config
@@ -50,10 +50,22 @@ class ConnectionHandler(object):
 
                 realm=robot_realm
             )
-            self.logger.info("** {}\n\n".format(threading.current_thread().name))
-            self.rie.on_join(self.on_connect if callback is None else callback)
+            self.logger.info("** {}\n".format(threading.current_thread().name))
+            self.rie.on_join(self.on_connect)
 
             self.logger.info("Running the rie component")
             run([self.rie])
         except Exception as e:
             self.logger.error("Unable to run the rie component | {}".format(e))
+
+    def stop_session(self):
+        try:
+            if self.session:
+                self.session.leave()
+                self.session_observers.notify_all(None)
+                self.logger.info("Closed the robot session.")
+            else:
+                self.logger.info("There is no active session.")
+        except Exception as e:
+            self.logger.error("Error while closing rie session: {}".format(e))
+

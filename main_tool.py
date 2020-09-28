@@ -26,7 +26,11 @@ def main():
     win.show()
     win.repaint()
     win.update()
-    sys.exit(app.exec_())
+    if app.exec_() == 0:
+        print("Exec...")
+        win.exit_gracefully()
+        sys.exit(0)
+    # sys.exit(app.exec_())
 
 
 if __name__ == "__main__":

@@ -33,7 +33,6 @@ class TabletHandler(object):
         except Exception as e:
             self.logger.error(e)
 
-    @inlineCallbacks
     def show_offline_page(self, name="index", url_params=None):
         try:
             tablet_settings = config_helper.get_tablet_settings()
@@ -41,7 +40,7 @@ class TabletHandler(object):
             url = "http://{}/{}{}".format(tablet_settings["ip"], tablet_settings["pages"][name], url_params)
             self.logger.info("URL: {}".format(url))
 
-            yield self.session.call("rom.optional.tablet.view", url=url)
+            self.session.call("rom.optional.tablet.view", url=url)
         except Exception as e:
             self.logger.error("Error while setting offline tablet page: {} | {}".format(url_params, e))
 

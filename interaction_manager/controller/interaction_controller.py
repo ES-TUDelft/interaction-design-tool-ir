@@ -14,10 +14,10 @@ import logging
 import time
 
 from block_manager.enums.block_enums import ExecutionMode
+from data_manager.controller.db_controller import DBController
 from es_common.enums.command_enums import ActionCommand
 from es_common.factory.module_factory import ModuleFactory
 from es_common.model.observable import Observable
-from es_common.utils.db_helper import DBHelper
 from es_common.utils.qt import QTimer
 from es_common.utils.timer_helper import TimerHelper
 from interaction_manager.utils import config_helper
@@ -30,8 +30,7 @@ class InteractionController(object):
 
         self.block_controller = block_controller
         self.music_controller = music_controller
-        self.db_change_thread = None
-        self.db_helper = DBHelper()
+        self.db_controller = DBController()
         self.timer_helper = TimerHelper()
         self.music_command = None
         self.animations_lst = []
@@ -59,12 +58,12 @@ class InteractionController(object):
         self.robot_name = robot_name
         self.robot_realm = robot_realm
 
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="connectRobot",
-                                  data_dict={"connectRobot": {"robotName": self.robot_name,
-                                                              "robotRealm": self.robot_realm},
-                                             "timestamp": time.time()})
-        self.update_threads()
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="connectRobot",
+                                      data_dict={"connectRobot": {"robotName": self.robot_name,
+                                                                  "robotRealm": self.robot_realm},
+                                                 "timestamp": time.time()})
+        self.start_listening_to_db_stream()
 
     def on_connect(self, data_dict=None):
         try:
@@ -78,20 +77,18 @@ class InteractionController(object):
             self.logger.error("Error while extracting isConnected: {} | {}".format(data_dict, e))
             self.execution_result = None
 
-    def disconnect_from_robot(self):
+    def disconnect(self):
         try:
-            if self.db_change_thread is not None:
-                self.db_change_thread.stop_running()
-            self.db_helper.update_one(self.db_helper.robot_collection,
-                                      data_key="isDisconnected",
-                                      data_dict={"isDisconnected": True, "timestamp": time.time()})
-            self.logger.info("Disconnecting in 10s...")
+            self.logger.info("Disconnecting...")
+            self.db_controller.stop_db_stream()
+
+            self.db_controller.update_one(self.db_controller.interaction_collection,
+                                          data_key="disconnectRobot",
+                                          data_dict={"disconnectRobot": True, "timestamp": time.time()})
             time.sleep(1)
-            self.db_helper.update_one(self.db_helper.interaction_collection,
-                                      data_key="disconnectRobot",
-                                      data_dict={"disconnectRobot": True, "timestamp": time.time()})
+            self.logger.info("Disconnection was successful.")
         except Exception as e:
-            self.logger.error("Error while disconnecting from robot. | {}".format(e))
+            self.logger.error("Error while disconnecting: {}".format(e))
 
         return True
 
@@ -112,7 +109,7 @@ class InteractionController(object):
         success = False
         conn = None
         try:
-            conn = self.db_helper.find_one(self.db_helper.robot_collection, "isConnected")
+            conn = self.db_controller.find_one(self.db_controller.robot_collection, "isConnected")
             if conn and conn["isConnected"] is True:
                 success = True
         except Exception as e:
@@ -120,20 +117,15 @@ class InteractionController(object):
         finally:
             return success
 
-    def update_threads(self):
-        self.threads = []
-        # start DB listener
-        self.db_change_thread = DBChangeStreamQThread()
-        self.db_change_thread.add_data_observers(
-            observers_dict={
-                "isConnected": self.on_connect,
-                "isExecuted": self.on_block_executed,
-                "isEngaged": self.on_engaged
-            }
-        )
-        self.db_change_thread.start_listening(self.db_helper.robot_collection)
-
-        self.threads.append(self.db_change_thread)
+    def start_listening_to_db_stream(self):
+        observers_dict = {
+            "isConnected": self.on_connect,
+            "isExecuted": self.on_block_executed,
+            "isEngaged": self.on_engaged
+        }
+        self.db_controller.start_db_stream(observers_dict=observers_dict,
+                                           db_collection=self.db_controller.robot_collection,
+                                           target_thread="qt")
 
     def on_block_executed(self, data_dict=None):
         try:
@@ -154,21 +146,21 @@ class InteractionController(object):
             self.execution_result = None
 
     def update_speech_certainty(self, speech_certainty=40.0):
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="speechCertainty",
-                                  data_dict={"speechCertainty": speech_certainty, "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="speechCertainty",
+                                      data_dict={"speechCertainty": speech_certainty, "timestamp": time.time()})
 
     def update_db_data(self, data_key, data_value):
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key=data_key,
-                                  data_dict={data_key: data_value, "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key=data_key,
+                                      data_dict={data_key: data_value, "timestamp": time.time()})
 
     def wakeup_robot(self):
         success = False
         try:
-            self.db_helper.update_one(self.db_helper.interaction_collection,
-                                      data_key="wakeUpRobot",
-                                      data_dict={"wakeUpRobot": True, "timestamp": time.time()})
+            self.db_controller.update_one(self.db_controller.interaction_collection,
+                                          data_key="wakeUpRobot",
+                                          data_dict={"wakeUpRobot": True, "timestamp": time.time()})
             success = True
         except Exception as e:
             self.logger.error("Error while waking up the robot! | {}".format(e))
@@ -177,37 +169,38 @@ class InteractionController(object):
 
     def rest_robot(self):
         try:
-            self.db_helper.update_one(self.db_helper.interaction_collection,
-                                      data_key="restRobot",
-                                      data_dict={"restRobot": True, "timestamp": time.time()})
+            self.db_controller.update_one(self.db_controller.interaction_collection,
+                                          data_key="restRobot",
+                                          data_dict={"restRobot": True, "timestamp": time.time()})
         except Exception as e:
             self.logger.error("Error while setting the robot posture to rest: {}".format(e))
 
     # TOUCH
     # ------
     def enable_touch(self):
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="enableTouch",
-                                  data_dict={"enableTouch": True, "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="enableTouch",
+                                      data_dict={"enableTouch": True, "timestamp": time.time()})
 
     # BEHAVIORS
     # ---------
     def animate(self, animation_name=None):
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="animateRobot",
-                                  data_dict={"animateRobot": {"animation": animation_name, "message": ""},
-                                             "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="animateRobot",
+                                      data_dict={"animateRobot": {"animation": animation_name, "message": ""},
+                                                 "timestamp": time.time()})
 
     def animated_say(self, message=None, animation_name=None):
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="animateRobot",
-                                  data_dict={"animateRobot": {"animation": animation_name, "message": message},
-                                             "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="animateRobot",
+                                      data_dict={"animateRobot": {"animation": animation_name, "message": message},
+                                                 "timestamp": time.time()})
 
     def customized_say(self, interaction_block):
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="interactionBlock",
-                                  data_dict={"interactionBlock": interaction_block.to_dict, "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="interactionBlock",
+                                      data_dict={"interactionBlock": interaction_block.to_dict,
+                                                 "timestamp": time.time()})
 
     # SPEECH
     # ------
@@ -313,9 +306,9 @@ class InteractionController(object):
     def interaction(self, start=False):
         self.logger.info("Interaction called with start = {}".format(start))
 
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="startInteraction",
-                                  data_dict={"startInteraction": start, "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="startInteraction",
+                                      data_dict={"startInteraction": start, "timestamp": time.time()})
 
         if start is False:  # stop the interaction
             self.tablet_image(hide=True)
@@ -337,9 +330,9 @@ class InteractionController(object):
         @param start = bool
         """
         self.logger.info("Engagement called with start = {}".format(start))
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="startEngagement",
-                                  data_dict={"startEngagement": start, "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="startEngagement",
+                                      data_dict={"startEngagement": start, "timestamp": time.time()})
 
         if not start:
             self.has_finished_playing_observers.notify_all(True)
@@ -484,6 +477,6 @@ class InteractionController(object):
     # TABLET
     # ------
     def tablet_image(self, hide=False):
-        self.db_helper.update_one(self.db_helper.interaction_collection,
-                                  data_key="hideTabletImage",
-                                  data_dict={"hideTabletImage": True, "timestamp": time.time()})
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="hideTabletImage",
+                                      data_dict={"hideTabletImage": True, "timestamp": time.time()})
