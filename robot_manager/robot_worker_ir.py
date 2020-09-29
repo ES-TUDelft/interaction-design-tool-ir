@@ -121,7 +121,7 @@ class RobotWorker(object):
                                           data_key="isExecuted",
                                           data_dict={"isExecuted": {"value": True, "executionResult": execution_result},
                                                      "timestamp": time.time()})
-            yield
+            yield True
         except Exception as e:
             self.logger.error("Error while storing block completed: {}".format(e))
 
@@ -169,21 +169,21 @@ class RobotWorker(object):
     @inlineCallbacks
     def on_interaction_block(self, data_dict=None):
         try:
-            self.logger.info("Received Interaction Block data.")
+            self.logger.info("Received Interaction Block data.\n")
             interaction_block = self.get_interaction_block(data_dict=data_dict)
 
             if interaction_block is None:
                 return
 
             # set the tablet page, if any
-            self.logger.info("Robot name: {}\n\n".format(self.robot_name))
+            # self.logger.info("Robot name: {}\n\n".format(self.robot_name))
             if self.robot_name.lower() == RobotName.PEPPER.name.lower():
                 yield self.set_web_view(tablet_page=interaction_block.tablet_page)
 
             # get the message
             message = interaction_block.message
             if message is None or message == "":
-                self.on_block_executed(val=True)
+                yield self.on_block_executed(val=True)
             else:
                 yield self.animate_message(interaction_block)
         except Exception as e:
@@ -217,6 +217,7 @@ class RobotWorker(object):
 
             self.logger.info("Message to say: {}".format(message))
             speech_event = self.speech_handler.animated_say(message=message)
+            self.logger.info("Speech Event: {}".format(speech_event))
 
             # check if answers are needed
             if interaction_block.topic_tag.topic == "":
@@ -233,17 +234,19 @@ class RobotWorker(object):
     @inlineCallbacks
     def set_web_view(self, tablet_page):
         if tablet_page is None:
-            yield
+            yield False
             return None
 
         try:
             url_params = "?{}{}{}".format(self.check_url_parameter("pageHeading", tablet_page.heading),
                                           self.check_url_parameter("pageText", tablet_page.text),
                                           self.check_url_parameter("pageImage", tablet_page.image))
-            self.logger.info(url_params)
+            # self.logger.info(url_params)
             yield self.tablet_handler.show_offline_page(name=tablet_page.name, url_params=url_params)
+            self.logger.info("Setting the robot's tablet.")
         except Exception as e:
             self.logger.error("Error while constructing the tablet URL: {}".format(e))
+            yield False
 
     def check_url_parameter(self, param_name, param_value):
         if param_value is not None and param_value != "":

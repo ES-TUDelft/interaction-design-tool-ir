@@ -38,7 +38,6 @@ class SpeechHandler(object):
         self.current_keywords = []
         self.is_listening = False
         self.start_time = time.time()
-        self.speech_event = None
 
     def reset(self):
         pass
@@ -58,27 +57,24 @@ class SpeechHandler(object):
                     keyword = frame["data"]["body"]["text"]
 
                     if keyword in self.current_keywords:
-                        self.logger.info("Detected keyword is in the list: {} | {}".format(keyword, certainty))
+                        self.logger.info("Detected keyword is in the list: {}".format(frame["data"]))
                         self.is_listening = False
                         self.clear_keywords()
 
                         self.keyword_stream(start=False)
 
                         self.keyword_observers.notify_all(keyword)
-                        yield
+                        yield True
                     else:
                         self.logger.info("Keyword received '{}' is not in the list {}".format(
                             keyword, self.current_keywords))
-                        yield
+                        yield False
                 else:
-                    self.logger.info("Frame {} | at {}".format(frame, self.get_time_ms()))
-                    yield
+                    self.logger.info("OnKeyword received with low certainty: {}".format(frame))
+                    yield False
             except Exception as e:
                 self.logger.error("Error while getting the received answer! | {}".format(e))
-                yield
-
-    def get_time_ms(self):
-        return time.time() * 1000
+                yield False
 
     def add_keywords(self, keywords=None):
         # add keywords to listen to
@@ -110,14 +106,12 @@ class SpeechHandler(object):
     # =======
     @inlineCallbacks
     def on_block_completed(self, result=None):
-        self.speech_event = None
         self.logger.info("BlockCompleted callback - notifying observers")
         self.block_completed_observers.notify_all(True)
-        yield
+        yield True
 
     @inlineCallbacks
     def on_start_listening(self, results):
-        self.speech_event = None
         self.add_keywords(keywords=self.current_keywords)
         yield self.keyword_stream(start=True)
 
@@ -126,12 +120,13 @@ class SpeechHandler(object):
     # ======
     def say(self, message="Hi"):
         text = "\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed), message)
-        self.session.call("rom.optional.tts.say", text=text)
+        yield self.session.call("rom.optional.tts.say", text=text)
 
+    @inlineCallbacks
     def animated_say(self, message="", animation_name=None):
-        return self.session.call("rom.optional.tts.animate",
-                                 text="\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed),
-                                                                       message))
+        yield self.session.call("rom.optional.tts.animate",
+                                text="\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed),
+                                                                      message))
 
     # DEPRECATED
     def customized_say(self, interaction_block=None):
@@ -152,20 +147,20 @@ class SpeechHandler(object):
                 message = message.format(answer=interaction_block.execution_result.lower())
 
             self.logger.info("Message to say: {}".format(message))
-            self.speech_event = self.animated_say(message=message)
+            speech_event = self.animated_say(message=message)
 
             # check if answers are needed
             # TODO: switch to another check
             if interaction_block.topic_tag.topic == "":
                 time.sleep(1)  # to keep the API happy :)
                 # self.block_completed_observers.notify_all(True)
-                self.speech_event.addCallback(self.on_block_completed)
+                speech_event.addCallback(self.on_block_completed)
             else:
                 keywords = interaction_block.topic_tag.get_combined_answers()
                 self.current_keywords = keywords
                 self.logger.info("Keywords: {}".format(keywords))
 
-                self.speech_event.addCallback(self.on_start_listening)
+                speech_event.addCallback(self.on_start_listening)
 
     def set_volume(self, level=50.0):
         vol = int(level) if level > 1 else int(level * 100)

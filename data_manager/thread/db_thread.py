@@ -75,7 +75,7 @@ class DBChangeStreamQThread(QThread):
             if key == "_id" or key == "timestamp":
                 continue
             try:
-                self.logger.info("The key is: {}\n".format(key))
+                # self.logger.info("The key inserted in db is: {}".format(key))
                 if key in self._db_change_observers_dict.keys():
                     self.logger.info("Notifying observers of: {}".format(key))
                     self._db_change_observers_dict[key].notify_all(data)
@@ -156,7 +156,7 @@ class DBChangeStreamThread(Thread):
             if key == "_id" or key == "timestamp":
                 continue
             try:
-                self.logger.info("The key is: {}\n".format(key))
+                # self.logger.info("The key inserted in db is: {}".format(key))
                 if key in self._db_change_observers_dict.keys():
                     self.logger.info("Notifying observers of: {}".format(key))
                     self._db_change_observers_dict[key].notify_all(data)

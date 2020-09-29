@@ -38,7 +38,7 @@ class TabletHandler(object):
             tablet_settings = config_helper.get_tablet_settings()
 
             url = "http://{}/{}{}".format(tablet_settings["ip"], tablet_settings["pages"][name], url_params)
-            self.logger.info("URL: {}".format(url))
+            # self.logger.info("URL: {}".format(url))
 
             self.session.call("rom.optional.tablet.view", url=url)
         except Exception as e:
