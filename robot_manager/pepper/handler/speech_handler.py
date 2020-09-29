@@ -129,9 +129,11 @@ class SpeechHandler(object):
         self.session.call("rom.optional.tts.say", text=text)
 
     def animated_say(self, message="", animation_name=None):
-        text = "\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed), message)
-        return self.session.call("rom.optional.tts.animate", text=text)
+        return self.session.call("rom.optional.tts.animate",
+                                 text="\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed),
+                                                                       message))
 
+    # DEPRECATED
     def customized_say(self, interaction_block=None):
         if interaction_block is None:
             self.logger.info("No block is received!")

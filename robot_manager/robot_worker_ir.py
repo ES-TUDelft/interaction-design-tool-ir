@@ -185,22 +185,7 @@ class RobotWorker(object):
             if message is None or message == "":
                 self.on_block_executed(val=True)
             else:
-                # update the block's message, if any
-                if "{answer}" in message and interaction_block.execution_result:
-                    message = message.format(answer=interaction_block.execution_result.lower())
-
-                self.logger.info("Message to say: {}".format(message))
-                speech_event = self.speech_handler.animated_say(message=message)
-
-                # check if answers are needed
-                if interaction_block.topic_tag.topic == "":
-                    # time.sleep(1)  # to keep the API happy :)
-                    speech_event.addCallback(self.on_block_executed)
-                else:
-                    keywords = interaction_block.topic_tag.get_combined_answers()
-                    self.speech_handler.current_keywords = keywords
-
-                    yield speech_event.addCallback(self.speech_handler.on_start_listening)
+                yield self.animate_message(interaction_block)
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
 
@@ -223,8 +208,32 @@ class RobotWorker(object):
             return None
 
     @inlineCallbacks
+    def animate_message(self, interaction_block):
+        try:
+            message = interaction_block.message
+            # update the block's message, if any
+            if "{answer}" in message and interaction_block.execution_result:
+                message = message.format(answer=interaction_block.execution_result.lower())
+
+            self.logger.info("Message to say: {}".format(message))
+            speech_event = self.speech_handler.animated_say(message=message)
+
+            # check if answers are needed
+            if interaction_block.topic_tag.topic == "":
+                # time.sleep(1)  # to keep the API happy :)
+                yield speech_event.addCallback(self.on_block_executed)
+            else:
+                keywords = interaction_block.topic_tag.get_combined_answers()
+                self.speech_handler.current_keywords = keywords
+
+                yield speech_event.addCallback(self.speech_handler.on_start_listening)
+        except Exception as e:
+            self.logger.error("Error while executing robot message: {}".format(e))
+
+    @inlineCallbacks
     def set_web_view(self, tablet_page):
         if tablet_page is None:
+            yield
             return None
 
         try:
