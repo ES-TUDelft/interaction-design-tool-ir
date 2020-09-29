@@ -107,7 +107,6 @@
     <addaction name="separator"/>
     <addaction name="actionMenuCopy"/>
     <addaction name="actionMenuPaste"/>
-    <addaction name="actionMenuPasteParameters"/>
     <addaction name="separator"/>
     <addaction name="actionMenuDelete"/>
     <addaction name="actionMenuClear"/>
@@ -188,7 +187,7 @@
    <addaction name="actionMenuSave"/>
    <addaction name="separator"/>
    <addaction name="actionMenuCopy"/>
-   <addaction name="actionMenuPasteParameters"/>
+   <addaction name="actionMenuPaste"/>
    <addaction name="separator"/>
    <addaction name="actionMenuClear"/>
    <addaction name="separator"/>
@@ -885,24 +884,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
-   </property>
-  </action>
-  <action name="actionMenuPasteParameters">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="hre_resources/resources.qrc">
-     <normaloff>:/hreresources/icons/paste.png</normaloff>:/hreresources/icons/paste.png</iconset>
-   </property>
-   <property name="text">
-    <string>Paste Parameters</string>
-   </property>
-   <property name="toolTip">
-    <string>Paste Parameters</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+V</string>
    </property>
   </action>
   <action name="actionMenuDelete">

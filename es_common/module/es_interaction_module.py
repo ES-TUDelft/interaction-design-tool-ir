@@ -56,8 +56,8 @@ class ESInteractionModule(Serializable):
                 elif output_socket_id == edge["end_socket"]:
                     input_sockets_id_lst.append(edge["start_socket"])
 
-            self.logger.info("Socket {} is connected to {} {}".format(output_socket_id,
-                                                                      len(input_sockets_id_lst), input_sockets_id_lst))
+            # self.logger.info("Socket {} is connected to {} {}".format(output_socket_id, len(input_sockets_id_lst),
+            #                                                           input_sockets_id_lst))
 
             next_block_dict = None
             next_int_block = None
@@ -77,7 +77,7 @@ class ESInteractionModule(Serializable):
 
             if next_block_dict:
                 next_int_block = InteractionBlock.create_interaction_block(next_block_dict)
-                self.logger.info("Next int block: {}".format(next_int_block.to_dict))
+                # self.logger.info("Next int block: {}".format(next_int_block.to_dict))
                 if next_int_block:
                     next_int_block.id = next_block_dict["id"]
                     next_int_block.is_hidden = True
@@ -85,7 +85,7 @@ class ESInteractionModule(Serializable):
 
             self.next_int_block = next_int_block
             self.update_next_block_fields()
-            self.logger.info("Found another block: {}".format(self.next_int_block.message))
+            self.logger.info("Found block: {}".format(self.next_int_block.message if self.next_int_block else None))
         except Exception as e:
             self.logger.error("Error while getting the next block: {}".format(e))
         finally:

@@ -207,6 +207,7 @@ class InteractionController(object):
         if self.verify_current_interaction_block() is False:
             return False
 
+        self.logger.info("Executing next block.\n")
         self.block_controller.clear_selection()
         connecting_edge = None
 
@@ -274,9 +275,10 @@ class InteractionController(object):
 
         next_block = None
         connecting_edge = None
-        self.logger.debug("Getting the next interaction block...")
+
+        self.logger.info("Getting the next interaction block...")
         try:
-            self.logger.info("Module Name: {} | Mode: {}\n\n".
+            self.logger.info("Module Name: {} | Mode: {}".
                              format(self.current_interaction_block.design_module,
                                     self.current_interaction_block.execution_mode))
             if self.current_interaction_block.design_module and \
