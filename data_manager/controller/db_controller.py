@@ -4,7 +4,7 @@ import time
 
 import pymongo
 
-from thread_manager.db_thread import DBChangeStreamThread, DBChangeStreamQThread
+from data_manager.thread.db_thread import DBChangeStreamThread, DBChangeStreamQThread
 
 env_name = "CHANGE_STREAM_ROBOT_DB"
 os.environ[env_name] = "mongodb://localhost:27017"

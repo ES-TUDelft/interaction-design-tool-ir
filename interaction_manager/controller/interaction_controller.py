@@ -21,7 +21,6 @@ from es_common.model.observable import Observable
 from es_common.utils.qt import QTimer
 from es_common.utils.timer_helper import TimerHelper
 from interaction_manager.utils import config_helper
-from thread_manager.db_thread import DBChangeStreamQThread
 
 
 class InteractionController(object):
