@@ -40,14 +40,13 @@ class InteractionController(object):
         self.robot_name = None
         self.robot_realm = None
 
-        self.is_ready_to_interact = False
         self.current_interaction_block = None
         self.previous_interaction_block = None
         self.interaction_blocks = None
         self.interaction_design = None
         self.interaction_module = None
+        self.is_interacting = False
 
-        self.stop_playing = False
         self.execution_result = None
         self.has_finished_playing_observers = Observable()
         self.threads = []
@@ -81,6 +80,8 @@ class InteractionController(object):
             self.logger.info("Disconnecting...")
             self.db_controller.stop_db_stream()
 
+            self.engagement(start=False)
+            time.sleep(1)
             self.db_controller.update_one(self.db_controller.interaction_collection,
                                           data_key="disconnectRobot",
                                           data_dict={"disconnectRobot": True, "timestamp": time.time()})
@@ -120,7 +121,7 @@ class InteractionController(object):
         observers_dict = {
             "isConnected": self.on_connect,
             "isExecuted": self.on_block_executed,
-            "isEngaged": self.on_engaged
+            "startInteraction": self.on_start_interaction
         }
         self.db_controller.start_db_stream(observers_dict=observers_dict,
                                            db_collection=self.db_controller.robot_collection,
@@ -133,15 +134,6 @@ class InteractionController(object):
             self.execute_next_block()
         except Exception as e:
             self.logger.error("Error while extracting isExecuted block: {} | {}".format(data_dict, e))
-            self.execution_result = None
-
-    def on_engaged(self, data_dict=None):
-        try:
-            self.logger.info("isEngaged data received: {}".format(data_dict))
-            start = data_dict["isEngaged"]
-            self.interaction(start=start)
-        except Exception as e:
-            self.logger.error("Error while extracting isEngaged: {} | {}".format(data_dict, e))
             self.execution_result = None
 
     def update_speech_certainty(self, speech_certainty=40.0):
@@ -252,22 +244,60 @@ class InteractionController(object):
             self.logger.info(to_say)
         self.animated_say(message=to_say)
 
+    # def on_engaged(self, data_dict=None):
+    #     try:
+    #         self.logger.info("isEngaged data received: {}".format(data_dict))
+    #         start = data_dict["isEngaged"]
+    #         self.interaction(start=start)
+    #     except Exception as e:
+    #         self.logger.error("Error while extracting isEngaged: {} | {}".format(data_dict, e))
+    #         self.execution_result = None
+
+    def on_start_interaction(self, data_dict=None):
+        if self.is_interacting:
+            self.logger.info("Interaction is in progress...")
+            return False
+
+        starting_block = self.get_starting_block()
+        if starting_block:
+            self.is_interacting = True
+            self.logger.info("Starting the interaction!")
+            self.start_playing(int_block=starting_block)
+        else:
+            self.is_interacting = False
+            self.logger.warning("Couldn't start the interaction!")
+
     def start_playing(self, int_block):
         if int_block is None:
             return False
 
-        self.stop_playing = False
         self.previous_interaction_block = None
         self.current_interaction_block = int_block
         self.current_interaction_block.execution_mode = ExecutionMode.NEW
         self.logger.debug("Started playing the blocks")
 
-        # ready to interact
-        self.is_ready_to_interact = True
+        self.execute_next_block()  # start interacting
 
-        # start engagement
-        self.engagement(start=True)
-        return True
+    def stop_playing(self):
+        self.tablet_image(hide=True)
+        self.interaction_blocks = []
+        self.is_interacting = False
+        self.logger.info("Stopped interacting.")
+
+    def get_starting_block(self):
+        try:
+            # check if the scene contains a valid start block
+            block = self.block_controller.get_block(pattern="start")
+            if block is None:
+                self.logger.warning("The scene doesn't contain a starting block! "
+                                    "Please add a 'START' block to play the interaction!")
+                return None
+
+            self.logger.info("Found a starting block.")
+            return block.parent
+        except Exception as e:
+            self.logger.error("Error while getting the start block: {}".format(e))
+            return None
 
     def get_next_interaction_block(self):
         if self.current_interaction_block is None:
@@ -304,28 +334,6 @@ class InteractionController(object):
             self.logger.error("Error while getting the next block! {}".format(e))
             return next_block, connecting_edge
 
-    def interaction(self, start=False):
-        self.logger.info("Interaction called with start = {}".format(start))
-
-        self.db_controller.update_one(self.db_controller.interaction_collection,
-                                      data_key="startInteraction",
-                                      data_dict={"startInteraction": start, "timestamp": time.time()})
-
-        if start is False:  # stop the interaction
-            self.tablet_image(hide=True)
-            self.is_ready_to_interact = False
-            self.interaction_blocks = []  # empty the blocks
-            self.engagement(start=False)
-
-            self.logger.info("Successfully stopped the interaction")
-
-        elif self.is_ready_to_interact is True:  # start is True
-            self.execute_next_block()  # start interacting
-
-    def stop_engagement_callback(self):
-        # stop!
-        self.interaction(start=False)
-
     def engagement(self, start=False):
         """
         @param start = bool
@@ -335,14 +343,12 @@ class InteractionController(object):
                                       data_key="startEngagement",
                                       data_dict={"startEngagement": start, "timestamp": time.time()})
 
-        if not start:
-            self.has_finished_playing_observers.notify_all(True)
-
     def verify_current_interaction_block(self):
         # if there are no more blocks, stop interacting
-        if self.current_interaction_block is None or self.stop_playing is True:
+        if self.current_interaction_block is None:
             # stop interacting
-            self.interaction(start=False)
+            self.stop_playing()
+            self.has_finished_playing_observers.notify_all(True)
             return False
         return True
 

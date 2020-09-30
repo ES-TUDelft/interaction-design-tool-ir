@@ -2,16 +2,16 @@ import logging
 import sys
 
 from data_manager.controller.db_controller import DBController
-from robot_manager.worker_ir.robot_worker import RobotWorker
+from robot_manager.worker_ir.engagement_worker import EngagementWorker
 
 ROBOT_NAME = "NAO"
 ROBOT_REALM = None
 
-logger = logging.getLogger("RobotMain")
+logger = logging.getLogger("EngagementMain")
 
 
 def main():
-    global robot_worker
+    global engagement_worker
 
     robot_name = ROBOT_NAME
     robot_realm = ROBOT_REALM
@@ -25,13 +25,13 @@ def main():
         except Exception as e_m:
             logger.error("Error while extracting robot props: {} | {}".format(conn_data, e_m))
 
-    robot_worker = RobotWorker(robot_name=robot_name, robot_realm=robot_realm)
-    robot_worker.connect_robot()
-    logger.info("Robot Worker is up and running.")
+    engagement_worker = EngagementWorker(robot_name=robot_name, robot_realm=robot_realm)
+    engagement_worker.connect_robot()
+    logger.info("Engagement Worker is up and running.")
 
 
 if __name__ == '__main__':
-    global robot_worker
+    global engagement_worker
     logging.basicConfig(level=logging.INFO,
                         format="%(levelname)s %(filename)s:%(lineno)4d: %(message)s",
                         stream=sys.stdout)
@@ -43,4 +43,4 @@ if __name__ == '__main__':
         logger.error("Exception: {}".format(e))
     finally:
         logger.info("Disconnecting...")
-        robot_worker.exit_gracefully()
+        engagement_worker.exit_gracefully()

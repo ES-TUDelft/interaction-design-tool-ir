@@ -95,7 +95,8 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuPlay.setEnabled(False)
         self.ui.actionMenuPlay.triggered.connect(self.play_blocks)
         self.ui.actionMenuSimulate.triggered.connect(self.simulate_blocks)
-        self.ui.actionMenuStop.triggered.connect(self.interaction_controller.stop_engagement_callback)
+        self.ui.actionMenuStop.triggered.connect(self.interaction_controller.stop_playing)
+        self.ui.actionMenuStart.triggered.connect(lambda: self.interaction_controller.engagement(start=True))
         # MUSIC
         # --------
         self.ui.actionMenuMusic.triggered.connect(self.spotify_connect)
@@ -772,7 +773,8 @@ class UIController(QtWidgets.QMainWindow):
             # Enable/disable buttons
             self._enable_buttons([self.ui.actionMenuRest, self.ui.actionMenuShowImage,
                                   self.ui.actionMenuEnableTouch,
-                                  self.ui.actionMenuVolumeDown, self.ui.actionMenuVolumeUp, self.ui.actionMenuPlay,
+                                  self.ui.actionMenuVolumeDown, self.ui.actionMenuVolumeUp,
+                                  self.ui.actionMenuPlay, self.ui.actionMenuStart, self.ui.actionMenuStop
                                   ], enabled=True)
             self._enable_buttons([self.ui.actionMenuWakeUp, self.ui.actionMenuHideImage,
                                   self.ui.actionMenuStop], enabled=False)
@@ -783,5 +785,5 @@ class UIController(QtWidgets.QMainWindow):
             self._enable_buttons([self.ui.actionMenuRest, self.ui.actionMenuShowImage, self.ui.actionMenuHideImage,
                                   self.ui.actionMenuEnableTouch,
                                   self.ui.actionMenuVolumeDown, self.ui.actionMenuVolumeUp, self.ui.actionMenuPlay,
-                                  self.ui.actionMenuStop,
+                                  self.ui.actionMenuStart, self.ui.actionMenuStop,
                                   ], enabled=False)

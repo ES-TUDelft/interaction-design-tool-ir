@@ -10,38 +10,24 @@ from robot_manager.pepper.handler.animation_handler import AnimationHandler
 from robot_manager.pepper.handler.connection_handler import ConnectionHandler
 from robot_manager.pepper.handler.speech_handler import SpeechHandler
 from robot_manager.pepper.handler.tablet_handler import TabletHandler
+from robot_manager.worker_ir.es_worker import ESWorker
 
 
-class RobotWorker(object):
+class RobotWorker(ESWorker):
     def __init__(self, robot_name=None, robot_realm=None):
+        super().__init__(robot_name, robot_realm)
+
         self.logger = logging.getLogger("RobotWorker")
-
-        self.robot_name = robot_name
-        self.robot_realm = robot_realm
-
-        self.db_controller = DBController()
 
         self.speech_handler = None
         self.tablet_handler = None
         self.animation_handler = None
-        self.connection_handler = None
 
         self.interaction_block = None
-        self.is_interacting = False
 
-    def connect_robot(self, data_dict=None):
-        try:
-            self.connection_handler = ConnectionHandler()
-            self.connection_handler.session_observers.add_observer(self.on_connect)
-
-            self.logger.info("Connecting...")
-            self.connection_handler.start_rie_session(robot_name=self.robot_name,
-                                                      robot_realm=self.robot_realm)
-
-            self.logger.info("Successfully connected to the robot")
-        except Exception as e:
-            self.logger.error("Error while connecting to the robot: {}".format(e))
-
+    """
+    Override parent methods
+    """
     @inlineCallbacks
     def on_connect(self, session, details=None):
         try:
@@ -60,8 +46,9 @@ class RobotWorker(object):
                 self.animation_handler = AnimationHandler(session=session)
 
                 # update speech certainty
-                self.on_speech_certainty(data_dict=self.db_controller.find_one(self.db_controller.interaction_collection,
-                                                                               "speechCertainty"))
+                self.on_speech_certainty(
+                    data_dict=self.db_controller.find_one(self.db_controller.interaction_collection,
+                                                          "speechCertainty"))
                 # update voice settings
                 self.on_voice_pitch(
                     data_dict=self.db_controller.find_one(self.db_controller.interaction_collection, "voicePitch"))
@@ -78,34 +65,26 @@ class RobotWorker(object):
         except Exception as e:
             yield self.logger.error("Error while setting the robot controller {}: {}".format(session, e))
 
-    def disconnect_robot(self, data_dict=None):
-        self.logger.info("Disconnecting from robot...")
-        if self.connection_handler:
-            self.connection_handler.stop_session()
-        time.sleep(1)
-        self.logger.info("Disconnected from robot.")
+    def start_listening_to_db_stream(self):
+        observers_dict = {
+            "connectRobot": self.connect_robot,
+            "disconnectRobot": self.disconnect_robot,
+            "wakeUpRobot": self.on_wakeup,
+            "restRobot": self.on_rest,
+            "animateRobot": self.on_animate,
+            "interactionBlock": self.on_interaction_block,
+            "hideTabletImage": self.on_hide_tablet_image,
+            "speechCertainty": self.on_speech_certainty,
+            "voicePitch": self.on_voice_pitch,
+            "voiceSpeed": self.on_voice_speed
+        }
 
-    def exit_gracefully(self, data_dict=None):
-        try:
-            self.disconnect_robot()
-            self.db_controller.stop_db_stream()
-            self.db_controller.update_one(self.db_controller.interaction_collection,
-                                          data_key="isConnected",
-                                          data_dict={"isConnected": False, "timestamp": time.time()})
-        except Exception as e:
-            self.logger.error("Error while exiting: {}".format(e))
+        self.db_controller.start_db_stream(observers_dict=observers_dict,
+                                           db_collection=self.db_controller.interaction_collection)
 
-    def setup_db_stream(self):
-        try:
-            self.db_controller.update_one(self.db_controller.robot_collection,
-                                          data_key="isConnected",
-                                          data_dict={"isConnected": True, "timestamp": time.time()})
-
-            self.start_listening_to_db_stream()
-            self.logger.info("Finished")
-        except Exception as e:
-            self.logger.error("Error while setting up db stream: {}".format(e))
-
+    """
+    Class methods
+    """
     def on_user_answer(self, val=None):
         try:
             self.logger.debug("User Answer: {}".format(val))
@@ -124,16 +103,6 @@ class RobotWorker(object):
             yield True
         except Exception as e:
             self.logger.error("Error while storing block completed: {}".format(e))
-
-    def on_engaged(self, val=None):
-        try:
-            if not self.is_interacting:
-                self.db_controller.update_one(self.db_controller.robot_collection,
-                                              data_key="isEngaged",
-                                              data_dict={"isEngaged": False if val is None else val,
-                                                         "timestamp": time.time()})
-        except Exception as e:
-            self.logger.error("Error while storing isEngaged: {}".format(e))
 
     @inlineCallbacks
     def on_wakeup(self, data_dict=None):
@@ -254,26 +223,6 @@ class RobotWorker(object):
 
         return ""
 
-    def on_start_interaction(self, data_dict=None):
-        try:
-            self.logger.info("Data received: {}".format(data_dict))
-            self.is_interacting = data_dict["startInteraction"]
-        except Exception as e:
-            self.logger.error("Error while extracting interaction data: {} | {}".format(data_dict, e))
-
-    def on_start_engagement(self, data_dict=None):
-        # TODO: set listener to engagement events
-        try:
-            self.logger.info("Data received: {}".format(data_dict))
-            start = data_dict["startEngagement"]
-            if start is True:
-                self.logger.info("Engagement is set.")
-                self.on_engaged(True)
-            else:
-                self.logger.info("Engagement is disabled")
-        except Exception as e:
-            self.logger.error("Error while extracting engagement data: {} | {}".format(data_dict, e))
-
     def on_touch(self, data_dict=None):
         try:
             self.logger.info("Data received: {}".format(data_dict))
@@ -301,22 +250,3 @@ class RobotWorker(object):
             self.speech_handler.voice_speed = data_dict["voiceSpeed"]
         except Exception as e:
             self.logger.error("Error while extracting voice speed data: {} | {}".format(data_dict, e))
-
-    def start_listening_to_db_stream(self):
-        observers_dict = {
-            "connectRobot": self.connect_robot,
-            "disconnectRobot": self.disconnect_robot,
-            "wakeUpRobot": self.on_wakeup,
-            "restRobot": self.on_rest,
-            "animateRobot": self.on_animate,
-            "interactionBlock": self.on_interaction_block,
-            "startInteraction": self.on_start_interaction,
-            "startEngagement": self.on_start_engagement,
-            "hideTabletImage": self.on_hide_tablet_image,
-            "speechCertainty": self.on_speech_certainty,
-            "voicePitch": self.on_voice_pitch,
-            "voiceSpeed": self.on_voice_speed
-        }
-
-        self.db_controller.start_db_stream(observers_dict=observers_dict,
-                                           db_collection=self.db_controller.interaction_collection)

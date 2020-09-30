@@ -552,6 +552,11 @@ class Ui_DialogGUI(object):
         self.actionMenuSimulationDockView.setObjectName("actionMenuSimulationDockView")
         self.actionMenuSettingsDockView = QtWidgets.QAction(DialogGUI)
         self.actionMenuSettingsDockView.setObjectName("actionMenuSettingsDockView")
+        self.actionMenuStart = QtWidgets.QAction(DialogGUI)
+        self.actionMenuStart.setCheckable(False)
+        self.actionMenuStart.setEnabled(False)
+        self.actionMenuStart.setIcon(icon13)
+        self.actionMenuStart.setObjectName("actionMenuStart")
         self.menuFile.addAction(self.actionMenuNew)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionMenuImportBlocks)
@@ -626,6 +631,7 @@ class Ui_DialogGUI(object):
         self.mainToolBar.addAction(self.actionMenuVolumeUp)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.actionMenuPlay)
+        self.mainToolBar.addAction(self.actionMenuStart)
         self.mainToolBar.addAction(self.actionMenuStop)
         self.mainToolBar.addSeparator()
         self.mainToolBar.addAction(self.actionMenuMusic)
@@ -729,6 +735,7 @@ class Ui_DialogGUI(object):
         self.actionMenuSimulationDockView.setText(_translate("DialogGUI", "Simulation Panel"))
         self.actionMenuSimulationDockView.setToolTip(_translate("DialogGUI", "Simulation"))
         self.actionMenuSettingsDockView.setText(_translate("DialogGUI", "Settings Panel"))
+        self.actionMenuStart.setText(_translate("DialogGUI", "Start"))
 import interaction_manager.view.resources_rc
 
 

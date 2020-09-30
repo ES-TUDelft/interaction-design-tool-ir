@@ -137,11 +137,11 @@ class InteractionBlock(Serializable):
                 if next_int_block:
                     next_int_block.execution_result = execution_result
             connecting_edge = self.get_output_connected_edge(next_int_block)
-        except Exception as e:
-            self.logger.error("Error while attempting to get the next block! {}".format(e))
-        finally:
             self.logger.debug("Next block is: {} | {}".format(0 if next_int_block is None else next_int_block.title,
                                                               next_int_block.message))
+            return next_int_block, connecting_edge
+        except Exception as e:
+            self.logger.error("Error while attempting to get the next block! {}".format(e))
             return next_int_block, connecting_edge
 
     def set_selected(self, val):
