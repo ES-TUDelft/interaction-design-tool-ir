@@ -27,7 +27,10 @@ class EngagementWorker(ESWorker):
 
         self.connection_handler = None
         self.engagement_handler = None
-        self.notification_interval = 2
+
+        self.notification_interval = 2.0  # seconds
+        self.interaction_interval = 30.0  # seconds
+        self.face_size = 0.2
 
     """
     Override parent methods
@@ -43,12 +46,19 @@ class EngagementWorker(ESWorker):
                 self.engagement_handler = EngagementHandler(session=session)
                 self.engagement_handler.notification_interval = self.notification_interval
 
-                # switch to English
-                yield session.call(u'rom.optional.tts.language', lang="en")
-                yield session.call("rom.optional.tts.say", text="Engagement worker is ready.")
+                # update settings
+                self.on_face_size(
+                    data_dict=self.db_controller.find_one(self.db_controller.interaction_collection, "faceSize"))
+                self.on_interaction_interval(
+                    data_dict=self.db_controller.find_one(self.db_controller.interaction_collection,
+                                                          "interactionInterval"))
 
                 # Start listening to DB Stream
                 self.setup_db_stream()
+
+                # switch to English
+                yield session.call(u'rom.optional.tts.language', lang="en")
+                yield session.call("rom.optional.tts.say", text="Engagement worker is ready.")
 
                 self.logger.info("Connection to the robot is successfully established.")
         except Exception as e:
@@ -59,6 +69,8 @@ class EngagementWorker(ESWorker):
             "connectRobot": self.connect_robot,
             "disconnectRobot": self.disconnect_robot,
             "startEngagement": self.on_start_engagement,
+            "faceSize": self.on_face_size,
+            "interactionInterval": self.on_interaction_interval
         }
 
         self.db_controller.start_db_stream(observers_dict=observers_dict,
@@ -70,7 +82,8 @@ class EngagementWorker(ESWorker):
     def on_face_detected(self, interval=None):
         try:
             self.logger.info("Interval received: {}".format(interval))
-            if interval > 10.0:  # a new person has arrived
+            if interval >= self.interaction_interval:  # a new person has arrived
+                self.logger.info("Starting a new interaction...\n")
                 # start new interaction
                 self.db_controller.update_one(self.db_controller.robot_collection,
                                               data_key="startInteraction",
@@ -96,12 +109,30 @@ class EngagementWorker(ESWorker):
                 self.logger.info("Engagement is started.")
                 self.engagement_handler.face_detected_observers.add_observer(self.on_face_detected)
                 self.engagement_handler.face_detection(start=True)
+                self.engagement_handler.face_tracker(start=True)
             else:
                 self.logger.info("Engagement is disabled")
                 self.engagement_handler.face_detected_observers.remove_observer(self.on_face_detected)
                 self.engagement_handler.face_detection(start=False)
+                self.engagement_handler.face_tracker(start=False)
         except Exception as e:
             self.logger.error("Error while extracting engagement data: {} | {}".format(data_dict, e))
+
+    def on_face_size(self, data_dict=None):
+        try:
+            self.logger.info("Data received: {}".format(data_dict))
+            self.face_size = float(data_dict["faceSize"])
+            self.logger.info("Setting minimum face size to: {}".format(self.face_size))
+        except Exception as e:
+            self.logger.error("Error while extracting face size: {} | {}".format(data_dict, e))
+
+    def on_interaction_interval(self, data_dict=None):
+        try:
+            self.logger.info("Data received: {}".format(data_dict))
+            self.interaction_interval = float(data_dict["interactionInterval"])
+            self.logger.info("Setting interaction interval to: {}".format(self.interaction_interval))
+        except Exception as e:
+            self.logger.error("Error while extracting interaction interval: {} | {}".format(data_dict, e))
 
     @property
     def notification_interval(self):
@@ -112,3 +143,21 @@ class EngagementWorker(ESWorker):
         self._notification_interval = interval
         if self.engagement_handler:
             self.engagement_handler.notification_interval = interval
+
+    @property
+    def interaction_interval(self):
+        return self._interaction_interval
+
+    @interaction_interval.setter
+    def interaction_interval(self, interval=30.0):
+        self._interaction_interval = interval
+
+    @property
+    def face_size(self):
+        return self._face_size
+
+    @face_size.setter
+    def face_size(self, val=30.0):
+        self._face_size = val
+        if self.engagement_handler:
+            self.engagement_handler.min_face_size = val

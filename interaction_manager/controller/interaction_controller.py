@@ -42,8 +42,6 @@ class InteractionController(object):
 
         self.current_interaction_block = None
         self.previous_interaction_block = None
-        self.interaction_blocks = None
-        self.interaction_design = None
         self.interaction_module = None
         self.is_interacting = False
 
@@ -129,6 +127,10 @@ class InteractionController(object):
 
     def on_block_executed(self, data_dict=None):
         try:
+            if self.is_interacting is False:
+                self.logger.info("Not in interaction mode!")
+                return False
+
             self.logger.info("isExecuted data received: {}".format(data_dict))
             self.execution_result = data_dict["isExecuted"]["executionResult"]
             self.execute_next_block()
@@ -195,6 +197,64 @@ class InteractionController(object):
 
     # SPEECH
     # ------
+    def say(self, message=None):
+        to_say = "Hello!" if message is None else message
+        if message is None:
+            self.logger.info(to_say)
+        self.animated_say(message=to_say)
+
+    # def on_engaged(self, data_dict=None):
+    #     try:
+    #         self.logger.info("isEngaged data received: {}".format(data_dict))
+    #         start = data_dict["isEngaged"]
+    #         self.interaction(start=start)
+    #     except Exception as e:
+    #         self.logger.error("Error while extracting isEngaged: {} | {}".format(data_dict, e))
+    #         self.execution_result = None
+
+    def on_start_interaction(self, data_dict=None):
+        if self.is_interacting:
+            self.logger.info("Interaction is in progress...")
+            return False
+
+        self.logger.info("Starting the interaction!")
+        self.start_playing(int_block=self.get_starting_block())
+
+    def start_playing(self, int_block):
+        if int_block is None:
+            self.is_interacting = False
+            self.logger.warning("Couldn't start the interaction!")
+            return False
+
+        self.is_interacting = True
+        self.previous_interaction_block = None
+        self.current_interaction_block = int_block
+        self.current_interaction_block.execution_mode = ExecutionMode.NEW
+        self.logger.debug("Started playing the blocks")
+
+        self.execute_next_block()  # start interacting
+
+    def stop_playing(self):
+        self.tablet_image(hide=True)
+        self.is_interacting = False
+        self.has_finished_playing_observers.notify_all(True)
+        self.logger.info("Stopped interacting.")
+
+    def get_starting_block(self):
+        try:
+            # check if the scene contains a valid start block
+            block = self.block_controller.get_block(pattern="start")
+            if block is None:
+                self.logger.warning("The scene doesn't contain a starting block! "
+                                    "Please add a 'START' block to play the interaction!")
+                return None
+
+            self.logger.info("Found a starting block.")
+            return block.parent
+        except Exception as e:
+            self.logger.error("Error while getting the start block: {}".format(e))
+            return None
+
     def execute_next_block(self, val=None):
         if self.verify_current_interaction_block() is False:
             return False
@@ -237,67 +297,6 @@ class InteractionController(object):
         self.customized_say(interaction_block=self.current_interaction_block)
 
         return True
-
-    def say(self, message=None):
-        to_say = "Hello!" if message is None else message
-        if message is None:
-            self.logger.info(to_say)
-        self.animated_say(message=to_say)
-
-    # def on_engaged(self, data_dict=None):
-    #     try:
-    #         self.logger.info("isEngaged data received: {}".format(data_dict))
-    #         start = data_dict["isEngaged"]
-    #         self.interaction(start=start)
-    #     except Exception as e:
-    #         self.logger.error("Error while extracting isEngaged: {} | {}".format(data_dict, e))
-    #         self.execution_result = None
-
-    def on_start_interaction(self, data_dict=None):
-        if self.is_interacting:
-            self.logger.info("Interaction is in progress...")
-            return False
-
-        starting_block = self.get_starting_block()
-        if starting_block:
-            self.is_interacting = True
-            self.logger.info("Starting the interaction!")
-            self.start_playing(int_block=starting_block)
-        else:
-            self.is_interacting = False
-            self.logger.warning("Couldn't start the interaction!")
-
-    def start_playing(self, int_block):
-        if int_block is None:
-            return False
-
-        self.previous_interaction_block = None
-        self.current_interaction_block = int_block
-        self.current_interaction_block.execution_mode = ExecutionMode.NEW
-        self.logger.debug("Started playing the blocks")
-
-        self.execute_next_block()  # start interacting
-
-    def stop_playing(self):
-        self.tablet_image(hide=True)
-        self.interaction_blocks = []
-        self.is_interacting = False
-        self.logger.info("Stopped interacting.")
-
-    def get_starting_block(self):
-        try:
-            # check if the scene contains a valid start block
-            block = self.block_controller.get_block(pattern="start")
-            if block is None:
-                self.logger.warning("The scene doesn't contain a starting block! "
-                                    "Please add a 'START' block to play the interaction!")
-                return None
-
-            self.logger.info("Found a starting block.")
-            return block.parent
-        except Exception as e:
-            self.logger.error("Error while getting the start block: {}".format(e))
-            return None
 
     def get_next_interaction_block(self):
         if self.current_interaction_block is None:
@@ -348,7 +347,6 @@ class InteractionController(object):
         if self.current_interaction_block is None:
             # stop interacting
             self.stop_playing()
-            self.has_finished_playing_observers.notify_all(True)
             return False
         return True
 

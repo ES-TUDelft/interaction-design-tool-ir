@@ -2,7 +2,7 @@ import logging
 import sys
 
 from data_manager.controller.db_controller import DBController
-from robot_manager.worker_ir.robot_worker import RobotWorker
+from robot_manager.worker_ir.interaction_worker import InteractionWorker
 
 ROBOT_NAME = "NAO"
 ROBOT_REALM = None
@@ -25,7 +25,7 @@ def main():
         except Exception as e_m:
             logger.error("Error while extracting robot props: {} | {}".format(conn_data, e_m))
 
-    robot_worker = RobotWorker(robot_name=robot_name, robot_realm=robot_realm)
+    robot_worker = InteractionWorker(robot_name=robot_name, robot_realm=robot_realm)
     robot_worker.connect_robot()
     logger.info("Robot Worker is up and running.")
 

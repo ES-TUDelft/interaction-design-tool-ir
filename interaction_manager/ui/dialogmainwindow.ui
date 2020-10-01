@@ -134,6 +134,8 @@
     <addaction name="actionMenuPause"/>
     <addaction name="actionMenuStop"/>
     <addaction name="separator"/>
+    <addaction name="actionMenuEngage"/>
+    <addaction name="separator"/>
     <addaction name="actionMenuSimulate"/>
     <addaction name="separator"/>
     <addaction name="actionMenuEnableMoving"/>
@@ -197,16 +199,17 @@
    <addaction name="actionMenuWakeUp"/>
    <addaction name="actionMenuRest"/>
    <addaction name="separator"/>
+   <addaction name="actionMenuEngage"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuPlay"/>
+   <addaction name="actionMenuStop"/>
+   <addaction name="separator"/>
    <addaction name="actionMenuVolumeDown"/>
    <addaction name="actionMenuVolumeUp"/>
    <addaction name="separator"/>
-   <addaction name="actionMenuPlay"/>
-   <addaction name="actionMenuStart"/>
-   <addaction name="actionMenuStop"/>
+   <addaction name="actionMenuSimulate"/>
    <addaction name="separator"/>
    <addaction name="actionMenuMusic"/>
-   <addaction name="separator"/>
-   <addaction name="actionMenuSimulate"/>
    <addaction name="separator"/>
    <addaction name="actionMenuImportBlocks"/>
    <addaction name="actionMenuExportBlocks"/>
@@ -576,80 +579,6 @@
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0" colspan="2">
-        <widget class="QGroupBox" name="certaintyGroupBox">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="title">
-          <string>Certainty (%)</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_5">
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="speechCertaintySpinBox">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="minimum">
-               <number>1</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="value">
-               <number>38</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_2">
-              <property name="font">
-               <font>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Speech-Recognition</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item row="1" column="0" colspan="2">
         <widget class="QGroupBox" name="voiceGroupBox">
          <property name="font">
@@ -737,6 +666,172 @@
               </property>
               <property name="value">
                <number>85</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="certaintyGroupBox">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string>Certainty (%)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="speechCertaintySpinBox">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="value">
+               <number>38</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Speech-Recognition</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QGroupBox" name="engagementGroupBox">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="title">
+          <string>Engagement</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_14">
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_15">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_6">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Face Size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Interaction Interval (s)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="interactionIntervalSpinBox">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>200</number>
+              </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
+              <property name="value">
+               <number>30</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="faceSizeDoubleSpinBox">
+              <property name="font">
+               <font>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="maximum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.050000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.200000000000000</double>
               </property>
              </widget>
             </item>
@@ -1179,7 +1274,7 @@
     <string>Settings Panel</string>
    </property>
   </action>
-  <action name="actionMenuStart">
+  <action name="actionMenuEngage">
    <property name="checkable">
     <bool>false</bool>
    </property>
@@ -1188,10 +1283,13 @@
    </property>
    <property name="icon">
     <iconset resource="hre_resources/resources.qrc">
-     <normaloff>:/hreresources/icons/eyeon.png</normaloff>:/hreresources/icons/eyeon.png</iconset>
+     <normaloff>:/hreresources/icons/smiley.png</normaloff>:/hreresources/icons/smiley.png</iconset>
    </property>
    <property name="text">
-    <string>Start</string>
+    <string>Engage</string>
+   </property>
+   <property name="toolTip">
+    <string>Engage</string>
    </property>
   </action>
  </widget>

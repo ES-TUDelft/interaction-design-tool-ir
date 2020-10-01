@@ -40,9 +40,10 @@ class EngagementHandler(object):
     def on_face_detected(self, frame):
         try:
             if frame is None or len(frame) == 0:
-                yield
+                yield sleep(1)
             else:
                 detected_face = frame["data"]["body"]
+                # skip empty frames
                 if detected_face and len(detected_face) > 0:
                     # check face size
                     face_size = frame["data"]["body"][0][2]
@@ -57,7 +58,8 @@ class EngagementHandler(object):
                 else:
                     yield sleep(1)
         except Exception as e:
-            yield self.logger.error("Error while receiving the detected face: {}".format(e))
+            self.logger.error("Error while receiving the detected face: {}".format(e))
+            yield sleep(1)
 
         # yield self.session.call("rom.optional.tts.language", lang="en")
         # yield self.session.call("rom.optional.tts.animate", text="I see you")
@@ -65,3 +67,6 @@ class EngagementHandler(object):
     def face_detection(self, start=False):
         # start/close the face stream
         self.session.call("rom.optional.face.stream" if start else "rom.optional.face.close")
+
+    def face_tracker(self, start=False):
+        self.session.call("rom.optional.face.face_tracker", start=start)

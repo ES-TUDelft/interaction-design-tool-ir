@@ -57,5 +57,6 @@
         <file>icons/simulate.png</file>
         <file>icons/stats.png</file>
         <file>icons/music.png</file>
+        <file>icons/smiley.png</file>
     </qresource>
 </RCC>

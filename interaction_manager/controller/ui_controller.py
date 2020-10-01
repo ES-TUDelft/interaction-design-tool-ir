@@ -96,7 +96,7 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuPlay.triggered.connect(self.play_blocks)
         self.ui.actionMenuSimulate.triggered.connect(self.simulate_blocks)
         self.ui.actionMenuStop.triggered.connect(self.interaction_controller.stop_playing)
-        self.ui.actionMenuStart.triggered.connect(lambda: self.interaction_controller.engagement(start=True))
+        self.ui.actionMenuEngage.triggered.connect(lambda: self.interaction_controller.engagement(start=True))
         # MUSIC
         # --------
         self.ui.actionMenuMusic.triggered.connect(self.spotify_connect)
@@ -116,6 +116,11 @@ class UIController(QtWidgets.QMainWindow):
             lambda: self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value())))
         self.ui.voiceSpeedSpinBox.valueChanged.connect(
             lambda: self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value())))
+        self.ui.faceSizeDoubleSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="faceSize", value=round(float(self.ui.faceSizeDoubleSpinBox.value()), 2)))
+        self.ui.interactionIntervalSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="interactionInterval",
+                                        value=float(self.ui.interactionIntervalSpinBox.value())))
 
         # UNDO/REDO
         # ---------
@@ -219,6 +224,9 @@ class UIController(QtWidgets.QMainWindow):
                     self.update_setting(key="speechCertainty", value=float(self.ui.speechCertaintySpinBox.value()))
                     self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value()))
                     self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value()))
+                    self.update_setting(key="faceSize", value=round(float(self.ui.faceSizeDoubleSpinBox.value()), 2))
+                    self.update_setting(key="interactionInterval",
+                                        value=float(self.ui.interactionIntervalSpinBox.value()))
                     self._display_message(message="Successfully connected to the robot.")
                 else:
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=True)
@@ -510,12 +518,13 @@ class UIController(QtWidgets.QMainWindow):
             self._enable_buttons([self.ui.actionMenuPlay], enabled=False)
             self._enable_buttons([self.ui.actionMenuStop], enabled=True)
             self.interaction_controller.robot_volume = self.volume
+            self.interaction_controller.is_interacting = True
             self.interaction_controller.start_playing(int_block=block.parent)
 
     def on_finished_playing(self, event):
         try:
             self._enable_buttons([self.ui.actionMenuPlay], enabled=True)
-            self._enable_buttons([self.ui.actionMenuStop], enabled=False)
+            # self._enable_buttons([self.ui.actionMenuStop], enabled=False)
         except Exception as e:
             self.logger.error("Warning while enabling the buttons: {}".format(e))
 
@@ -771,12 +780,12 @@ class UIController(QtWidgets.QMainWindow):
     def _toggle_buttons(self, is_awake=False):
         if is_awake is True:
             # Enable/disable buttons
-            self._enable_buttons([self.ui.actionMenuRest, self.ui.actionMenuShowImage,
+            self._enable_buttons([self.ui.actionMenuWakeUp, self.ui.actionMenuRest, self.ui.actionMenuShowImage,
                                   self.ui.actionMenuEnableTouch,
                                   self.ui.actionMenuVolumeDown, self.ui.actionMenuVolumeUp,
-                                  self.ui.actionMenuPlay, self.ui.actionMenuStart, self.ui.actionMenuStop
+                                  self.ui.actionMenuPlay, self.ui.actionMenuEngage, self.ui.actionMenuStop
                                   ], enabled=True)
-            self._enable_buttons([self.ui.actionMenuWakeUp, self.ui.actionMenuHideImage,
+            self._enable_buttons([self.ui.actionMenuHideImage,
                                   self.ui.actionMenuStop], enabled=False)
         else:
             # Enable wake up button
@@ -785,5 +794,5 @@ class UIController(QtWidgets.QMainWindow):
             self._enable_buttons([self.ui.actionMenuRest, self.ui.actionMenuShowImage, self.ui.actionMenuHideImage,
                                   self.ui.actionMenuEnableTouch,
                                   self.ui.actionMenuVolumeDown, self.ui.actionMenuVolumeUp, self.ui.actionMenuPlay,
-                                  self.ui.actionMenuStart, self.ui.actionMenuStop,
+                                  self.ui.actionMenuEngage, self.ui.actionMenuStop,
                                   ], enabled=False)
