@@ -27,19 +27,28 @@ class BlockController(object):
         self.logger = logging.getLogger("AppBlock Controller")
 
         self.scene = BlockFactory.create_scene()
-        self.block_widget = BlockFactory.create_block_widget(scene=self.scene, parent=parent_widget)
+        self.scene.add_observer(self.on_scene_change)
+
+        # widgets
         self.block_list_widget = BlockListWidget()
+        self.block_widget = BlockFactory.create_block_widget(scene=self.scene, parent=parent_widget)
+        # Add observers
+        self.block_widget.drag_enter_observers.add_observer(self.on_drag_enter)
+        self.block_widget.drop_observers.add_observer(self.on_drop)
+        self.block_widget.block_selected_observers.add_observer(self.on_block_selected)
+        self.block_widget.no_block_selected_observers.add_observer(self.on_no_block_selected)
+        self.block_widget.right_click_block_observers.add_observer(self.on_right_click_block)
+        self.block_widget.invalid_edge_observers.add_observer(self.on_invalid_edge)
 
-        self.on_block_selected_observable = Observable()
-        self.on_no_block_selected_observable = Observable()
-        self.block_settings_observable = Observable()
-        self.block_editing_observable = Observable()
-        self.start_block_observable = Observable()
-
-        # add observers
-        self.add_drag_enter_observer(self.on_drag_enter)
-        self.add_drop_observer(self.on_drop)
-        self.add_no_block_selected_observer(self.no_block_selected)
+        # Observables
+        self.block_selected_observers = Observable()
+        self.no_block_selected_observers = Observable()
+        self.block_settings_observers = Observable()
+        self.block_editing_observers = Observable()
+        self.start_block_observers = Observable()
+        self.right_click_block_observers = Observable()
+        self.invalid_edge_observers = Observable()
+        self.scene_change_observers = Observable()
 
         # store initial state
         self.store("Initial Scene")
@@ -95,12 +104,12 @@ class BlockController(object):
             block = self.add_block(title=item_text,
                                    num_in=1, num_out=1,
                                    pos=[scene_position.x(), scene_position.y()],
-                                   observer=self.block_is_selected,
+                                   observer=self.on_block_selected,
                                    parent=None,
                                    icon=item_text.lower())
             # editing/settings observers
-            block.settings_observers.add_observer(self.block_settings_selected)
-            block.editing_observers.add_observer(self.block_editing_selected)
+            block.settings_observers.add_observer(self.on_block_settings)
+            block.editing_observers.add_observer(self.on_block_editing)
 
             self.store("Added new {}".format(item_text))
 
@@ -113,40 +122,49 @@ class BlockController(object):
     def update_block_selected_observer(self, block):
         if type(block) is Block:
             self.logger.debug("Observer for {} is updated.".format(block.title))
-            block.add_observer(self.block_is_selected)
-            block.settings_observers.add_observer(self.block_settings_selected)
-            block.editing_observers.add_observer(self.block_editing_selected)
+            block.add_observer(self.on_block_selected)
+            block.settings_observers.add_observer(self.on_block_settings)
+            block.editing_observers.add_observer(self.on_block_editing)
 
     def update_all_blocks_selected_observer(self):
         for block in self.get_blocks():
             self.logger.debug("Observer for {} is updated.".format(block.title))
-            block.add_observer(self.block_is_selected)
+            block.add_observer(self.on_block_selected)
             # editing/settings observers
-            block.settings_observers.add_observer(self.block_settings_selected)
-            block.editing_observers.add_observer(self.block_editing_selected)
+            block.settings_observers.add_observer(self.on_block_settings)
+            block.editing_observers.add_observer(self.on_block_editing)
 
-    def block_is_selected(self, block):
-        if type(block) is Block:
-            self.logger.debug("Block '{}' is selected. | id = {}".format(block.title, block.id))
-            self.on_block_selected_observable.notify_all(block)
+    def on_block_selected(self, event):
+        if type(event) is Block:
+            self.logger.debug("Block '{}' is selected. | id = {}".format(event.title, event.id))
+            self.block_selected_observers.notify_all(event)
         else:
-            self.on_no_block_selected_observable.notify_all(block)
+            self.on_no_block_selected(event)
 
-    def no_block_selected(self, event):
+    def on_no_block_selected(self, event):
         item = self.get_item_at(event.pos())
         self.logger.debug("No block is selected | {}".format(item))
 
-        self.on_no_block_selected_observable.notify_all(event)
+        self.no_block_selected_observers.notify_all(event)
 
-    def block_settings_selected(self, block):
+    def on_block_settings(self, block):
         if type(block) is Block:
             self.logger.debug("Settings icon of Block '{}' is selected. | id = {}".format(block.title, block.id))
-            self.block_settings_observable.notify_all(block)
+            self.block_settings_observers.notify_all(block)
 
-    def block_editing_selected(self, block):
+    def on_block_editing(self, block):
         if type(block) is Block:
             self.logger.debug("Editing icon of Block '{}' is selected. | id = {}".format(block.title, block.id))
-            self.block_editing_observable.notify_all(block)
+            self.block_editing_observers.notify_all(block)
+
+    def on_right_click_block(self, event):
+        self.right_click_block_observers.notify_all(event)
+
+    def on_invalid_edge(self, event):
+        self.invalid_edge_observers.notify_all(event)
+
+    def on_scene_change(self, event):
+        self.scene_change_observers.notify_all(event)
 
     def get_block(self, pattern=None):
         if pattern is None:
@@ -253,38 +271,3 @@ class BlockController(object):
 
     def get_block_widget(self):
         return self.block_widget
-
-    ###
-    # DRAG and DROP OBSERVERS
-    ###
-    def add_drag_enter_observer(self, observer):
-        self.block_widget.add_drag_enter_observer(observer)
-
-    def remove_drag_enter_observer(self, observer):
-        return self.block_widget.remove_drag_enter_observer(observer)
-
-    def add_drop_observer(self, observer):
-        self.block_widget.add_drop_observer(observer)
-
-    def remove_drop_observer(self, observer):
-        return self.block_widget.remove_drop_observer(observer)
-
-    # BLOCK OBSERVERS
-    # ===============
-    def add_no_block_selected_observer(self, observer):
-        self.block_widget.add_no_block_selected_observer(observer)
-
-    def add_right_click_block_observer(self, observer):
-        self.block_widget.right_click_block_observable.add_observer(observer)
-
-    def add_invalid_edge_observer(self, observer):
-        self.block_widget.add_invalid_edge_observer(observer)
-
-    ###
-    # Scene observers
-    #################
-    def add_on_scene_change_observer(self, observer):
-        self.scene.add_observer(observer)
-
-    def remove_on_scene_change_observer(self, observer):
-        self.scene.remove_observer(observer)

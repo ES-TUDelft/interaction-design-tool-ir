@@ -12,11 +12,12 @@
 import logging
 
 import spotipy
-from es_common.utils.qt import QtWidgets, QtGui
 
-import es_common.hre_config as pconfig
+from es_common.utils.qt import QtWidgets, QtGui
 from interaction_manager.utils import config_helper
 from interaction_manager.view.ui_spotify_dialog import Ui_SpotifyDialog
+
+SELECT_OPTION = "-- SELECT --"
 
 
 class UISpotifyConnectionController(QtWidgets.QDialog):
@@ -129,7 +130,7 @@ class UISpotifyConnectionController(QtWidgets.QDialog):
             return
 
         try:
-            self.ui.playlistComboBox.addItems([pconfig.SELECT_OPTION])
+            self.ui.playlistComboBox.addItems([SELECT_OPTION])
             self.ui.playlistComboBox.addItems([p for p in self.playlists.keys()])
         except Exception as e:
             self._display_message(error="Error while loading tracks! {}".format(e))
@@ -138,17 +139,17 @@ class UISpotifyConnectionController(QtWidgets.QDialog):
         self.ui.trackComboBox.clear()
         playlist = self.ui.playlistComboBox.currentText()
 
-        if playlist == "" or playlist == pconfig.SELECT_OPTION:
+        if playlist == "" or playlist == SELECT_OPTION:
             return False
         try:
-            self.ui.trackComboBox.addItems([pconfig.SELECT_OPTION])
+            self.ui.trackComboBox.addItems([SELECT_OPTION])
             self.ui.trackComboBox.addItems([t for t in self.playlists[playlist]["tracks"]])
             return True
         except Exception as e:
             self._display_message(error="Error while loading tracks! {}".format(e))
 
     def enable_play_button(self):
-        self.ui.playButton.setEnabled(True if self.ui.trackComboBox.currentText() != pconfig.SELECT_OPTION else False)
+        self.ui.playButton.setEnabled(True if self.ui.trackComboBox.currentText() != SELECT_OPTION else False)
 
     def enable_settings(self, val):
         self.ui.settingsGroupBox.setEnabled(not self.ui.defaultSettingsCheckBox.isChecked())
@@ -183,10 +184,10 @@ class UISpotifyConnectionController(QtWidgets.QDialog):
 
     def get_track_uri(self):
         playlist = self.ui.playlistComboBox.currentText()
-        if playlist == pconfig.SELECT_OPTION:
+        if playlist == SELECT_OPTION:
             return None
         track = self.ui.trackComboBox.currentText()
-        if track == pconfig.SELECT_OPTION:
+        if track == SELECT_OPTION:
             return None
         return self.playlists[playlist]["tracks"][track]
 

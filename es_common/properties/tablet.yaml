@@ -1,9 +1,10 @@
 tablet:
   ip: "198.18.0.1"
   pages: {
-    index: "apps/hre_dialog/index.html",
-    displayinfo: "apps/hre_dialog/pages/displayinfo.html",
-    displayimage: "apps/hre_dialog/pages/displayimage.html",
-    displaytext: "apps/hre_dialog/pages/displaytext.html"
+    index: "apps/es_app/index.html",
+    displayinfo: "apps/es_app/pages/displayinfo.html",
+    displayimage: "apps/es_app/pages/displayimage.html",
+    displaytext: "apps/es_app/pages/displaytext.html",
+    getinput: "apps/es_app/pages/getinput.html"
   }
-  pics_folder: "robot_manager/pepper/hre_dialog/html/pics"
+  pics_folder: "robot_manager/tablet/es_app/html/pics"

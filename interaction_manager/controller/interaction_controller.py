@@ -46,6 +46,7 @@ class InteractionController(object):
         self.is_interacting = False
 
         self.execution_result = None
+        self.tablet_input = None
         self.has_finished_playing_observers = Observable()
         self.threads = []
         self.on_connected_observers = Observable()
@@ -119,7 +120,9 @@ class InteractionController(object):
         observers_dict = {
             "isConnected": self.on_connect,
             "isExecuted": self.on_block_executed,
-            "startInteraction": self.on_start_interaction
+            "isDisengaged": self.on_disengaged,
+            "startInteraction": self.on_start_interaction,
+            "tabletInput": self.on_tablet_input
         }
         self.db_controller.start_db_stream(observers_dict=observers_dict,
                                            db_collection=self.db_controller.robot_collection,
@@ -137,6 +140,30 @@ class InteractionController(object):
         except Exception as e:
             self.logger.error("Error while extracting isExecuted block: {} | {}".format(data_dict, e))
             self.execution_result = None
+
+    def on_tablet_input(self, data_dict=None):
+        try:
+            if self.is_interacting is False:
+                self.logger.info("Not in interaction mode!")
+                return False
+
+            self.logger.info("Tablet data received: {}".format(data_dict))
+            self.tablet_input = data_dict["tabletInput"]
+            self.execution_result = data_dict["tabletInput"]
+            self.execute_next_block()
+        except Exception as e:
+            self.logger.error("Error while extracting tablet data: {} | {}".format(data_dict, e))
+            self.tablet_input = None
+            self.execution_result = None
+
+    def on_disengaged(self, data_dict=None):
+        try:
+            self.logger.info("Disengaged data received: {}".format(data_dict))
+            self.execution_result = ""
+            self.stop_playing()
+        except Exception as e:
+            self.logger.error("Error while extracting disengaged data: {} | {}".format(data_dict, e))
+            self.stop_playing()
 
     def update_speech_certainty(self, speech_certainty=40.0):
         self.db_controller.update_one(self.db_controller.interaction_collection,
@@ -227,6 +254,7 @@ class InteractionController(object):
             return False
 
         self.is_interacting = True
+
         self.previous_interaction_block = None
         self.current_interaction_block = int_block
         self.current_interaction_block.execution_mode = ExecutionMode.NEW
@@ -235,8 +263,9 @@ class InteractionController(object):
         self.execute_next_block()  # start interacting
 
     def stop_playing(self):
-        self.tablet_image(hide=True)
+        # self.tablet_image(hide=True)
         self.is_interacting = False
+
         self.has_finished_playing_observers.notify_all(True)
         self.logger.info("Stopped interacting.")
 
@@ -485,3 +514,17 @@ class InteractionController(object):
         self.db_controller.update_one(self.db_controller.interaction_collection,
                                       data_key="hideTabletImage",
                                       data_dict={"hideTabletImage": True, "timestamp": time.time()})
+
+    # PROPERTIES
+    # ==========
+
+    @property
+    def is_interacting(self):
+        return self._is_interacting
+
+    @is_interacting.setter
+    def is_interacting(self, val=False):
+        self._is_interacting = val
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="isInteracting",
+                                      data_dict={"isInteracting": val, "timestamp": time.time()})

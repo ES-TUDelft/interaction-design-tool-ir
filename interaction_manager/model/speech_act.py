@@ -12,7 +12,7 @@
 
 import logging
 
-from es_common.enums.speech_enums import SpeechActsType
+from es_common.enums.robot_enums import SpeechActsType
 
 
 class SpeechAct(object):

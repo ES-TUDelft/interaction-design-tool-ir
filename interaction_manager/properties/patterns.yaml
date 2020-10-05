@@ -14,15 +14,6 @@ end:
     bg_color: 202022
     topic: ""
     tags: []
-question:
-    inputs: 1
-    outputs: 1
-    output_edges: 2
-    icon: block_manager/icons/blue/question-mark.png
-    bg_color: 291a2d #7e2a2a
-    topic: "question"
-    tags:
-        - askQuestionTag
 monologue:
     inputs: 1
     outputs: 1
@@ -39,6 +30,23 @@ module:
     topic: ""
     tags: []
     module: 1
+input:
+    inputs: 1
+    outputs: 1
+    output_edges: 1
+    icon: block_manager/icons/blue/check.png
+    bg_color: 2b4a4a
+    topic: ""
+    tags: []
+question:
+    inputs: 1
+    outputs: 1
+    output_edges: 2
+    icon: block_manager/icons/blue/question-mark.png
+    bg_color: 291a2d #7e2a2a
+    topic: "question"
+    tags:
+        - askQuestionTag
 #confirmation:
 #    inputs: 1
 #    outputs: 1

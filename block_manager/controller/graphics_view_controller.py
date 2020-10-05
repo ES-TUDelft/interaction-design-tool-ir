@@ -43,11 +43,11 @@ class ESGraphicsViewController(QGraphicsView):
         self.drag_start_socket = None
 
         # to deal with event observers
-        self.drag_enter_observable = Observable()
-        self.drop_observable = Observable()
-        self.block_selected_observable = Observable()
-        self.no_block_selected_observable = Observable()
-        self.invalid_edge_observable = Observable()
+        self.drag_enter_observers = Observable()
+        self.drop_observers = Observable()
+        self.block_selected_observers = Observable()
+        self.no_block_selected_observers = Observable()
+        self.invalid_edge_observers = Observable()
 
     def _init_ui(self):
         self.setRenderHints(
@@ -91,10 +91,10 @@ class ESGraphicsViewController(QGraphicsView):
         super(ESGraphicsViewController, self).keyPressEvent(event)
 
     def dragEnterEvent(self, event):
-        self.drag_enter_observable.notify_all(event)
+        self.drag_enter_observers.notify_all(event)
 
     def dropEvent(self, event):
-        self.drop_observable.notify_all(event)
+        self.drop_observers.notify_all(event)
 
     def mouseMoveEvent(self, event):
         if self.mode == Mode.DRAG_EDGE:
@@ -129,9 +129,9 @@ class ESGraphicsViewController(QGraphicsView):
         # self.logger.debug("Item {} is clicked!".format(item))
         if hasattr(item, "block"):
             # send the item not the event
-            self.block_selected_observable.notify_all(event)
+            self.block_selected_observers.notify_all(event)
         else:
-            self.no_block_selected_observable.notify_all(event)
+            self.no_block_selected_observers.notify_all(event)
 
         # if item is None:  # drag the scene
         #    pass  # self.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -287,7 +287,7 @@ class ESGraphicsViewController(QGraphicsView):
                     success = True
         except Exception as e:
             self.logger.error("Error while ending drag! {}".format(e))
-            self.invalid_edge_observable.notify_all("Error while creating the edge!")
+            self.invalid_edge_observers.notify_all("Error while creating the edge!")
         finally:
             return success
 
@@ -298,7 +298,7 @@ class ESGraphicsViewController(QGraphicsView):
 
         # connected sockets should have opposite types (input vs output)
         if other_socket.socket_type == self.drag_start_socket.socket_type:
-            self.invalid_edge_observable.notify_all("* Cannot connect two sockets of the same type ({})".format(
+            self.invalid_edge_observers.notify_all("* Cannot connect two sockets of the same type ({})".format(
                 self.drag_start_socket.socket_type.name
             ))
             return False
@@ -310,7 +310,7 @@ class ESGraphicsViewController(QGraphicsView):
 
         # check the number of allowed edges for the each block
         if not (self.drag_start_socket.can_have_more_edges() and other_socket.can_have_more_edges()):
-            self.invalid_edge_observable.notify_all("* The Edge cannot be created: "
+            self.invalid_edge_observers.notify_all("* The Edge cannot be created: "
                                                     "The output has reached the max number of allowed edges!")
             return False
 

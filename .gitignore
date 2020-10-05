@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 test_rie.py
 tests/
-res_helper.txt
+tests/res_helper.txt
 
 .DS_Store
 blocks/
@@ -145,3 +145,8 @@ es_common/properties/tablebooker.yaml
 es_common/properties/robot.yaml
 es_common/module/interaction_design/reservations-1.json
 logs/*
+design_tool.sh
+tmp_tool.sh
+robot_workers.sh
+robot_manager/tablet/es_app/html/pics/covid-19-bg-sample.png
+robot_manager/tablet/es_app/html/pics/covid-19-sample.jpg

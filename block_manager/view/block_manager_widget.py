@@ -14,7 +14,13 @@ class BlockManagerWidget(QWidget):
 
         self._init_ui(scene)
 
-        self.right_click_block_observable = Observable()
+        # Observables
+        self.drag_enter_observers = Observable()
+        self.drop_observers = Observable()
+        self.block_selected_observers = Observable()
+        self.no_block_selected_observers = Observable()
+        self.invalid_edge_observers = Observable()
+        self.right_click_block_observers = Observable()
 
     def _init_ui(self, scene):
         self.setGeometry(200, 200, 800, 600)
@@ -28,6 +34,12 @@ class BlockManagerWidget(QWidget):
 
         # Graphics View
         self.blocks_view = ESGraphicsViewController(self.scene.graphics_scene, self)
+        # add observers
+        self.blocks_view.drag_enter_observers.add_observer(self.on_drag_enter)
+        self.blocks_view.drop_observers.add_observer(self.on_drop)
+        self.blocks_view.block_selected_observers.add_observer(self.on_block_selected)
+        self.blocks_view.no_block_selected_observers.add_observer(self.on_no_block_selected)
+        self.blocks_view.invalid_edge_observers.add_observer(self.on_invalid_edge)
 
         # set layout
         self.layout.addWidget(self.blocks_view)
@@ -41,7 +53,7 @@ class BlockManagerWidget(QWidget):
         if hasattr(item, "block"):
             self.logger.debug("item has block attribute: {}".format(item))
             # notify observers
-            self.right_click_block_observable.notify_all(event)
+            self.right_click_block_observers.notify_all(event)
 
         super(BlockManagerWidget, self).contextMenuEvent(event)
 
@@ -66,28 +78,19 @@ class BlockManagerWidget(QWidget):
         del self.blocks_view
 
     ###
-    # OBSERVERS
+    # Event Listeners
     ###
-    def add_drag_enter_observer(self, observer):
-        self.blocks_view.drag_enter_observable.add_observer(observer)
+    def on_drag_enter(self, event=None):
+        self.drag_enter_observers.notify_all(event)
 
-    def remove_drag_enter_observer(self, observer):
-        return self.blocks_view.drag_enter_observable.remove_observer(observer)
+    def on_drop(self, event=None):
+        self.drop_observers.notify_all(event)
 
-    def add_drop_observer(self, observer):
-        self.blocks_view.drop_observable.add_observer(observer)
+    def on_block_selected(self, event=None):
+        self.block_selected_observers.notify_all(event)
 
-    def remove_drop_observer(self, observer):
-        return self.blocks_view.drop_observable.remove_observer(observer)
+    def on_no_block_selected(self, event=None):
+        self.no_block_selected_observers.notify_all(event)
 
-    def add_no_block_selected_observer(self, observer):
-        self.blocks_view.no_block_selected_observable.add_observer(observer)
-
-    def remove_no_block_selected_observer(self, observer):
-        self.blocks_view.no_block_selected_observable.remove_observer(observer)
-
-    def add_invalid_edge_observer(self, observer):
-        self.blocks_view.invalid_edge_observable.add_observer(observer)
-
-    def remove_invalid_edge_observer(self, observer):
-        self.blocks_view.invalid_edge_observable.remove_observer(observer)
+    def on_invalid_edge(self, event=None):
+        self.invalid_edge_observers.notify_all(event)

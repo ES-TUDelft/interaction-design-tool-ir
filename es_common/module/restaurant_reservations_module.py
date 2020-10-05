@@ -12,7 +12,7 @@ INT_DESIGN_FILE = "es_common/module/interaction_design/reservations.json"
 
 class RestaurantReservationsModule(ESInteractionModule):
     def __init__(self, origin_block, block_controller=None):
-        super().__init__(block_controller, origin_block)
+        super().__init__(origin_block=origin_block, block_controller=block_controller)
         self.logger = logging.getLogger("RestaurantReservationsModule")
 
         self.module_type = InteractionModule.RESTAURANT_RESERVATIONS

@@ -1,7 +1,7 @@
 from es_common.model.interaction_block import InteractionBlock
 from es_common.model.observable import Observable
 
-block_observable = Observable()
+block_observers = Observable()
 
 
 def create_block_parent(parent_data, hashmap={}):
@@ -9,6 +9,6 @@ def create_block_parent(parent_data, hashmap={}):
     # deserialize
     interaction_block.deserialize(parent_data, hashmap)
 
-    block_observable.notify_all(interaction_block.block)
+    block_observers.notify_all(interaction_block.block)
 
     return interaction_block

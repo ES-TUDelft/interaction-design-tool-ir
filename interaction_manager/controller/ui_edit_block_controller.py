@@ -13,7 +13,6 @@
 import logging
 import os
 
-import es_common.hre_config as pconfig
 from block_manager.enums.block_enums import SocketType
 from es_common.enums.command_enums import ActionCommand
 from es_common.enums.module_enums import InteractionModule
@@ -26,6 +25,8 @@ from es_common.utils.qt import QtCore, QtWidgets
 from interaction_manager.model.speech_act import SpeechAct
 from interaction_manager.utils import config_helper
 from interaction_manager.view.ui_editblock_dialog import Ui_EditBlockDialog
+
+SELECT_OPTION = "-- SELECT --"
 
 
 class UIEditBlockController(QtWidgets.QDialog):
@@ -83,8 +84,6 @@ class UIEditBlockController(QtWidgets.QDialog):
         self.ui.tabWidget.removeTab(beh_tab_index)
 
         # tablet page
-        # self.ui.tabletPageNameComboBox.clear()
-        # self.ui.tabletPageNameComboBox.addItems(pconfig.tablet_pages)
         tablet_page = self.interaction_block.tablet_page
         if not tablet_page.name == "":
             self.ui.tabletPageNameComboBox.setCurrentIndex(
@@ -129,7 +128,7 @@ class UIEditBlockController(QtWidgets.QDialog):
                 # TODO: check if needed
                 modules = [m for m in InteractionModule.keys()]
 
-                self.ui.moduleNameComboBox.addItems([pconfig.SELECT_OPTION])
+                self.ui.moduleNameComboBox.addItems([SELECT_OPTION])
                 self.ui.moduleNameComboBox.addItems(modules)
 
                 # check if the block contains a module
@@ -191,7 +190,7 @@ class UIEditBlockController(QtWidgets.QDialog):
                 actions = [a for a in ActionCommand.keys()]
                 self.toggle_action_tab(enable=True)
 
-                self.ui.actionComboBox.addItems([pconfig.SELECT_OPTION])
+                self.ui.actionComboBox.addItems([SELECT_OPTION])
                 self.ui.actionComboBox.addItems(actions)
 
                 # listeners
@@ -267,7 +266,7 @@ class UIEditBlockController(QtWidgets.QDialog):
         try:
             if self.music_controller.playlists is None or len(self.music_controller.playlists) == 0:
                 return
-            self.ui.playlistComboBox.addItems([pconfig.SELECT_OPTION])
+            self.ui.playlistComboBox.addItems([SELECT_OPTION])
             self.ui.playlistComboBox.addItems([p for p in self.music_controller.playlists.keys()])
         except Exception as e:
             self.logger.error("Error while loading the playlists! {}".format(e))
@@ -278,8 +277,8 @@ class UIEditBlockController(QtWidgets.QDialog):
             return
         playlist = self.ui.playlistComboBox.currentText()
         try:
-            if playlist != pconfig.SELECT_OPTION:
-                self.ui.tracksComboBox.addItems([pconfig.SELECT_OPTION])
+            if playlist != SELECT_OPTION:
+                self.ui.tracksComboBox.addItems([SELECT_OPTION])
                 self.ui.tracksComboBox.addItems([t for t in self.music_controller.playlists[playlist]["tracks"]])
         except Exception as e:
             self.logger.error("Error while loading tracks for playlist: {}! {}".format(playlist, e))
@@ -287,11 +286,10 @@ class UIEditBlockController(QtWidgets.QDialog):
     def update_tags(self):
         # tags
         self.ui.topicTagComboBox.clear()
-        # self.ui.topicTagComboBox.addItems([pconfig.SELECT_OPTION])
 
         tags = self.pattern_settings["tags"]
         if len(tags) > 1:
-            self.ui.topicTagComboBox.addItems([pconfig.SELECT_OPTION])
+            self.ui.topicTagComboBox.addItems([SELECT_OPTION])
         self.ui.topicTagComboBox.addItems(tags)
 
         tag = self.interaction_block.topic_tag.name
@@ -315,7 +313,7 @@ class UIEditBlockController(QtWidgets.QDialog):
 
     def set_tablet_page_combo(self, pages):
         self.ui.tabletPageNameComboBox.clear()
-        self.ui.tabletPageNameComboBox.addItems([pconfig.SELECT_OPTION])
+        self.ui.tabletPageNameComboBox.addItems([SELECT_OPTION])
         self.ui.tabletPageNameComboBox.addItems(pages)
 
         tablet_page = self.interaction_block.tablet_page
@@ -340,8 +338,6 @@ class UIEditBlockController(QtWidgets.QDialog):
             a2 = '' if len(topic_tag.answers) < 2 else topic_tag.answers[1]
 
             # topic properties ==> we're using one topic for now!
-            # self.ui.topicNameComboBox.addItems([pconfig.SELECT_OPTION])
-            # available_topics = [t for t in config_helper.get_topics()]
             self.ui.topicNameComboBox.addItems([self.pattern_settings["topic"]])
 
             if topic.lower() != "" and topic.lower() != self.pattern_settings["topic"]:
@@ -360,7 +356,7 @@ class UIEditBlockController(QtWidgets.QDialog):
 
     def update_go_to(self, goto_ids, combo_box_1, combo_box_2):
         if self.connected_interaction_blocks is not None and len(self.connected_interaction_blocks) > 0:
-            items = [pconfig.SELECT_OPTION]
+            items = [SELECT_OPTION]
             items.extend(["{}: {}".format(b.title, b.description) for b in self.connected_interaction_blocks])
 
             combo_box_1.addItems(items)
@@ -387,7 +383,6 @@ class UIEditBlockController(QtWidgets.QDialog):
     def get_speech_act(self):
         return SpeechAct.create_speech_act({"message": "{}".format(self.ui.messageTextEdit.toPlainText()).strip(),
                                             "message_type": "Informal"})
-        # .format(self.ui.messageTypeComboBox.currentText())
 
     def get_topic_tag(self):
         topic_tag = TopicTag()
@@ -474,8 +469,8 @@ class UIEditBlockController(QtWidgets.QDialog):
             playlist = self.ui.playlistComboBox.currentText()
             track = self.ui.tracksComboBox.currentText()
 
-            if playlist == "" or playlist in pconfig.SELECT_OPTION \
-                    or track == "" or track in pconfig.SELECT_OPTION:
+            if playlist == "" or playlist in SELECT_OPTION \
+                    or track == "" or track in SELECT_OPTION:
                 args = None
             else:
                 args = [playlist, track, int(self.ui.playTimeSpinBox.value())]
@@ -520,7 +515,7 @@ class UIEditBlockController(QtWidgets.QDialog):
             int_block.action_command = self.get_command()
 
     def _is_valid_option(self, option):
-        if option is not None and option != "" and option != pconfig.SELECT_OPTION:
+        if option is not None and option != "" and option != SELECT_OPTION:
             return True
 
         return False

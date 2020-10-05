@@ -120,10 +120,9 @@ class InteractionBlock(Serializable):
         # TODO: verify the returned user input from Pepper
         try:
             # in the absence of a condition
-            if execution_result is None or execution_result == "":
+            if execution_result is None or execution_result == "" or len(self.topic_tag.answers) == 0:
                 # select first if possible
                 next_int_block = int_blocks[0]  # we already verified the len to be > 0
-                next_int_block.execution_result = ""
             else:
                 # check the answers
                 for i in range(len(self.topic_tag.answers)):
@@ -133,9 +132,8 @@ class InteractionBlock(Serializable):
                     if execution_result.strip().lower() in ans:
                         next_int_block = self._get_block_by_id(int_blocks, self.topic_tag.goto_ids[i])
                         break
-                # update the block's message, if any
-                if next_int_block:
-                    next_int_block.execution_result = execution_result
+            if next_int_block:
+                next_int_block.execution_result = execution_result
             connecting_edge = self.get_output_connected_edge(next_int_block)
             self.logger.debug("Next block is: {} | {}".format(0 if next_int_block is None else next_int_block.title,
                                                               next_int_block.message))
@@ -239,6 +237,7 @@ class InteractionBlock(Serializable):
             ("tablet_page", self.tablet_page.to_dict),
             ("icon_path", self.icon_path),
             ("speech_act", self.speech_act.to_dict),
+            ("execution_result", self.execution_result),
             ("action_command", self.action_command.serialize() if self.action_command is not None else {}),
             ("interaction_module_name", self.interaction_module_name),
             ('design_module', {} if self.design_module is None else self.design_module.to_dict),
@@ -272,6 +271,9 @@ class InteractionBlock(Serializable):
 
             if "design_module" in block_dict.keys():
                 block.design_module = DesignModule.create_design_module(block_dict["design_module"])
+
+            if "execution_result" in block_dict.keys():
+                block.execution_result = block_dict["execution_result"]
 
             if any('interaction' in k for k in block_dict.keys()):
                 block.interaction_start_time = block_dict['interaction_start_time']

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Interact with Pepper</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/w3.css">
+        <link rel="stylesheet" type="text/css" href="../css/formatting.css">
+        <link rel="stylesheet" href="../css/all.css">
+
+        <script src="/libs/qi/2/qi.js"></script>
+        <script src="../js/jquery.js"></script>
+        <script src="../js/qievents.js"></script>
+        <script src="../js/displayinfo.js"></script>
+    </head>
+    
+    <body>
+        <div class="w3-content" style="max-width:1100px">
+            <div class="w3-row">
+                <div>
+                    <div id="informationSection" class="w3-center">
+                        <hr />
+                        <h2 id="fieldTitle"></h2>
+                        <span>
+                            <input type="text" id="inputField" placeholder="Click here to input your text" size="50%" class="input-field"/>
+                            <button type="button" id="inputFieldNextButton" onclick="raiseInputFieldEvent()" class="fa rounded-rect-btn blue-btn" style="font-size:30px; padding: 10px;">
+                                <span class="fa-hand-point-right"><span class="default-font"> NEXT</span></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+    </body>
+    <script type="text/javascript">
+        updateInputField();
+    </script>
+</html>
+

@@ -2,7 +2,7 @@ import logging
 import sys
 
 from data_manager.controller.db_controller import DBController
-from robot_manager.worker_ir.engagement_worker import EngagementWorker
+from robot_manager.worker.irc.engagement_worker import EngagementWorker
 
 ROBOT_NAME = "NAO"
 ROBOT_REALM = None

@@ -13,13 +13,11 @@
 import logging
 import os
 
-from es_common.utils.qt import QtCore, QtGui, QtWidgets
-
-import es_common.hre_config as pconfig
 from block_manager.utils import config_helper as bconfig_helper
 from es_common.utils import date_helper
-from interaction_manager.controller.block_controller import ESBlockController
+from es_common.utils.qt import QtCore, QtGui, QtWidgets
 from interaction_manager.controller.database_controller import DatabaseController
+from interaction_manager.controller.es_block_controller import ESBlockController
 from interaction_manager.controller.interaction_controller import InteractionController
 from interaction_manager.controller.music_controller import MusicController
 from interaction_manager.controller.simulation_controller import SimulationController
@@ -31,6 +29,8 @@ from interaction_manager.controller.ui_robot_connection_controller import UIRobo
 from interaction_manager.controller.ui_spotify_connection_controller import UISpotifyConnectionController
 from interaction_manager.view.ui_dialog import Ui_DialogGUI
 
+SELECT_OPTION = "-- SELECT --"
+
 
 class UIController(QtWidgets.QMainWindow):
 
@@ -39,19 +39,16 @@ class UIController(QtWidgets.QMainWindow):
 
         self.logger = logging.getLogger("UIController")
 
-        self.image_viewer = None
         self.start_time = 0.0
-        self.interaction_blocks = []
         self.selected_block = None
         self.copied_block = None
-        self.is_simulation_mode = False  # TODO: replace by mode enums for simulation - playing - idle
 
-        self.interaction_design = None
-        self.allow_duplicates = True
-        self.volume = pconfig.default_voice_volume
-        self.database_controller = None
+        self.volume = 50.0
+        self.volume_increase = 5.0
+
         self.right_click_menu = None
 
+        self.database_controller = None
         self.block_controller = None
         self.interaction_controller = None
         self.simulation_controller = None
@@ -59,6 +56,10 @@ class UIController(QtWidgets.QMainWindow):
 
         # load stylesheet
         bconfig_helper.load_stylesheet()
+
+        # TODO: replace by mode enums for simulation - playing - idle
+        self.is_simulation_mode = False
+
         # init UI elements
         self._init_ui()
 
@@ -121,6 +122,9 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.interactionIntervalSpinBox.valueChanged.connect(
             lambda: self.update_setting(key="interactionInterval",
                                         value=float(self.ui.interactionIntervalSpinBox.value())))
+        self.ui.disengagementIntervalSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="disengagementInterval",
+                                        value=float(self.ui.disengagementIntervalSpinBox.value())))
 
         # UNDO/REDO
         # ---------
@@ -172,14 +176,14 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuSettingsDockView.triggered.connect(lambda: self.ui.settingsDockWidget.setHidden(False))
 
         # observe selected blocks
-        self.block_controller.on_block_selected_observable.add_observer(self.on_block_selected)
-        self.block_controller.on_no_block_selected_observable.add_observer(self.on_no_block_selected)
-        self.block_controller.start_block_observable.add_observer(self.on_invalid_action)
-        self.block_controller.add_invalid_edge_observer(self.on_invalid_action)
-        self.block_controller.add_on_scene_change_observer(self.on_scene_change)
-        # self.block_controller.block_settings_observable.add_observer(self.block_settings)
-        self.block_controller.block_editing_observable.add_observer(self.block_editing)
-        self.block_controller.add_right_click_block_observer(self.create_popup_menu)
+        self.block_controller.block_selected_observers.add_observer(self.on_block_selected)
+        self.block_controller.no_block_selected_observers.add_observer(self.on_no_block_selected)
+        self.block_controller.start_block_observers.add_observer(self.on_invalid_action)
+        self.block_controller.invalid_edge_observers.add_observer(self.on_invalid_action)
+        self.block_controller.scene_change_observers.add_observer(self.on_scene_change)
+        # self.block_controller.block_settings_observers.add_observer(self.block_settings)
+        self.block_controller.block_editing_observers.add_observer(self.block_editing)
+        self.block_controller.right_click_block_observers.add_observer(self.create_popup_menu)
 
     def _setup_interaction_controller(self):
         self.interaction_controller = InteractionController(block_controller=self.block_controller)
@@ -221,12 +225,8 @@ class UIController(QtWidgets.QMainWindow):
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=False)
                     self._enable_buttons([self.ui.actionMenuDisconnect], enabled=True)
 
-                    self.update_setting(key="speechCertainty", value=float(self.ui.speechCertaintySpinBox.value()))
-                    self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value()))
-                    self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value()))
-                    self.update_setting(key="faceSize", value=round(float(self.ui.faceSizeDoubleSpinBox.value()), 2))
-                    self.update_setting(key="interactionInterval",
-                                        value=float(self.ui.interactionIntervalSpinBox.value()))
+                    self._update_interaction_settings()
+
                     self._display_message(message="Successfully connected to the robot.")
                 else:
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=True)
@@ -344,7 +344,7 @@ class UIController(QtWidgets.QMainWindow):
         if self.music_controller.playlists is None or len(self.music_controller.playlists) == 0:
             return
         try:
-            self.ui.musicPlaylistComboBox.addItems([pconfig.SELECT_OPTION])
+            self.ui.musicPlaylistComboBox.addItems([SELECT_OPTION])
             self.ui.musicPlaylistComboBox.addItems([p for p in self.music_controller.playlists.keys()])
         except Exception as e:
             self._display_message(warning="Unable to load the playlists! {}".format(e))
@@ -353,10 +353,10 @@ class UIController(QtWidgets.QMainWindow):
         try:
             self.ui.musicTracksComboBox.clear()
             playlist = self.ui.musicPlaylistComboBox.currentText()
-            if playlist == "" or playlist == pconfig.SELECT_OPTION:
+            if playlist == "" or playlist == SELECT_OPTION:
                 return
 
-            self.ui.musicTracksComboBox.addItems([pconfig.SELECT_OPTION])
+            self.ui.musicTracksComboBox.addItems([SELECT_OPTION])
             self.ui.musicTracksComboBox.addItems([t for t in self.music_controller.playlists[playlist]["tracks"]])
 
             self.ui.musicPlayButton.setEnabled(False)
@@ -365,7 +365,7 @@ class UIController(QtWidgets.QMainWindow):
             self._display_message(warning="Unable to load tracks! {}".format(e))
 
     def enable_music_buttons(self):
-        if self.ui.musicTracksComboBox.currentText() != pconfig.SELECT_OPTION:
+        if self.ui.musicTracksComboBox.currentText() != SELECT_OPTION:
             # enable play button
             self._enable_buttons([self.ui.musicPlayButton], enabled=True)
         else:
@@ -427,6 +427,16 @@ class UIController(QtWidgets.QMainWindow):
         except Exception as e:
             self.logger.error("Error while updating {} to {} | {}".format(key, value, e))
 
+    def _update_interaction_settings(self):
+        self.update_setting(key="speechCertainty", value=float(self.ui.speechCertaintySpinBox.value()))
+        self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value()))
+        self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value()))
+        self.update_setting(key="faceSize", value=round(float(self.ui.faceSizeDoubleSpinBox.value()), 2))
+        self.update_setting(key="interactionInterval",
+                            value=float(self.ui.disengagementIntervalSpinBox.value()))
+        self.update_setting(key="disengagementInterval",
+                            value=float(self.ui.disengagementIntervalSpinBox.value()))
+
     # ----------- #
     # Robot Start
     # ----------- #
@@ -450,17 +460,17 @@ class UIController(QtWidgets.QMainWindow):
         self.repaint()
 
     def volume_up(self):
-        vol = self.volume + pconfig.volume_increase
+        vol = self.volume + self.volume_increase
         self.set_volume(vol)
         self._display_message("Volume set to: {}".format(self.volume))
 
     def volume_down(self):
-        vol = self.volume - pconfig.volume_increase
+        vol = self.volume - self.volume_increase
         self.set_volume(vol)
         self._display_message("Volume set to: {}".format(self.volume))
 
-    def set_volume(self, vol=pconfig.default_voice_volume):
-        if self._check_value(vol, pconfig.voice_volume_range[0], pconfig.voice_volume_range[1]) is True:
+    def set_volume(self, vol):
+        if self._check_value(vol, 0.0, 100.0) is True:
             self.volume = vol
             if self.interaction_controller is not None:
                 self.interaction_controller.robot_volume = vol
