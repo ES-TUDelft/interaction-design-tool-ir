@@ -1,7 +1,4 @@
-# interaction-design-tool-ir
-Interaction-Design tool for designing human-robot interactions
-
-# Interaction-Design Tool for ulti-Modal Robot Communication
+# Interaction-Design Tool for Multi-Modal Robot Communication
 
 This project provides a prototyping tool for designing interactions with social robots. The current version is compatible with the [Pepper Robot](https://www.ald.softbankrobotics.com/en/robots/pepper) and requires a license from [Interactive-Robotics](https://www.interactive-robotics.com). 
 
