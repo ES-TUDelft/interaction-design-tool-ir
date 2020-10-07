@@ -163,7 +163,6 @@ class InteractionController(object):
             self.stop_playing()
         except Exception as e:
             self.logger.error("Error while extracting disengaged data: {} | {}".format(data_dict, e))
-            self.stop_playing()
 
     def update_speech_certainty(self, speech_certainty=40.0):
         self.db_controller.update_one(self.db_controller.interaction_collection,
@@ -265,6 +264,9 @@ class InteractionController(object):
     def stop_playing(self):
         # self.tablet_image(hide=True)
         self.is_interacting = False
+        self.db_controller.update_one(self.db_controller.interaction_collection,
+                                      data_key="resumeEngagement",
+                                      data_dict={"resumeEngagement": True, "timestamp": time.time()})
 
         self.has_finished_playing_observers.notify_all(True)
         self.logger.info("Stopped interacting.")

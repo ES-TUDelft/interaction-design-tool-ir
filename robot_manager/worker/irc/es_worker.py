@@ -104,7 +104,7 @@ class ESWorker(object):
             "connectRobot": self.connect_robot,
             "disconnectRobot": self.disconnect_robot
         }
-
+        # Listen to the "interaction_collection"
         self.db_controller.start_db_stream(observers_dict=observers_dict,
                                            db_collection=self.db_controller.interaction_collection)
 

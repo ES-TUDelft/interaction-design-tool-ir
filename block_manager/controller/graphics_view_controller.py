@@ -125,11 +125,12 @@ class ESGraphicsViewController(QGraphicsView):
 
     def left_mouse_button_press(self, event):
         item = self.get_clicked_item(event)
+        # self.logger.debug("Item {} is clicked.".format(item))
 
-        # self.logger.debug("Item {} is clicked!".format(item))
         if hasattr(item, "block"):
+            self.logger.debug("Selected item block: {}".format(item.block))
             # send the item not the event
-            self.block_selected_observers.notify_all(event)
+            self.block_selected_observers.notify_all(item.block)
         else:
             self.no_block_selected_observers.notify_all(event)
 
@@ -311,7 +312,7 @@ class ESGraphicsViewController(QGraphicsView):
         # check the number of allowed edges for the each block
         if not (self.drag_start_socket.can_have_more_edges() and other_socket.can_have_more_edges()):
             self.invalid_edge_observers.notify_all("* The Edge cannot be created: "
-                                                    "The output has reached the max number of allowed edges!")
+                                                   "The output has reached the max number of allowed edges!")
             return False
 
         # connect to a block once

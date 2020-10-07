@@ -134,17 +134,19 @@ class BlockController(object):
             block.settings_observers.add_observer(self.on_block_settings)
             block.editing_observers.add_observer(self.on_block_editing)
 
-    def on_block_selected(self, event):
-        if type(event) is Block:
-            self.logger.debug("Block '{}' is selected. | id = {}".format(event.title, event.id))
-            self.block_selected_observers.notify_all(event)
+    def on_block_selected(self, block):
+        if type(block) is Block:
+            self.logger.debug("Block '{}' is selected. | id = {}".format(block.title, block.id))
+
+            self.update()
+            self.block_selected_observers.notify_all(block)
         else:
-            self.on_no_block_selected(event)
+            self.on_no_block_selected(block)
 
     def on_no_block_selected(self, event):
-        item = self.get_item_at(event.pos())
-        self.logger.debug("No block is selected | {}".format(item))
+        self.logger.debug("No block is selected: {}".format(event))
 
+        self.update()
         self.no_block_selected_observers.notify_all(event)
 
     def on_block_settings(self, block):
@@ -164,7 +166,13 @@ class BlockController(object):
         self.invalid_edge_observers.notify_all(event)
 
     def on_scene_change(self, event):
+        self.logger.debug("Received notification for 'scene change': {}".format(event))
+
+        self.update()
         self.scene_change_observers.notify_all(event)
+
+    def update(self):
+        self.block_widget.update()
 
     def get_block(self, pattern=None):
         if pattern is None:
@@ -193,8 +201,6 @@ class BlockController(object):
 
     def store(self, description):
         self.scene.store(description=description)
-
-        self.block_widget.repaint()
 
     def save_blocks(self, filename):
         self.scene.save_scene(filename=filename)

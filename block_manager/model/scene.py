@@ -53,8 +53,9 @@ class Scene(Serializable, Observable):
 
     def store(self, description):
         success = self.history.store(description)
-        if success is True:
-            self.notify_all("Stored scene")
+        # TODO: check to see if this condition is needed; delete otherwise.
+        # if success is True:
+        self.notify_all("Stored scene")
 
     def save_scene(self, filename):
         try:

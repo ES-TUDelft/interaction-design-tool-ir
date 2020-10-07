@@ -70,16 +70,24 @@ class EngagementWorker(ESWorker):
             "connectRobot": self.connect_robot,
             "disconnectRobot": self.disconnect_robot,
             "startEngagement": self.on_start_engagement,
+            "resumeEngagement": self.on_resume_engagement,
             "faceSize": self.on_face_size,
             "interactionInterval": self.on_interaction_interval
         }
-
+        # Listen to the "interaction_collection"
         self.db_controller.start_db_stream(observers_dict=observers_dict,
                                            db_collection=self.db_controller.interaction_collection)
 
     """
     Class methods
     """
+
+    def on_resume_engagement(self, data_dict=None):
+        try:
+            self.logger.info("Data received: {}".format(data_dict))
+            self.engagement_handler.face_detection(start=True)
+        except Exception as e:
+            self.logger.error("Error while resuming engagement: {}".format(e))
 
     def on_start_engagement(self, data_dict=None):
         try:
@@ -123,6 +131,8 @@ class EngagementWorker(ESWorker):
                 self.db_controller.update_one(self.db_controller.robot_collection,
                                               data_key="startInteraction",
                                               data_dict={"startInteraction": True, "timestamp": time.time()})
+                # pause face_detection
+                self.engagement_handler.face_detection(start=False)
         except Exception as e:
             self.logger.error("Error while checking isInteracting data: {}".format(e))
 

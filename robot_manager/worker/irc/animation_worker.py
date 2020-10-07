@@ -83,7 +83,7 @@ class AnimationWorker(ESWorker):
             "voiceSpeed": self.on_voice_speed,
             "disengagementInterval": self.on_disengagement_interval
         }
-
+        # Listen to the "interaction_collection"
         self.db_controller.start_db_stream(observers_dict=observers_dict,
                                            db_collection=self.db_controller.interaction_collection)
 
@@ -174,6 +174,9 @@ class AnimationWorker(ESWorker):
             # get the message
             message = interaction_block.message
             if message is None or message == "":
+                # reset web page
+                if self.has_tablet():
+                    yield self.tablet_handler.show_offline_page("index")
                 yield self.on_block_executed(val=True)
             else:
                 yield self.animate_message(interaction_block)
@@ -298,14 +301,17 @@ class AnimationWorker(ESWorker):
             self.logger.error("Error while extracting speech certainty data: {} | {}".format(data_dict, e))
 
     def is_engaged(self):
+        # TODO:
+        #       - test whether the face_detection process is blocking the robot animation
+        #       - in that case, provide a better solution!
         try:
             last_seen_data = self.db_controller.find_one(self.db_controller.robot_collection, data_key="isEngaged")
-            last_seen = time.time() - last_seen_data["timestamp"]
-            self.logger.info("Last Seen: {:.2f}s | Disengage after: {}s\n".format(last_seen, self.disengagement_interval))
-            if last_seen <= self.disengagement_interval:
-                return True
-
-            return False
+            # last_seen = time.time() - last_seen_data["timestamp"]
+            # self.logger.info("Last Seen: {:.2f}s | Disengage after: {}s\n".format(last_seen,
+            #                                                                       self.disengagement_interval))
+            # if last_seen <= self.disengagement_interval:
+            #     return True
+            return last_seen_data["isEngaged"]
         except Exception as e:
             self.logger.error("Error while fetching isEngaged data: {}".format(e))
             return False
