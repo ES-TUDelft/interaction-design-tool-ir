@@ -54,20 +54,7 @@ class InteractionBlock(Serializable):
         self.execution_result = ""
 
     def clone(self):
-        block = InteractionBlock()
-        block.name = self.name
-        block.pattern = self.pattern
-        block.message = self.message
-        block.topic_tag = self.topic_tag.clone()
-        block.tablet_page = self.tablet_page.clone()
-        block.speech_act = self.speech_act.clone()
-        block.icon_path = self.icon_path
-        block.block = copy.copy(self.block)
-
-        block.interaction_start_time = self.interaction_start_time
-        block.interaction_start_time = self.interaction_end_time
-
-        return block
+        return InteractionBlock.create_interaction_block(self.to_dict)
 
     def set_icon_path(self, icon_path):
         # TODO: use config file to retrieve the path
@@ -167,6 +154,9 @@ class InteractionBlock(Serializable):
 
     def has_interaction_module(self, module_name):
         return self.interaction_module_name == module_name
+
+    def get_combined_answers(self):
+        return self.topic_tag.get_combined_answers()
 
     # ===========
     # PROPERTIES

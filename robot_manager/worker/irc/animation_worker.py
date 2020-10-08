@@ -1,6 +1,7 @@
 import logging
 import time
 
+from autobahn.twisted import sleep
 from twisted.internet.defer import inlineCallbacks
 
 from es_common.model.interaction_block import InteractionBlock
@@ -37,7 +38,6 @@ class AnimationWorker(ESWorker):
                 self.tablet_handler = None
             else:
                 self.speech_handler = SpeechHandler(session=session)
-                self.speech_handler.block_completed_observers.add_observer(self.on_block_executed)
                 self.speech_handler.keyword_observers.add_observer(self.on_user_answer)
 
                 self.tablet_handler = TabletHandler(session=session)
@@ -113,10 +113,11 @@ class AnimationWorker(ESWorker):
     @inlineCallbacks
     def on_block_executed(self, val=None, execution_result=""):
         try:
-            yield self.db_controller.update_one(self.db_controller.robot_collection, data_key="isExecuted",
-                                                data_dict={
-                                                    "isExecuted": {"value": True, "executionResult": execution_result},
-                                                    "timestamp": time.time()})
+            self.db_controller.update_one(self.db_controller.robot_collection, data_key="isExecuted",
+                                          data_dict={
+                                              "isExecuted": {"value": True, "executionResult": execution_result},
+                                              "timestamp": time.time()})
+            yield sleep(1)
         except Exception as e:
             self.logger.error("Error while storing block completed: {}".format(e))
 
@@ -157,34 +158,47 @@ class AnimationWorker(ESWorker):
 
         # check if is still engaged
         if not self.is_engaged():
-            yield self.on_disengagement()
-            return False
+            return self.on_disengagement()
 
         try:
             interaction_block = self.get_interaction_block(data_dict=data_dict)
-            if interaction_block is None:
-                self.logger.info("Could not create an interaction block!")
-                return False
 
             # get the message
             message = interaction_block.message
             if message is None or message == "":
                 # reset web page
                 if self.has_tablet():
-                    self.tablet_handler.show_offline_page("index")
-                yield self.on_block_executed(val=True)
+                    self.set_web_view()
+                self.on_block_executed(val=True)
             else:
+                self.logger.info("Message to say: {}".format(message))
                 if self.has_tablet():
-                    yield self.set_web_view(tablet_page=interaction_block.tablet_page)
-                yield self.animate_message(interaction_block)
+                    self.set_web_view(tablet_page=interaction_block.tablet_page)
+
+                speech_event = self.speech_handler.animated_say(message=message)
+                self.logger.info("Speech Event: {}".format(speech_event))
+
+                # check if user answers or tablet_input are needed
+                if "input" in interaction_block.pattern and self.has_tablet():
+                    self.logger.info("Wait for input from tablet...")
+                    yield self.tablet_handler.input_stream(start=True)
+                elif interaction_block.topic_tag.topic == "":
+                    # time.sleep(1)  # to keep the API happy :)
+                    yield speech_event.addCallback(self.on_block_executed)
+                else:
+                    keywords = interaction_block.get_combined_answers()
+                    self.speech_handler.current_keywords = keywords
+
+                    yield speech_event.addCallback(self.speech_handler.on_start_listening)
+                # yield self.animate_message(interaction_block)
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
+            self.on_block_executed()
 
-    @inlineCallbacks
     def on_disengagement(self):
         self.logger.info("User is disengaged... Stop interacting!")
-        yield self.speech_handler.animated_say(message="Oops, looks like you left. Goodbye!")
-        yield self.animation_handler.reset_posture()
+        self.speech_handler.animated_say(message="Oops, looks like you left. Goodbye!")
+        self.animation_handler.reset_posture()
 
         if self.has_tablet():
             self.tablet_handler.show_webview(hide=True)
@@ -211,43 +225,20 @@ class AnimationWorker(ESWorker):
             self.logger.error("Error while creating the interaction block: {}".format(e))
             return None
 
-    @inlineCallbacks
-    def animate_message(self, interaction_block):
+    def set_web_view(self, tablet_page=None):
         try:
-            message = interaction_block.message
-            # update the block's message, if any
-            if "{answer}" in message and interaction_block.execution_result:
-                message = message.format(answer=interaction_block.execution_result.lower())
-            self.logger.info("Message to say: {}".format(message))
-
-            speech_event = self.speech_handler.animated_say(message=message)
-            self.logger.info("Speech Event: {}".format(speech_event))
-
-            # check if user answers or tablet_input are needed
-            if self.has_tablet() and "input" in interaction_block.pattern:
-                self.logger.info("Wait for input from tablet...")
-                yield self.tablet_handler.input_stream(start=True)
-            elif interaction_block.topic_tag.topic == "":
-                # time.sleep(1)  # to keep the API happy :)
-                yield speech_event.addCallback(self.on_block_executed)
+            if tablet_page is None:
+                page_name = "index"
+                url_params = ""
             else:
-                keywords = interaction_block.topic_tag.get_combined_answers()
-                self.speech_handler.current_keywords = keywords
+                page_name = tablet_page.name
+                url_params = "?{}{}{}".format(self.check_url_parameter("pageHeading", tablet_page.heading),
+                                              self.check_url_parameter("pageText", tablet_page.text),
+                                              self.check_url_parameter("pageImage", tablet_page.image))
 
-                yield speech_event.addCallback(self.speech_handler.on_start_listening)
-        except Exception as e:
-            self.logger.error("Error while executing robot message: {}".format(e))
-
-    def set_web_view(self, tablet_page):
-        if tablet_page is None:
-            return
-        try:
-            url_params = "?{}{}{}".format(self.check_url_parameter("pageHeading", tablet_page.heading),
-                                          self.check_url_parameter("pageText", tablet_page.text),
-                                          self.check_url_parameter("pageImage", tablet_page.image))
-            # self.logger.info(url_params)
             self.logger.info("Setting the robot's tablet.")
-            self.tablet_handler.show_offline_page(name=tablet_page.name, url_params=url_params)
+            self.tablet_handler.show_webview(TabletHandler.create_tablet_url(page_name=page_name,
+                                                                             url_params=url_params))
         except Exception as e:
             self.logger.error("Error while constructing the tablet URL: {}".format(e))
 

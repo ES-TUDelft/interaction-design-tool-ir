@@ -27,7 +27,6 @@ class SpeechHandler(object):
         self.session = session
 
         self.keyword_observers = Observable()
-        self.block_completed_observers = Observable()
 
         self.speech_certainty = 0.4
         self.voice_pitch = 100
@@ -86,18 +85,13 @@ class SpeechHandler(object):
         # start/close the keyword stream
         self.session.call("rom.optional.keyword.stream" if start else "rom.optional.keyword.close")
 
-    # BLOCKS
-    # =======
-    @inlineCallbacks
-    def on_block_completed(self, result=None):
-        self.logger.info("BlockCompleted callback - notifying observers")
-        yield self.block_completed_observers.notify_all(True)
+    # Listener
+    # =========
 
-    @inlineCallbacks
     def on_start_listening(self, results):
         self.is_listening = True
-        yield self.add_keywords(keywords=self.current_keywords)
-        yield self.keyword_stream(start=True)
+        self.add_keywords(keywords=self.current_keywords)
+        self.keyword_stream(start=True)
 
     # ======
     # SPEECH

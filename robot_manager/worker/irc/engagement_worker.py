@@ -125,7 +125,7 @@ class EngagementWorker(ESWorker):
             elapsed_time = time.time() - data_dict["timestamp"]
 
             if (data_dict["isInteracting"] is False) and (elapsed_time >= self.interaction_interval):
-                self.logger.info("Starting a new interaction...\n")
+                self.logger.info("Starting a new interaction after {}s...\n".format(elapsed_time))
 
                 # call for start new interaction
                 self.db_controller.update_one(self.db_controller.robot_collection,

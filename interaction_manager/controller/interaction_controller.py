@@ -216,9 +216,16 @@ class InteractionController(object):
                                                  "timestamp": time.time()})
 
     def customized_say(self, interaction_block):
+        if interaction_block is None:
+            return
+
+        block_to_execute = interaction_block.clone()
+        if "{answer}" in block_to_execute.message and block_to_execute.execution_result:
+            block_to_execute.message = block_to_execute.message.format(answer=block_to_execute.execution_result.lower())
+
         self.db_controller.update_one(self.db_controller.interaction_collection,
                                       data_key="interactionBlock",
-                                      data_dict={"interactionBlock": interaction_block.to_dict,
+                                      data_dict={"interactionBlock": block_to_execute.to_dict,
                                                  "timestamp": time.time()})
 
     # SPEECH
@@ -228,15 +235,6 @@ class InteractionController(object):
         if message is None:
             self.logger.info(to_say)
         self.animated_say(message=to_say)
-
-    # def on_engaged(self, data_dict=None):
-    #     try:
-    #         self.logger.info("isEngaged data received: {}".format(data_dict))
-    #         start = data_dict["isEngaged"]
-    #         self.interaction(start=start)
-    #     except Exception as e:
-    #         self.logger.error("Error while extracting isEngaged: {} | {}".format(data_dict, e))
-    #         self.execution_result = None
 
     def on_start_interaction(self, data_dict=None):
         if self.is_interacting:
@@ -286,48 +284,38 @@ class InteractionController(object):
             self.logger.error("Error while getting the start block: {}".format(e))
             return None
 
-    def execute_next_block(self, val=None):
-        if self.verify_current_interaction_block() is False:
-            return False
+    def execute_next_block(self):
+        try:
+            self.logger.info("Executing next block.\n")
+            self.block_controller.clear_selection()
+            connecting_edge = None
 
-        self.logger.info("Executing next block.\n")
-        self.block_controller.clear_selection()
-        connecting_edge = None
-
-        # check for remaining actions
-        if self.execute_action_command() is True:
-            return True
-
-        if self.previous_interaction_block is None:  # interaction has just started
-            self.previous_interaction_block = self.current_interaction_block
-        else:
-            # get the next block to say
-            self.current_interaction_block, connecting_edge = self.get_next_interaction_block()
-
-            # check if reached the end of the interaction_module
-            if self.current_interaction_block is None and self.previous_interaction_block:
-                if self.previous_interaction_block.is_hidden and self.interaction_module:
-                    self.current_interaction_block = self.interaction_module.origin_block
-                    self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
+            # check for remaining actions; otherwise, continue
+            if self.current_interaction_block.action_command and \
+                    self.current_interaction_block.execution_mode is ExecutionMode.EXECUTING:
+                self.execute_action_command()
+            else:
+                # check if the interaction has just started
+                if self.previous_interaction_block is None:
+                    self.previous_interaction_block = self.current_interaction_block
+                else:
+                    # get the next block to say
                     self.current_interaction_block, connecting_edge = self.get_next_interaction_block()
 
-            if self.verify_current_interaction_block() is False:
-                return False
+                if self.verify_current_interaction_block() is False:
+                    return False
 
-        # execute the block
-        self.current_interaction_block.execution_mode = ExecutionMode.EXECUTING
+                # change the block status
+                self.current_interaction_block.execution_mode = ExecutionMode.EXECUTING
+                # update selection
+                self.current_interaction_block.set_selected(True)
+                if connecting_edge is not None:
+                    connecting_edge.set_selected(True)
 
-        if not self.current_interaction_block.is_hidden:
-            self.current_interaction_block.set_selected(True)
-            if connecting_edge is not None:
-                connecting_edge.set_selected(True)
-
-        self.current_interaction_block.volume = self.robot_volume
-
-        # get the result from the execution
-        self.customized_say(interaction_block=self.current_interaction_block)
-
-        return True
+                # send a request to say the robot message
+                self.customized_say(interaction_block=self.current_interaction_block)
+        except Exception as e:
+            self.logger.error("Error while executing next block: {}".format(e))
 
     def get_next_interaction_block(self):
         if self.current_interaction_block is None:
@@ -338,27 +326,30 @@ class InteractionController(object):
 
         self.logger.info("Getting the next interaction block...")
         try:
-            self.logger.info("Module Name: {} | Mode: {}".
-                             format(self.current_interaction_block.design_module,
-                                    self.current_interaction_block.execution_mode))
+            # 1- Check for the design module and execute it
             if self.current_interaction_block.design_module and \
                     self.current_interaction_block.execution_mode is ExecutionMode.EXECUTING:
                 self.execute_interaction_module()
 
+            # 2- When the interaction module exists, get the next block from it
             if self.current_interaction_block.is_hidden and self.interaction_module:
                 connecting_edge = None
                 next_block = self.interaction_module.get_next_interaction_block(self.current_interaction_block,
                                                                                 self.execution_result)
-            else:
+                # check if reached the end of the interaction_module
+                if next_block is None and self.previous_interaction_block:
+                    self.current_interaction_block = self.interaction_module.origin_block
+
+            # 3- Otherwise, Get the next block from the current design
+            if next_block is None:
                 next_block, connecting_edge = self.current_interaction_block.get_next_interaction_block(
                     execution_result=self.execution_result)
 
-            # complete execution
+            # Change current block status
             self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
-
             # update previous block
             self.previous_interaction_block = self.current_interaction_block
-            # self.logger.info("Next block is: {}".format(next_block.message))
+
             return next_block, connecting_edge
         except Exception as e:
             self.logger.error("Error while getting the next block! {}".format(e))
@@ -399,16 +390,15 @@ class InteractionController(object):
 
     def execute_action_command(self):
         # check for remaining actions
-        if self.current_interaction_block.execution_mode is ExecutionMode.EXECUTING:
-            if self.current_interaction_block.has_action(action_type=ActionCommand.PLAY_MUSIC):
-                self.on_music_mode()
-                return True
-            elif self.current_interaction_block.has_action(action_type=ActionCommand.WAIT):
-                self.on_wait_mode()
-                return True
-            elif self.current_interaction_block.has_action(action_type=ActionCommand.GET_RESERVATIONS):
-                self.on_get_reservations()
-                return True
+        if self.current_interaction_block.has_action(action_type=ActionCommand.PLAY_MUSIC):
+            self.on_music_mode()
+            return True
+        elif self.current_interaction_block.has_action(action_type=ActionCommand.WAIT):
+            self.on_wait_mode()
+            return True
+        elif self.current_interaction_block.has_action(action_type=ActionCommand.GET_RESERVATIONS):
+            self.on_get_reservations()
+            return True
 
         return False
 
