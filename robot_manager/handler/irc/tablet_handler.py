@@ -55,31 +55,27 @@ class TabletHandler(object):
     def on_tablet_input(self, frame=None):
         if (not self.is_listening) and (frame is None or len(frame) == 0):
             self.logger.info("No frames!")
-            yield False
         else:
             try:
                 self.logger.info("Received Tablet Input: {}".format(frame["data"]))
                 self.is_listening = False
-                self.input_stream(start=False)
+                yield self.input_stream(start=False)
 
                 tablet_input = frame["data"]["body"]["text"]
                 if type(tablet_input) is bytes:
                     tablet_input = tablet_input.decode('utf-8')
 
-                self.show_offline_page()
+                yield self.show_offline_page()
                 self.tablet_input_observers.notify_all(tablet_input)
-
-                yield True
             except Exception as e:
                 self.logger.error("Error while getting the received tablet input: {}".format(e))
                 yield False
 
-    @inlineCallbacks
     def input_stream(self, start=False):
         self.logger.info("{} Tablet Input stream.".format("Starting" if start else "Closing"))
         self.is_listening = start
         # start/close the input stream
-        yield self.session.call("rom.optional.tablet_input.stream" if start else "rom.optional.tablet_input.close")
+        self.session.call("rom.optional.tablet_input.stream" if start else "rom.optional.tablet_input.close")
 
     def set_image(self, image_path="img/help_charger.png", hide=False):
         try:

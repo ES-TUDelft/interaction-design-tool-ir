@@ -40,8 +40,7 @@ class UIEditBlockController(QtWidgets.QDialog):
         self.music_controller = music_controller
         self.robot_controller = robot_controller
 
-        self.pattern = self.interaction_block.pattern.lower()
-        self.pattern_settings = config_helper.get_patterns()[self.pattern]
+        self.pattern_settings, self.pattern = self._get_pattern_settings(self.interaction_block.pattern.lower())
 
         # init UI elements
         self.ui = Ui_EditBlockDialog()
@@ -102,6 +101,15 @@ class UIEditBlockController(QtWidgets.QDialog):
         self.ui.topicNameComboBox.currentIndexChanged.connect(self.update_tags)
         self.ui.topicTagComboBox.currentIndexChanged.connect(self.update_pages)
         self.toggle_topic_tab()
+
+    def _get_pattern_settings(self, pattern_name):
+        patterns = config_helper.get_patterns()
+        pattern_settings = {}
+        for p in patterns.keys():
+            if pattern_name in p:
+                self.logger.info("Pattern found: {}".format(p))
+                return patterns[p], p
+        return {}, ""
 
     def toggle_topic_tab(self):
         topic_index = self.ui.tabWidget.indexOf(self.ui.tabWidget.findChild(QtWidgets.QWidget, 'topicTab'))
@@ -485,6 +493,7 @@ class UIEditBlockController(QtWidgets.QDialog):
     def get_interaction_block(self):
         d_block = self.interaction_block.clone()
         d_block.name = "{}".format(self.ui.patternLineEdit.text().strip())
+        d_block.pattern = "{}".format(self.ui.patternLineEdit.text().strip())
         d_block.description = "{}".format(self.ui.blockDescriptionLineEdit.text().strip())
         d_block.speech_act = self.get_speech_act()
         d_block.topic_tag = self.get_topic_tag()
@@ -500,6 +509,9 @@ class UIEditBlockController(QtWidgets.QDialog):
             return
 
         int_block.name = "{}".format(self.ui.patternLineEdit.text().strip())
+        int_block.pattern = "{}".format(self.ui.patternLineEdit.text().strip())
+        if int_block.block:
+            int_block.block.title = int_block.pattern.title()
         int_block.description = "{}".format(self.ui.blockDescriptionLineEdit.text().strip())
         int_block.speech_act = self.get_speech_act()
         int_block.topic_tag = self.get_topic_tag()

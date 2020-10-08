@@ -81,14 +81,15 @@ class EngagementWorker(ESWorker):
     """
     Class methods
     """
-
+    @inlineCallbacks
     def on_resume_engagement(self, data_dict=None):
         try:
             self.logger.info("Data received: {}".format(data_dict))
-            self.engagement_handler.face_detection(start=True)
+            yield self.engagement_handler.face_detection(start=True)
         except Exception as e:
             self.logger.error("Error while resuming engagement: {}".format(e))
 
+    @inlineCallbacks
     def on_start_engagement(self, data_dict=None):
         try:
             self.logger.info("Data received: {}".format(data_dict))
@@ -96,19 +97,17 @@ class EngagementWorker(ESWorker):
             if start is True:
                 self.logger.info("Engagement is started.")
                 self.engagement_handler.face_detected_observers.add_observer(self.on_face_detected)
-                self.engagement_handler.face_detection(start=True)
-                self.engagement_handler.face_tracker(start=True)
+                yield self.engagement_handler.face_detection(start=True)
+                yield self.engagement_handler.face_tracker(start=True)
             else:
                 self.logger.info("Engagement is disabled")
                 self.engagement_handler.face_detected_observers.remove_observer(self.on_face_detected)
-                self.engagement_handler.face_detection(start=False)
-                self.engagement_handler.face_tracker(start=False)
+                yield self.engagement_handler.face_detection(start=False)
+                yield self.engagement_handler.face_tracker(start=False)
         except Exception as e:
             self.logger.error("Error while extracting engagement data: {} | {}".format(data_dict, e))
 
     def on_face_detected(self, val=None):
-        # self.logger.info("Data received: {}".format(val))
-
         self.check_for_start_interaction()
 
         try:
@@ -119,6 +118,7 @@ class EngagementWorker(ESWorker):
         except Exception as e:
             self.logger.error("Error while storing isEngaged: {}".format(e))
 
+    @inlineCallbacks
     def check_for_start_interaction(self):
         try:
             data_dict = self.db_controller.find_one(self.db_controller.interaction_collection, "isInteracting")
@@ -132,7 +132,7 @@ class EngagementWorker(ESWorker):
                                               data_key="startInteraction",
                                               data_dict={"startInteraction": True, "timestamp": time.time()})
                 # pause face_detection
-                self.engagement_handler.face_detection(start=False)
+                yield self.engagement_handler.face_detection(start=False)
         except Exception as e:
             self.logger.error("Error while checking isInteracting data: {}".format(e))
 

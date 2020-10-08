@@ -30,7 +30,7 @@ module:
     topic: ""
     tags: []
     module: 1
-input:
+tablet_input:
     inputs: 1
     outputs: 1
     output_edges: 1

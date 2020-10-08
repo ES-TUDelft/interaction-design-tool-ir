@@ -61,9 +61,6 @@ class EngagementHandler(object):
             self.logger.error("Error while receiving the detected face: {}".format(e))
             yield sleep(1)
 
-        # yield self.session.call("rom.optional.tts.language", lang="en")
-        # yield self.session.call("rom.optional.tts.animate", text="I see you")
-
     def face_detection(self, start=False):
         # start/close the face stream
         self.session.call("rom.optional.face.stream" if start else "rom.optional.face.close")

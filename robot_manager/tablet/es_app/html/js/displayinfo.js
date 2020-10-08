@@ -6,12 +6,13 @@ function getUrlVars() {
     return vars;
 }
 
-function getUrlParam(parameter, defaultvalue){
-    var urlparameter = defaultvalue;
-    if(window.location.href.indexOf(parameter) > -1){
-        urlparameter = getUrlVars()[parameter];
-        }
-    return urlparameter;
+function getUrlParam(param, defaultVal){
+    var urlParam = defaultVal;
+
+    if (window.location.href.indexOf(param) > -1) {
+        urlParam = getUrlVars()[param];
+    }
+    return urlParam;
 }
 
 function displayPageInformation() {

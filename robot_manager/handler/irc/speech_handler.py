@@ -47,8 +47,7 @@ class SpeechHandler(object):
     @inlineCallbacks
     def on_keyword(self, frame):
         if (not self.is_listening) and (frame is None or len(frame) == 0):
-            self.logger.info("No frames needed!")
-            yield
+            self.logger.info("No frames!")
         else:
             try:
                 certainty = frame["data"]["body"]["certainty"]
@@ -58,101 +57,73 @@ class SpeechHandler(object):
 
                     if keyword in self.current_keywords:
                         self.logger.info("Detected keyword is in the list: {}".format(frame["data"]))
-                        self.is_listening = False
-                        self.clear_keywords()
 
+                        self.is_listening = False
+                        yield self.clear_keywords()
                         yield self.keyword_stream(start=False)
 
                         self.keyword_observers.notify_all(keyword)
-                        yield True
                     else:
                         self.logger.info("Keyword received '{}' is not in the list {}".format(
                             keyword, self.current_keywords))
-                        yield False
                 else:
                     self.logger.info("OnKeyword received with low certainty: {}".format(frame))
-                    yield False
             except Exception as e:
                 self.logger.error("Error while getting the received answer! | {}".format(e))
-                yield False
 
-    @inlineCallbacks
     def add_keywords(self, keywords=None):
-        # add keywords to listen to
-        if keywords is None:
-            yield False
-        else:
-            yield self.session.call("rom.optional.keyword.add", keywords=keywords)  # keywords = array of strings
+        # add keywords = [array of strings] to listen to
+        self.session.call("rom.optional.keyword.add", keywords=[] if keywords is None else keywords)
 
-    @inlineCallbacks
     def remove_keywords(self, keywords=None):
-        if keywords is None:
-            yield False
-        else:
-            yield self.session.call("rom.optional.keyword.remove", keywords=keywords)
+        self.session.call("rom.optional.keyword.remove", keywords=[] if keywords is None else keywords)
 
-    @inlineCallbacks
     def clear_keywords(self):
         self.current_keywords = []
-        yield self.session.call("rom.optional.keyword.clear")
+        self.session.call("rom.optional.keyword.clear")
 
-    @inlineCallbacks
     def keyword_stream(self, start=False):
-        self.logger.info("{} keyword stream.".format("Starting" if start else "Closing"))
-        self.is_listening = start
         # start/close the keyword stream
-        yield self.session.call("rom.optional.keyword.stream" if start else "rom.optional.keyword.close")
-
-    @inlineCallbacks
-    def reset_keyword_stream(self):
-        self.clear_keywords()
-        yield self.keyword_stream(start=False)
+        self.session.call("rom.optional.keyword.stream" if start else "rom.optional.keyword.close")
 
     # BLOCKS
     # =======
     @inlineCallbacks
     def on_block_completed(self, result=None):
         self.logger.info("BlockCompleted callback - notifying observers")
-        self.block_completed_observers.notify_all(True)
-        yield True
+        yield self.block_completed_observers.notify_all(True)
 
     @inlineCallbacks
     def on_start_listening(self, results):
+        self.is_listening = True
         yield self.add_keywords(keywords=self.current_keywords)
         yield self.keyword_stream(start=True)
 
     # ======
     # SPEECH
     # ======
-    @inlineCallbacks
     def say(self, message="Hi"):
         text = "\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed), message)
-        yield self.session.call("rom.optional.tts.say", text=text)
+        return self.session.call("rom.optional.tts.say", text=text)
 
-    @inlineCallbacks
     def animated_say(self, message="", animation_name=None):
-        yield self.session.call("rom.optional.tts.animate",
-                                text="\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed),
-                                                                      message))
+        text = "\\vct={}\\\\rspd={}\\{}".format(int(self.voice_pitch), int(self.voice_speed), message)
+        return self.session.call("rom.optional.tts.animate", text=text)
 
-    @inlineCallbacks
     def set_volume(self, level=50.0):
         vol = int(level) if level > 1 else int(level * 100)
         self.logger.info("Setting volume to: {}".format(vol))
-        yield self.session.call("rom.actuator.audio.volume", volume=vol)
+        self.session.call("rom.actuator.audio.volume", volume=vol)
 
-    @inlineCallbacks
     def set_language(self, name="en"):
         # switch to English
-        yield self.session.call(u'rom.optional.tts.language', lang="en")
-        yield self.session.call("rie.dialogue.config.language", lang="{}".format(name))
+        self.session.call(u'rom.optional.tts.language', lang="en")
+        self.session.call("rie.dialogue.config.language", lang="{}".format(name))
 
     # MEMORY
     def insert(self, data_dict=None):
-        if data_dict is None:
-            return
         try:
-            self.session.call("rom.optional.tts.insert_data", data_dict=data_dict)
+            self.session.call("rom.optional.tts.insert_data", data_dict={} if data_dict is None else data_dict)
         except Exception as e:
             self.logger.error("Error while inserting '{}' into memory: {}".format(data_dict, e))
 

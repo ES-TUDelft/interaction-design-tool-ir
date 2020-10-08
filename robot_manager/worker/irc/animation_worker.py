@@ -25,6 +25,7 @@ class AnimationWorker(ESWorker):
     """
     Override parent methods
     """
+
     @inlineCallbacks
     def on_connect(self, session, details=None):
         try:
@@ -90,6 +91,7 @@ class AnimationWorker(ESWorker):
     """
     Class methods
     """
+
     def on_user_answer(self, val=None):
         try:
             self.logger.debug("User Answer: {}".format(val))
@@ -111,11 +113,10 @@ class AnimationWorker(ESWorker):
     @inlineCallbacks
     def on_block_executed(self, val=None, execution_result=""):
         try:
-            self.db_controller.update_one(self.db_controller.robot_collection,
-                                          data_key="isExecuted",
-                                          data_dict={"isExecuted": {"value": True, "executionResult": execution_result},
-                                                     "timestamp": time.time()})
-            yield True
+            yield self.db_controller.update_one(self.db_controller.robot_collection, data_key="isExecuted",
+                                                data_dict={
+                                                    "isExecuted": {"value": True, "executionResult": execution_result},
+                                                    "timestamp": time.time()})
         except Exception as e:
             self.logger.error("Error while storing block completed: {}".format(e))
 
@@ -152,33 +153,29 @@ class AnimationWorker(ESWorker):
 
     @inlineCallbacks
     def on_interaction_block(self, data_dict=None):
+        self.logger.info("Received Interaction Block data.\n")
+
+        # check if is still engaged
+        if not self.is_engaged():
+            yield self.on_disengagement()
+            return False
+
         try:
-            self.logger.info("Received Interaction Block data.\n")
-
-            # check if is still engaged
-            if not self.is_engaged():
-                yield self.on_disengagement()
-                return False
-
             interaction_block = self.get_interaction_block(data_dict=data_dict)
             if interaction_block is None:
-                yield False
                 self.logger.info("Could not create an interaction block!")
                 return False
-
-            # set the tablet page, if any
-            # self.logger.info("Robot name: {}\n\n".format(self.robot_name))
-            if self.has_tablet():
-                yield self.set_web_view(tablet_page=interaction_block.tablet_page)
 
             # get the message
             message = interaction_block.message
             if message is None or message == "":
                 # reset web page
                 if self.has_tablet():
-                    yield self.tablet_handler.show_offline_page("index")
+                    self.tablet_handler.show_offline_page("index")
                 yield self.on_block_executed(val=True)
             else:
+                if self.has_tablet():
+                    yield self.set_web_view(tablet_page=interaction_block.tablet_page)
                 yield self.animate_message(interaction_block)
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
@@ -190,7 +187,7 @@ class AnimationWorker(ESWorker):
         yield self.animation_handler.reset_posture()
 
         if self.has_tablet():
-            yield self.tablet_handler.show_webview(hide=True)
+            self.tablet_handler.show_webview(hide=True)
 
         self.db_controller.update_one(self.db_controller.robot_collection,
                                       data_key="isDisengaged",
@@ -220,10 +217,9 @@ class AnimationWorker(ESWorker):
             message = interaction_block.message
             # update the block's message, if any
             if "{answer}" in message and interaction_block.execution_result:
-                self.logger.info("Adding '{}' to robot message.".format(interaction_block.execution_result))
                 message = message.format(answer=interaction_block.execution_result.lower())
-
             self.logger.info("Message to say: {}".format(message))
+
             speech_event = self.speech_handler.animated_say(message=message)
             self.logger.info("Speech Event: {}".format(speech_event))
 
@@ -242,22 +238,18 @@ class AnimationWorker(ESWorker):
         except Exception as e:
             self.logger.error("Error while executing robot message: {}".format(e))
 
-    @inlineCallbacks
     def set_web_view(self, tablet_page):
         if tablet_page is None:
-            yield False
-            return None
-
+            return
         try:
             url_params = "?{}{}{}".format(self.check_url_parameter("pageHeading", tablet_page.heading),
                                           self.check_url_parameter("pageText", tablet_page.text),
                                           self.check_url_parameter("pageImage", tablet_page.image))
             # self.logger.info(url_params)
-            yield self.tablet_handler.show_offline_page(name=tablet_page.name, url_params=url_params)
             self.logger.info("Setting the robot's tablet.")
+            self.tablet_handler.show_offline_page(name=tablet_page.name, url_params=url_params)
         except Exception as e:
             self.logger.error("Error while constructing the tablet URL: {}".format(e))
-            yield False
 
     def check_url_parameter(self, param_name, param_value):
         if param_value is not None and param_value != "":
@@ -315,4 +307,3 @@ class AnimationWorker(ESWorker):
         except Exception as e:
             self.logger.error("Error while fetching isEngaged data: {}".format(e))
             return False
-
