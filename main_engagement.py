@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from data_manager.controller.db_controller import DBController
+from data_manager.controller.db_stream_controller import DBStreamController
 from robot_manager.worker.irc.engagement_worker import EngagementWorker
 
 ROBOT_NAME = "NAO"
@@ -16,8 +16,8 @@ def main():
     robot_name = ROBOT_NAME
     robot_realm = ROBOT_REALM
 
-    db_controller = DBController()
-    conn_data = db_controller.find_one(coll=db_controller.interaction_collection, data_key="connectRobot")
+    db_stream_controller = DBStreamController()
+    conn_data = db_stream_controller.find_one(coll=db_stream_controller.interaction_collection, data_key="connectRobot")
     if conn_data:
         try:
             robot_name = conn_data["connectRobot"]["robotName"]

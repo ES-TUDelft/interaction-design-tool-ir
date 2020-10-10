@@ -10,7 +10,7 @@
 # **
 
 from interaction_manager.controller.ui_db_controller import UIDBController
-from interaction_manager.dataservice.mongo_dao import MongoDAO
+from data_manager.dao.mongo_dao import MongoDAO
 from interaction_manager.utils import config_helper
 
 

@@ -59,16 +59,16 @@ class AnimationWorker(ESWorker):
 
     def _update_interaction_settings(self):
         # update speech certainty
-        self.on_speech_certainty(
-            data_dict=self.db_controller.find_one(self.db_controller.interaction_collection, "speechCertainty"))
+        self.on_speech_certainty(data_dict=self.db_stream_controller.find_one(
+            self.db_stream_controller.interaction_collection, "speechCertainty"))
         # update voice settings
-        self.on_voice_pitch(
-            data_dict=self.db_controller.find_one(self.db_controller.interaction_collection, "voicePitch"))
-        self.on_voice_speed(
-            data_dict=self.db_controller.find_one(self.db_controller.interaction_collection, "voiceSpeed"))
+        self.on_voice_pitch(data_dict=self.db_stream_controller.find_one(
+            self.db_stream_controller.interaction_collection, "voicePitch"))
+        self.on_voice_speed(data_dict=self.db_stream_controller.find_one(
+            self.db_stream_controller.interaction_collection, "voiceSpeed"))
         # Disengagement
-        self.on_disengagement_interval(
-            data_dict=self.db_controller.find_one(self.db_controller.interaction_collection, "disengagementInterval"))
+        self.on_disengagement_interval(data_dict=self.db_stream_controller.find_one(
+            self.db_stream_controller.interaction_collection, "disengagementInterval"))
 
     def start_listening_to_db_stream(self):
         observers_dict = {
@@ -85,8 +85,8 @@ class AnimationWorker(ESWorker):
             "disengagementInterval": self.on_disengagement_interval
         }
         # Listen to the "interaction_collection"
-        self.db_controller.start_db_stream(observers_dict=observers_dict,
-                                           db_collection=self.db_controller.interaction_collection)
+        self.db_stream_controller.start_db_stream(observers_dict=observers_dict,
+                                                  db_collection=self.db_stream_controller.interaction_collection)
 
     """
     Class methods
@@ -104,7 +104,7 @@ class AnimationWorker(ESWorker):
         try:
             self.logger.debug("Tablet Input: {}".format(val))
             self.on_block_executed(val=True, execution_result=val)
-            # self.db_controller.update_one(self.db_controller.robot_collection,
+            # self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
             #                               data_key="tabletInput",
             #                               data_dict={"tabletInput": val, "timestamp": time.time()})
         except Exception as e:
@@ -113,10 +113,10 @@ class AnimationWorker(ESWorker):
     @inlineCallbacks
     def on_block_executed(self, val=None, execution_result=""):
         try:
-            self.db_controller.update_one(self.db_controller.robot_collection, data_key="isExecuted",
-                                          data_dict={
-                                              "isExecuted": {"value": True, "executionResult": execution_result},
-                                              "timestamp": time.time()})
+            self.db_stream_controller.update_one(self.db_stream_controller.robot_collection, data_key="isExecuted",
+                                                 data_dict={
+                                                     "isExecuted": {"value": True, "executionResult": execution_result},
+                                                     "timestamp": time.time()})
             yield sleep(1)
         except Exception as e:
             self.logger.error("Error while storing block completed: {}".format(e))
@@ -203,9 +203,9 @@ class AnimationWorker(ESWorker):
         if self.has_tablet():
             self.tablet_handler.show_webview(hide=True)
 
-        self.db_controller.update_one(self.db_controller.robot_collection,
-                                      data_key="isDisengaged",
-                                      data_dict={"isDisengaged": True, "timestamp": time.time()})
+        self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
+                                             data_key="isDisengaged",
+                                             data_dict={"isDisengaged": True, "timestamp": time.time()})
 
     def get_interaction_block(self, data_dict=None):
         if data_dict is None:
@@ -288,7 +288,8 @@ class AnimationWorker(ESWorker):
         #       - test whether the face_detection process is blocking the robot animation
         #       - in that case, provide a better solution!
         try:
-            last_seen_data = self.db_controller.find_one(self.db_controller.robot_collection, data_key="isEngaged")
+            last_seen_data = self.db_stream_controller.find_one(self.db_stream_controller.robot_collection,
+                                                                data_key="isEngaged")
             # last_seen = time.time() - last_seen_data["timestamp"]
             # self.logger.info("Last Seen: {:.2f}s | Disengage after: {}s\n".format(last_seen,
             #                                                                       self.disengagement_interval))

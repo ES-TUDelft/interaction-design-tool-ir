@@ -186,33 +186,30 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionMenuSave"/>
-   <addaction name="separator"/>
-   <addaction name="actionMenuCopy"/>
-   <addaction name="actionMenuPaste"/>
-   <addaction name="separator"/>
-   <addaction name="actionMenuClear"/>
-   <addaction name="separator"/>
    <addaction name="actionMenuConnect"/>
    <addaction name="actionMenuDisconnect"/>
    <addaction name="separator"/>
    <addaction name="actionMenuWakeUp"/>
    <addaction name="actionMenuRest"/>
-   <addaction name="separator"/>
    <addaction name="actionMenuEngage"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuDatabaseConnect"/>
+   <addaction name="actionMenuDatabaseDisconnect"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuMusic"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuSimulate"/>
    <addaction name="separator"/>
    <addaction name="actionMenuPlay"/>
    <addaction name="actionMenuStop"/>
    <addaction name="separator"/>
-   <addaction name="actionMenuVolumeDown"/>
-   <addaction name="actionMenuVolumeUp"/>
-   <addaction name="separator"/>
-   <addaction name="actionMenuSimulate"/>
-   <addaction name="separator"/>
-   <addaction name="actionMenuMusic"/>
+   <addaction name="actionMenuClear"/>
    <addaction name="separator"/>
    <addaction name="actionMenuImportBlocks"/>
    <addaction name="actionMenuExportBlocks"/>
+   <addaction name="separator"/>
+   <addaction name="actionMenuSave"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="blocksDockWidget">
@@ -1050,7 +1047,7 @@
    </property>
    <property name="icon">
     <iconset resource="hre_resources/resources.qrc">
-     <normaloff>:/hreresources/icons/connect.png</normaloff>:/hreresources/icons/connect.png</iconset>
+     <normaloff>:/hreresources/pepper-icons/pepper-standing-icon-green.png</normaloff>:/hreresources/pepper-icons/pepper-standing-icon-green.png</iconset>
    </property>
    <property name="text">
     <string>Connect</string>
@@ -1062,7 +1059,7 @@
    </property>
    <property name="icon">
     <iconset resource="hre_resources/resources.qrc">
-     <normaloff>:/hreresources/icons/disconnect1.png</normaloff>:/hreresources/icons/disconnect1.png</iconset>
+     <normaloff>:/hreresources/pepper-icons/pepper-standing-icon-grey.png</normaloff>:/hreresources/pepper-icons/pepper-standing-icon-grey.png</iconset>
    </property>
    <property name="text">
     <string>Disconnect</string>

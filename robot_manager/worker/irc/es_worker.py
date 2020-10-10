@@ -16,7 +16,7 @@ import time
 from autobahn.twisted import sleep
 from twisted.internet.defer import inlineCallbacks
 
-from data_manager.controller.db_controller import DBController
+from data_manager.controller.db_stream_controller import DBStreamController
 from es_common.enums.robot_enums import RobotName
 from robot_manager.handler.irc.connection_handler import ConnectionHandler
 
@@ -28,7 +28,7 @@ class ESWorker(object):
         self.robot_name = robot_name
         self.robot_realm = robot_realm
 
-        self.db_controller = DBController()
+        self.db_stream_controller = DBStreamController()
 
         self.connection_handler = None
 
@@ -78,18 +78,18 @@ class ESWorker(object):
     def exit_gracefully(self, data_dict=None):
         try:
             self.disconnect_robot()
-            self.db_controller.stop_db_stream()
-            self.db_controller.update_one(self.db_controller.interaction_collection,
-                                          data_key="isConnected",
-                                          data_dict={"isConnected": False, "timestamp": time.time()})
+            self.db_stream_controller.stop_db_stream()
+            self.db_stream_controller.update_one(self.db_stream_controller.interaction_collection,
+                                                 data_key="isConnected",
+                                                 data_dict={"isConnected": False, "timestamp": time.time()})
         except Exception as e:
             self.logger.error("Error while exiting: {}".format(e))
 
     def setup_db_stream(self):
         try:
-            self.db_controller.update_one(self.db_controller.robot_collection,
-                                          data_key="isConnected",
-                                          data_dict={"isConnected": True, "timestamp": time.time()})
+            self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
+                                                 data_key="isConnected",
+                                                 data_dict={"isConnected": True, "timestamp": time.time()})
 
             self.start_listening_to_db_stream()
             self.logger.info("Finished")
@@ -105,8 +105,8 @@ class ESWorker(object):
             "disconnectRobot": self.disconnect_robot
         }
         # Listen to the "interaction_collection"
-        self.db_controller.start_db_stream(observers_dict=observers_dict,
-                                           db_collection=self.db_controller.interaction_collection)
+        self.db_stream_controller.start_db_stream(observers_dict=observers_dict,
+                                                  db_collection=self.db_stream_controller.interaction_collection)
 
     def has_tablet(self):
         return True if self.robot_name.lower() == RobotName.PEPPER.name.lower() else False

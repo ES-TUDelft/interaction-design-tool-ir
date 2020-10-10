@@ -49,10 +49,11 @@ class EngagementWorker(ESWorker):
 
                 # update settings
                 self.on_face_size(
-                    data_dict=self.db_controller.find_one(self.db_controller.interaction_collection, "faceSize"))
+                    data_dict=self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
+                                                                 "faceSize"))
                 self.on_interaction_interval(
-                    data_dict=self.db_controller.find_one(self.db_controller.interaction_collection,
-                                                          "interactionInterval"))
+                    data_dict=self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
+                                                                 "interactionInterval"))
 
                 # Start listening to DB Stream
                 self.setup_db_stream()
@@ -75,12 +76,13 @@ class EngagementWorker(ESWorker):
             "interactionInterval": self.on_interaction_interval
         }
         # Listen to the "interaction_collection"
-        self.db_controller.start_db_stream(observers_dict=observers_dict,
-                                           db_collection=self.db_controller.interaction_collection)
+        self.db_stream_controller.start_db_stream(observers_dict=observers_dict,
+                                                  db_collection=self.db_stream_controller.interaction_collection)
 
     """
     Class methods
     """
+
     @inlineCallbacks
     def on_resume_engagement(self, data_dict=None):
         try:
@@ -111,26 +113,27 @@ class EngagementWorker(ESWorker):
         self.check_for_start_interaction()
 
         try:
-            self.db_controller.update_one(self.db_controller.robot_collection,
-                                          data_key="isEngaged",
-                                          data_dict={"isEngaged": True,
-                                                     "timestamp": time.time()})
+            self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
+                                                 data_key="isEngaged",
+                                                 data_dict={"isEngaged": True,
+                                                            "timestamp": time.time()})
         except Exception as e:
             self.logger.error("Error while storing isEngaged: {}".format(e))
 
     @inlineCallbacks
     def check_for_start_interaction(self):
         try:
-            data_dict = self.db_controller.find_one(self.db_controller.interaction_collection, "isInteracting")
+            data_dict = self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
+                                                           "isInteracting")
             elapsed_time = time.time() - data_dict["timestamp"]
 
             if (data_dict["isInteracting"] is False) and (elapsed_time >= self.interaction_interval):
                 self.logger.info("Starting a new interaction after {}s...\n".format(elapsed_time))
 
                 # call for start new interaction
-                self.db_controller.update_one(self.db_controller.robot_collection,
-                                              data_key="startInteraction",
-                                              data_dict={"startInteraction": True, "timestamp": time.time()})
+                self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
+                                                     data_key="startInteraction",
+                                                     data_dict={"startInteraction": True, "timestamp": time.time()})
                 # pause face_detection
                 yield self.engagement_handler.face_detection(start=False)
         except Exception as e:

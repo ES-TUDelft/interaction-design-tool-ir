@@ -58,5 +58,8 @@
         <file>icons/stats.png</file>
         <file>icons/music.png</file>
         <file>icons/smiley.png</file>
+        <file>pepper-icons/pepper-standing-icon.png</file>
+        <file>pepper-icons/pepper-standing-icon-green.png</file>
+        <file>pepper-icons/pepper-standing-icon-grey.png</file>
     </qresource>
 </RCC>
