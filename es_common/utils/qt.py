@@ -7,6 +7,8 @@ logger = logging.getLogger("Qt Import")
 try:
     # PyQt5
     from PyQt5 import QtGui, QtWidgets, QtCore
+    from PyQt5.QtTest import QTest
+    from PyQt5.QtCore import QCoreApplication, QEventLoop
     from PyQt5.QtCore import pyqtSignal as Signal, QTimer
     from PyQt5.QtCore import Qt, QThread, QRectF, QPointF
     from PyQt5.QtCore import QSize, Qt, QByteArray, QDataStream, QIODevice, QMimeData, QPoint

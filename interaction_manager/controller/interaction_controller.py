@@ -314,7 +314,6 @@ class InteractionController(object):
                 self.current_interaction_block.set_selected(True)
                 if connecting_edge is not None:
                     connecting_edge.set_selected(True)
-                self.block_controller.update()
 
                 # send a request to say the robot message
                 self.customized_say(interaction_block=self.current_interaction_block)

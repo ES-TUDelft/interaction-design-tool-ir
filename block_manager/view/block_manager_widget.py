@@ -47,6 +47,7 @@ class BlockManagerWidget(QWidget):
         self.setLayout(self.layout)
 
         self.setWindowTitle("Block Manager")
+        self.update()
 
     def update_elements(self):
         self.update()
@@ -61,6 +62,7 @@ class BlockManagerWidget(QWidget):
             self.right_click_block_observers.notify_all(event)
 
         super(BlockManagerWidget, self).contextMenuEvent(event)
+        self.update()
 
     def get_scene_position(self, mouse_position):
         try:
@@ -70,12 +72,14 @@ class BlockManagerWidget(QWidget):
 
     def zoom_scene(self, val):
         self.blocks_view.zoom_scene(delta_y=val)
+        self.update()
 
     def get_item_at(self, pos):
         return self.blocks_view.itemAt(pos)
 
     def delete_selected(self):
         self.blocks_view.delete_selected()
+        self.update()
 
     def clean_up(self):
         # called on exit
@@ -87,15 +91,20 @@ class BlockManagerWidget(QWidget):
     ###
     def on_drag_enter(self, event=None):
         self.drag_enter_observers.notify_all(event)
+        self.update()
 
     def on_drop(self, event=None):
         self.drop_observers.notify_all(event)
+        self.update()
 
     def on_block_selected(self, event=None):
         self.block_selected_observers.notify_all(event)
+        self.update()
 
     def on_no_block_selected(self, event=None):
         self.no_block_selected_observers.notify_all(event)
+        self.update()
 
     def on_invalid_edge(self, event=None):
         self.invalid_edge_observers.notify_all(event)
+        self.update()

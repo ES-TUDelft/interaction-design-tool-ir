@@ -549,8 +549,7 @@ class UIController(QtWidgets.QMainWindow):
         self._enable_buttons([self.ui.actionMenuCopy], enabled=True)
 
         self.logger.info("Received notification for 'block selected', refreshing GUI now!")
-        self.update()
-        self.block_controller.update()
+        self.update_gui()
 
     def on_no_block_selected(self, event):
         self.selected_block = None
@@ -558,8 +557,7 @@ class UIController(QtWidgets.QMainWindow):
         # disable copy/paste
         self._enable_buttons([self.ui.actionMenuCopy, self.ui.actionMenuPaste],
                              enabled=False)
-        self.update()
-        self.block_controller.update()
+        self.update_gui()
 
     def block_editing(self, block):
         if block is None:
@@ -576,8 +574,8 @@ class UIController(QtWidgets.QMainWindow):
             if edit_dialog.exec_():
                 edit_dialog.update_interaction_block(self.selected_block.parent)
 
-                self.update()
                 self.block_controller.store("Edited block")
+                self.update_gui()
         except Exception as e:
             self._display_message(error="Error while attempting to edit the block! {}".format(e))
 
@@ -702,7 +700,6 @@ class UIController(QtWidgets.QMainWindow):
     def backup_blocks(self):
         filename = "{}/logs/interaction.json".format(os.getcwd())
         self.block_controller.save_blocks(filename=filename)
-        self.block_controller.update()
 
     def save_blocks(self):
         filename = "{}/logs/blocks_{}.json".format(os.getcwd(), date_helper.get_day_and_month())
@@ -725,6 +722,11 @@ class UIController(QtWidgets.QMainWindow):
     ###
     # HELPER METHODS
     ###
+    def update_gui(self):
+        self.update()
+        # QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
+        # QTest.qWait(1)
+
     def get_robot_controller(self):
         if self.interaction_controller is None:
             return None
@@ -752,7 +754,6 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.logsTextEdit.append(to_display)
 
         self.update()
-        self.block_controller.update()
 
     def _enable_buttons(self, buttons=None, enabled=False):
         if buttons is None:

@@ -141,14 +141,12 @@ class BlockController(object):
         if type(block) is Block:
             self.logger.debug("Block '{}' is selected. | id = {}".format(block.title, block.id))
             self.block_selected_observers.notify_all(block)
-            self.update()
         else:
             self.on_no_block_selected(block)
 
     def on_no_block_selected(self, event):
         self.logger.debug("No block is selected: {}".format(event))
         self.no_block_selected_observers.notify_all(event)
-        self.update()
 
     def on_block_settings(self, block):
         if type(block) is Block:
@@ -169,7 +167,6 @@ class BlockController(object):
     def on_scene_change(self, event):
         self.logger.debug("Received notification for 'scene change': {}".format(event))
         self.scene_change_observers.notify_all(event)
-        self.update()
 
     def update(self):
         self.logger.info("Updating GUI elements.")
@@ -205,7 +202,6 @@ class BlockController(object):
 
     def store(self, description):
         self.scene.store(description=description)
-        self.update()
 
     def save_blocks(self, filename):
         self.scene.save_scene(filename=filename)
