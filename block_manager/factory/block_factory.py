@@ -11,21 +11,11 @@
 # **
 
 from block_manager.enums.block_enums import SocketType, EdgeType
-from block_manager.model.edge import Edge
 from block_manager.model.block import Block
-from block_manager.model.scene import Scene
-from block_manager.view.block_manager_widget import BlockManagerWidget
+from block_manager.model.edge import Edge
 
 
 class BlockFactory(object):
-
-    @staticmethod
-    def create_scene():
-        return Scene()
-
-    @staticmethod
-    def create_block_widget(scene, parent=None):
-        return BlockManagerWidget(scene=scene, parent=parent)
 
     @staticmethod
     def create_block(scene, title, num_in, num_out, pos, observer=None,

@@ -34,6 +34,7 @@ class BlockManagerWidget(QWidget):
 
         # Graphics View
         self.blocks_view = ESGraphicsViewController(self.scene.graphics_scene, self)
+
         # add observers
         self.blocks_view.drag_enter_observers.add_observer(self.on_drag_enter)
         self.blocks_view.drop_observers.add_observer(self.on_drop)
@@ -46,6 +47,10 @@ class BlockManagerWidget(QWidget):
         self.setLayout(self.layout)
 
         self.setWindowTitle("Block Manager")
+
+    def update_elements(self):
+        self.update()
+        # self.blocks_view.update()
 
     def contextMenuEvent(self, event):
         item = self.get_item_at(event.pos())

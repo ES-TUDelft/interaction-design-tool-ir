@@ -4,5 +4,5 @@ spotipy==2.9.0
 pymongo
 pyOpenSSL
 autobahn[twisted,serialization]
-PyQt5==5.15.0
+PyQt5
 service_identity

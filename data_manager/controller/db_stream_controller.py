@@ -29,11 +29,11 @@ class DBStreamController(object):
         """
         self.stop_db_stream()  # just in case it was already running
 
-        if target_thread == "qt":
-            from data_manager.thread.db_q_thread import DBChangeStreamQThread
-            self.db_change_thread = DBChangeStreamQThread()
-        else:
-            self.db_change_thread = DBChangeStreamThread()
+        # if target_thread == "qt":
+        #     from data_manager.thread.db_q_thread import DBChangeStreamQThread
+        #     self.db_change_thread = DBChangeStreamQThread()
+        # else:
+        self.db_change_thread = DBChangeStreamThread()
 
         self.db_change_thread.add_data_observers(observers_dict=observers_dict)
 
@@ -45,18 +45,19 @@ class DBStreamController(object):
         try:
             if self.db_change_thread is not None:
                 self.db_change_thread.stop_running()
+
+                time.sleep(1)
                 self.update_one(self.interaction_collection,
                                 data_key="dbChangeStreamStop",
                                 data_dict={"dbChangeStreamStop": False, "timestamp": time.time()})
-                # time.sleep(1)
-                # if self.db_change_thread and self.db_change_thread.is_alive():
-                #     self.logger.info("DB Thread is still alive!")
-
-                self.logger.info("DB Thread is stopped.")
+                self.update_one(self.robot_collection,
+                                data_key="dbChangeStreamStop",
+                                data_dict={"dbChangeStreamStop": False, "timestamp": time.time()})
+                self.logger.info("DB Thread is stopped: {}.".format(self.db_change_thread.is_listening))
         except Exception as e:
             self.logger.error("Error while stopping thread: {} | {}".format(self.db_change_thread, e))
-        finally:
-            self.db_change_thread = None
+        # finally:
+        #     self.db_change_thread = None
 
     def drop(self, coll=None):
         try:

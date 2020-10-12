@@ -12,26 +12,29 @@
 
 import logging
 
-from es_common.utils.qt import QtWidgets, QtCore, QtGui
-
 from block_manager.controller.block_list_controller import BlockListWidget
 from block_manager.enums.block_enums import EdgeType
 from block_manager.factory.block_factory import BlockFactory
 from block_manager.model.block import Block
+from block_manager.model.scene import Scene
 from block_manager.utils import config_helper
+from block_manager.view.block_manager_widget import BlockManagerWidget
 from es_common.model.observable import Observable
+from es_common.utils.qt import QtWidgets, QtCore, QtGui
 
 
 class BlockController(object):
     def __init__(self, parent_widget=None):
         self.logger = logging.getLogger("AppBlock Controller")
 
-        self.scene = BlockFactory.create_scene()
+        self.parent_widget = parent_widget
+        self.scene = Scene()
         self.scene.add_observer(self.on_scene_change)
 
         # widgets
         self.block_list_widget = BlockListWidget()
-        self.block_widget = BlockFactory.create_block_widget(scene=self.scene, parent=parent_widget)
+        self.block_widget = BlockManagerWidget(scene=self.scene, parent=parent_widget)
+
         # Add observers
         self.block_widget.drag_enter_observers.add_observer(self.on_drag_enter)
         self.block_widget.drop_observers.add_observer(self.on_drop)
@@ -137,17 +140,15 @@ class BlockController(object):
     def on_block_selected(self, block):
         if type(block) is Block:
             self.logger.debug("Block '{}' is selected. | id = {}".format(block.title, block.id))
-
-            self.update()
             self.block_selected_observers.notify_all(block)
+            self.update()
         else:
             self.on_no_block_selected(block)
 
     def on_no_block_selected(self, event):
         self.logger.debug("No block is selected: {}".format(event))
-
-        self.update()
         self.no_block_selected_observers.notify_all(event)
+        self.update()
 
     def on_block_settings(self, block):
         if type(block) is Block:
@@ -167,12 +168,15 @@ class BlockController(object):
 
     def on_scene_change(self, event):
         self.logger.debug("Received notification for 'scene change': {}".format(event))
-
-        self.update()
         self.scene_change_observers.notify_all(event)
+        self.update()
 
     def update(self):
-        self.block_widget.update()
+        self.logger.info("Updating GUI elements.")
+        try:
+            self.block_widget.update_elements()
+        except Exception as e:
+            self.logger.error("Error while updating GUI: {}".format(e))
 
     def get_block(self, pattern=None):
         if pattern is None:
@@ -201,6 +205,7 @@ class BlockController(object):
 
     def store(self, description):
         self.scene.store(description=description)
+        self.update()
 
     def save_blocks(self, filename):
         self.scene.save_scene(filename=filename)

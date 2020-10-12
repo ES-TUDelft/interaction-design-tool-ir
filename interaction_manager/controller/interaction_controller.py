@@ -80,13 +80,13 @@ class InteractionController(object):
     def disconnect(self):
         try:
             self.logger.info("Disconnecting...")
-            self.db_stream_controller.stop_db_stream()
 
             self.engagement(start=False)
+            self.db_stream_controller.stop_db_stream()
+
             self.db_stream_controller.update_one(self.db_stream_controller.interaction_collection,
                                                  data_key="disconnectRobot",
                                                  data_dict={"disconnectRobot": True, "timestamp": time.time()})
-            time.sleep(1)
             self.logger.info("Disconnection was successful.")
         except Exception as e:
             self.logger.error("Error while disconnecting: {}".format(e))
@@ -314,6 +314,7 @@ class InteractionController(object):
                 self.current_interaction_block.set_selected(True)
                 if connecting_edge is not None:
                     connecting_edge.set_selected(True)
+                self.block_controller.update()
 
                 # send a request to say the robot message
                 self.customized_say(interaction_block=self.current_interaction_block)

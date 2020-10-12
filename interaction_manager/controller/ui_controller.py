@@ -239,11 +239,8 @@ class UIController(QtWidgets.QMainWindow):
                 self._display_message(error="Connection is canceled!")
                 # if self.interaction_controller.is_connected() is False:
                 #     self.robot_disconnect()
-
-            self.update()
         except Exception as e:
             self._display_message(error="Error while attempting to connect to the robot! {}".format(e))
-            self.update()
 
     def robot_disconnect(self):
         try:
@@ -254,10 +251,8 @@ class UIController(QtWidgets.QMainWindow):
             self._enable_buttons([self.ui.actionMenuConnect], enabled=True)
             self._enable_buttons([self.ui.actionMenuDisconnect], enabled=False)
             self._display_message(message="### Disconnected from the robot.")
-            self.update()
         except Exception as e:
             self._display_message(error="Error while attempting to disconnect from the robot! {}".format(e))
-            self.update()
 
     # --------- #
     # MONGO DB
@@ -268,17 +263,21 @@ class UIController(QtWidgets.QMainWindow):
         message, error = self.database_controller.connect()
 
         if error is None:
-            self._display_message(message=message)
             self._enable_buttons([self.ui.actionMenuDatabaseDisconnect,
                                   self.ui.actionMenuSave, self.ui.actionMenuSaveAs],
                                  enabled=True)
             self._enable_buttons([self.ui.actionMenuDatabaseConnect], enabled=False)
+            self._display_message(message=message)
         else:
             self._display_message(error=error)
 
-        self.update()
-
     def database_disconnect(self):
+
+        self._enable_buttons([self.ui.actionMenuDatabaseDisconnect,
+                              self.ui.actionMenuSave, self.ui.actionMenuSaveAs],
+                             enabled=False)
+        self._enable_buttons([self.ui.actionMenuDatabaseConnect], enabled=True)
+
         if self.database_controller is None:
             self._display_message(message='Database was already disconnected')
         else:
@@ -287,13 +286,6 @@ class UIController(QtWidgets.QMainWindow):
                 self._display_message(message=message)
             else:
                 self._display_message(error=error)
-
-        self._enable_buttons([self.ui.actionMenuDatabaseDisconnect,
-                              self.ui.actionMenuSave, self.ui.actionMenuSaveAs],
-                             enabled=False)
-        self._enable_buttons([self.ui.actionMenuDatabaseConnect], enabled=True)
-
-        self.update()
 
     ####
     # SPOTIFY
@@ -307,7 +299,6 @@ class UIController(QtWidgets.QMainWindow):
 
             if spotify_dialog.exec_():
                 if spotify_dialog.success is True:
-                    self._display_message(message="Successfully connected to spotify.")
                     self.music_controller.username = spotify_dialog.username
                     self.music_controller.spotify = spotify_dialog.spotify
                     self.music_controller.playlists = spotify_dialog.playlists
@@ -317,17 +308,16 @@ class UIController(QtWidgets.QMainWindow):
                     # set focus on the music widget
                     self.ui.musicDockWidget.setFocus()
                     self.ui.musicDockWidget.raise_()
+                    self._display_message(message="Successfully connected to spotify.")
                 else:
-                    self._display_message(warning="Spotify is not connected!")
                     self.reset_music_player()
+                    self._display_message(warning="Spotify is not connected!")
             else:
                 self.reset_music_player()
-
-            self.update()
+                self._display_message(warning="Spotify is not connected!")
         except Exception as e:
-            self._display_message(error="Error while connecting to spotify! {}".format(e))
             self.reset_music_player()
-            self.update()
+            self._display_message(error="Error while connecting to spotify! {}".format(e))
 
     def reset_music_player(self):
         self._enable_buttons([self.ui.musicVolumeButton, self.ui.musicPlayButton,
@@ -447,20 +437,18 @@ class UIController(QtWidgets.QMainWindow):
         success = self.interaction_controller.wakeup_robot()
         self._toggle_buttons(is_awake=success)
         self._display_message(message="Robot is awake and ready for action.")
-        self.update()
 
     def rest(self):
         self.interaction_controller.rest_robot()
         self._toggle_buttons(is_awake=False)
         self._display_message(message="Robot is Resting")
-        self.update()
 
     # TOUCH
     # ------
     def enable_touch(self):
         self.interaction_controller.enable_touch()
         self._enable_buttons([self.ui.actionMenuEnableTouch], False)
-        self.update()
+        self._display_message(message="Touch sensors are enabled.")
 
     def volume_up(self):
         vol = self.volume + self.volume_increase
@@ -484,13 +472,13 @@ class UIController(QtWidgets.QMainWindow):
         self.interaction_controller.tablet_image(hide=False)
         self._enable_buttons([self.ui.actionMenuShowImage], enabled=False)
         self._enable_buttons([self.ui.actionMenuHideImage], enabled=True)
-        self.update()
+        self._display_message(message="Updating tablet's image")
 
     def hide_image_on_tablet(self):
         self.interaction_controller.tablet_image(hide=True)
         self._enable_buttons([self.ui.actionMenuShowImage], enabled=True)
         self._enable_buttons([self.ui.actionMenuHideImage], enabled=False)
-        self.update()
+        self._display_message(message="Hiding tablet's image")
 
     def verify_interaction_setup(self):
         # check if the scene contains a valid start block
@@ -554,7 +542,6 @@ class UIController(QtWidgets.QMainWindow):
     def on_scene_change(self, val):
         # backup scene
         self.backup_blocks()
-        self.update()
 
     def on_block_selected(self, block):
         self.selected_block = block
@@ -563,6 +550,7 @@ class UIController(QtWidgets.QMainWindow):
 
         self.logger.info("Received notification for 'block selected', refreshing GUI now!")
         self.update()
+        self.block_controller.update()
 
     def on_no_block_selected(self, event):
         self.selected_block = None
@@ -571,6 +559,7 @@ class UIController(QtWidgets.QMainWindow):
         self._enable_buttons([self.ui.actionMenuCopy, self.ui.actionMenuPaste],
                              enabled=False)
         self.update()
+        self.block_controller.update()
 
     def block_editing(self, block):
         if block is None:
@@ -587,11 +576,10 @@ class UIController(QtWidgets.QMainWindow):
             if edit_dialog.exec_():
                 edit_dialog.update_interaction_block(self.selected_block.parent)
 
+                self.update()
                 self.block_controller.store("Edited block")
-            self.update()
         except Exception as e:
             self._display_message(error="Error while attempting to edit the block! {}".format(e))
-            self.update()
 
     def copy_block(self):
         if self.selected_block is not None:
@@ -685,19 +673,15 @@ class UIController(QtWidgets.QMainWindow):
 
     def duplicate_block(self):
         # TODO: implement duplicating a block
+        self._display_message(message="Successfully duplicated the block.")
         # backup
         self.backup_blocks()
-
-        self._display_message(message="Successfully duplicated the block.")
-        self.update()
 
     def clear_blocks(self):
         # Ask for confirmation
         confirmation_dialog = UIConfirmationDialogController(message="All blocks will be deleted!")
         if confirmation_dialog.exec_():
             self.block_controller.clear_scene()
-
-            self.update()
 
     def insert_interaction_design(self, design):
         success = self.database_controller.insert_interaction_design(design=design)
@@ -718,6 +702,7 @@ class UIController(QtWidgets.QMainWindow):
     def backup_blocks(self):
         filename = "{}/logs/interaction.json".format(os.getcwd())
         self.block_controller.save_blocks(filename=filename)
+        self.block_controller.update()
 
     def save_blocks(self):
         filename = "{}/logs/blocks_{}.json".format(os.getcwd(), date_helper.get_day_and_month())
@@ -736,7 +721,6 @@ class UIController(QtWidgets.QMainWindow):
             self.block_controller.load_blocks_data(data=import_dialog.blocks_data)
 
             self._display_message(message="New blocks are imported.")
-            self.update()
 
     ###
     # HELPER METHODS
@@ -768,6 +752,7 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.logsTextEdit.append(to_display)
 
         self.update()
+        self.block_controller.update()
 
     def _enable_buttons(self, buttons=None, enabled=False):
         if buttons is None:

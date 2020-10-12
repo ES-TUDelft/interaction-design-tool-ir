@@ -39,5 +39,5 @@ if __name__ == "__main__":
                         stream=sys.stdout)
     try:
         main()
-    except RuntimeError:
-        pass
+    except KeyboardInterrupt:
+        sys.exit(0)

@@ -78,7 +78,7 @@ class IRCWorker(object):
         if self.connection_handler:
             self.logger.info("Disconnecting from robot...")
             self.connection_handler.stop_session()
-            time.sleep(5)
+            time.sleep(2)
             self.connection_handler = None
         self.logger.info("Disconnected from robot.")
 
