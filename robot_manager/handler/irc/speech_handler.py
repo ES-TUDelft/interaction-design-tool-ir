@@ -32,14 +32,12 @@ class SpeechHandler(object):
         self.voice_pitch = 100
         self.voice_speed = 85
 
-        # add a listener to the keyword stream
-        self.session.subscribe(self.on_keyword, "rom.optional.keyword.stream")
         self.current_keywords = []
         self.is_listening = False
         self.start_time = time.time()
 
-    def reset(self):
-        pass
+        # add a listener to the keyword stream
+        self.session.subscribe(self.on_keyword, "rom.optional.keyword.stream")
 
     # KEYWORDS
     # ========
@@ -88,7 +86,7 @@ class SpeechHandler(object):
     # Listener
     # =========
 
-    def on_start_listening(self, results):
+    def on_start_listening(self, results=None):
         self.is_listening = True
         self.add_keywords(keywords=self.current_keywords)
         self.keyword_stream(start=True)
@@ -110,17 +108,19 @@ class SpeechHandler(object):
         self.session.call("rom.actuator.audio.volume", volume=vol)
 
     def set_language(self, name="en"):
-        # switch to English
-        self.session.call(u'rom.optional.tts.language', lang="en")
+        self.session.call(u'rom.optional.tts.language', lang="{}".format(name))
         self.session.call("rie.dialogue.config.language", lang="{}".format(name))
 
     # MEMORY
+    # =======
     def insert(self, data_dict=None):
         try:
             self.session.call("rom.optional.tts.insert_data", data_dict={} if data_dict is None else data_dict)
         except Exception as e:
             self.logger.error("Error while inserting '{}' into memory: {}".format(data_dict, e))
 
+    # PROPERTIES
+    # ==========
     @property
     def speech_certainty(self):
         return self.__speech_certainty
@@ -130,16 +130,8 @@ class SpeechHandler(object):
         val = abs(float(val))
         self.__speech_certainty = val if (0 <= val <= 1) else (val / 100.0)
 
-    # =======
-    # HELPERS
-    # =======
-
-    def is_valid_string(self, value):
-        """
-        @return False if value is None or is equal to empty string; and True otherwise.
-        """
-        return False if (value is None or value.strip() == "") else True
-
+    # HELPER
+    # ======
     @inlineCallbacks
     def print_data(self, result):
         yield self.logger.info('Result received: {}'.format(result))

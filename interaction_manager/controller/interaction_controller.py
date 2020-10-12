@@ -51,16 +51,19 @@ class InteractionController(object):
         self.threads = []
         self.on_connected_observers = Observable()
 
-    def connect_to_robot(self, robot_name=None, robot_realm=None):
+        self.start_listening_to_db_stream()
+
+    def connect_to_robot(self, robot_name=None, robot_realm=None, robot_ip=None, robot_port=None):
         self.robot_name = robot_name
         self.robot_realm = robot_realm
 
         self.db_stream_controller.update_one(self.db_stream_controller.interaction_collection,
                                              data_key="connectRobot",
                                              data_dict={"connectRobot": {"robotName": self.robot_name,
-                                                                         "robotRealm": self.robot_realm},
+                                                                         "robotRealm": self.robot_realm,
+                                                                         "robotIP": robot_ip,
+                                                                         "robotPort": robot_port},
                                                         "timestamp": time.time()})
-        self.start_listening_to_db_stream()
 
     def on_connect(self, data_dict=None):
         try:

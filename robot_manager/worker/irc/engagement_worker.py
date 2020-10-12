@@ -5,7 +5,7 @@
 # ================= #
 # ENGAGEMENT_WORKER #
 # ================= #
-# Handler class for controlling HRI engagement
+# Worker class for controlling HRI engagement
 #
 # @author ES
 # **
@@ -16,12 +16,12 @@ import time
 from twisted.internet.defer import inlineCallbacks
 
 from robot_manager.handler.irc.engagement_handler import EngagementHandler
-from robot_manager.worker.irc.es_worker import ESWorker
+from robot_manager.worker.irc.irc_worker import IRCWorker
 
 
-class EngagementWorker(ESWorker):
-    def __init__(self, robot_name=None, robot_realm=None):
-        super().__init__(robot_name, robot_realm)
+class EngagementWorker(IRCWorker):
+    def __init__(self):
+        super().__init__()
 
         self.logger = logging.getLogger("EngagementWorker")
 

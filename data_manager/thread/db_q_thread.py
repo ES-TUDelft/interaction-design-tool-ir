@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # **
 #
-# ======================= #
-# DB_CHANGE_STREAM_THREAD #
-# ======================= #
+# ========================= #
+# DB_CHANGE_STREAM_Q_THREAD #
+# ========================= #
 # Threads for listening to db changes
 #
 # @author ES
@@ -12,32 +12,37 @@
 
 import logging
 import time
-from threading import Thread
 
 from pymongo.errors import PyMongoError
 
 from es_common.model.observable import Observable
+from es_common.utils.qt import QThread
 
 
-# ##
-# DBChangeStreamThread: inherits Thread
-###
-class DBChangeStreamThread(Thread):
-    is_listening = False
-
+# ###
+# DBChangeStreamQThread: inherits QThread
+#       This requires a Qt application to run
+# ###
+class DBChangeStreamQThread(QThread):
     def __init__(self):
-        Thread.__init__(self)
+        QThread.__init__(self)
 
-        self.logger = logging.getLogger("DBChangeStreamThread")
-
+        self.logger = logging.getLogger("DBChangeStreamQThread")
         self.change_stream = None
+        self.is_listening = False
         self._db_change_observers_dict = {}
+
+    def __del__(self):
+        try:
+            self.wait()
+        except RuntimeError as e:
+            self.logger.warning("{}".format(e))
 
     def stop_running(self):
         self.is_listening = False
 
     def start_listening(self, db_collection):
-        if not self.is_alive():
+        if not self.isRunning():
             self.is_listening = True
             self.change_stream = db_collection.watch(full_document='updateLookup')
             self.logger.info("Started listening to db changes in robot collection.")

@@ -3,7 +3,7 @@
 # **
 #
 # ================= #
-# ES_WORKER #
+# IRC_WORKER #
 # ================= #
 # Abstract worker class
 #
@@ -21,21 +21,27 @@ from es_common.enums.robot_enums import RobotName
 from robot_manager.handler.irc.connection_handler import ConnectionHandler
 
 
-class ESWorker(object):
-    def __init__(self, robot_name=None, robot_realm=None):
-        self.logger = logging.getLogger("ESWorker")
+class IRCWorker(object):
+    def __init__(self):
+        self.logger = logging.getLogger("IRCWorker")
 
-        self.robot_name = robot_name
-        self.robot_realm = robot_realm
-
+        self.robot_name, self.robot_realm = (None, ) * 2
         self.db_stream_controller = DBStreamController()
-
         self.connection_handler = None
 
         self.is_interacting = False
 
+        self.is_connected = False
+
     def connect_robot(self, data_dict=None):
         try:
+            if data_dict is None:
+                data_dict = self.db_stream_controller.find_one(coll=self.db_stream_controller.interaction_collection,
+                                                               data_key="connectRobot")
+
+            self.robot_name = data_dict["connectRobot"]["robotName"]
+            self.robot_realm = data_dict["connectRobot"]["robotRealm"]
+
             self.connection_handler = ConnectionHandler()
             self.connection_handler.session_observers.add_observer(self.on_connect)
 
@@ -59,6 +65,7 @@ class ESWorker(object):
                 yield sleep(1)
             else:
                 yield session.call("rom.optional.tts.say", text="Received the session in abstract worker.")
+                self.is_connected = True
 
                 # Start listening to DB Stream
                 self.setup_db_stream()

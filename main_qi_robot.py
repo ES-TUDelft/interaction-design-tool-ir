@@ -1,21 +1,22 @@
 import logging
 import sys
 
-from robot_manager.worker.irc.engagement_worker import EngagementWorker
+from robot_manager.worker.qi.animation_worker import AnimationWorker
 
-logger = logging.getLogger("EngagementMain")
+logger = logging.getLogger("QIRobotMain")
 
 
 def main():
-    global engagement_worker
+    global robot_worker
 
-    engagement_worker = EngagementWorker()
-    engagement_worker.connect_robot()
-    logger.info("Engagement Worker is up and running.")
+    robot_worker = AnimationWorker()
+    robot_worker.connect_robot()
+    robot_worker.run()
+    logger.info("Robot Worker is up and running.")
 
 
 if __name__ == '__main__':
-    global engagement_worker
+    global robot_worker
     logging.basicConfig(level=logging.INFO,
                         format="%(levelname)s %(filename)s:%(lineno)4d: %(message)s",
                         stream=sys.stdout)
@@ -27,4 +28,4 @@ if __name__ == '__main__':
         logger.error("Exception: {}".format(e))
     finally:
         logger.info("Disconnecting...")
-        engagement_worker.exit_gracefully()
+        robot_worker.exit_gracefully()

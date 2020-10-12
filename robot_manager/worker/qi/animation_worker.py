@@ -13,25 +13,21 @@
 import logging
 import time
 
-from autobahn.twisted import sleep
-from twisted.internet.defer import inlineCallbacks
-
 from es_common.model.interaction_block import InteractionBlock
-from robot_manager.handler.irc.animation_handler import AnimationHandler
-from robot_manager.handler.irc.speech_handler import SpeechHandler
-from robot_manager.handler.irc.tablet_handler import TabletHandler
-from robot_manager.worker.irc.irc_worker import IRCWorker
+from robot_manager.handler.qi.animation_handler import AnimationHandler
+from robot_manager.handler.qi.tablet_handler import TabletHandler
+from robot_manager.worker.qi.qi_worker import QIWorker
 
 
-class AnimationWorker(IRCWorker):
+class AnimationWorker(QIWorker):
     def __init__(self):
-        super().__init__()
+        super(AnimationWorker, self).__init__()
 
         self.logger = logging.getLogger("AnimationWorker")
 
-        self.speech_handler = None
-        self.tablet_handler = None
         self.animation_handler = None
+        self.tablet_handler = None
+
         self.disengagement_interval = 10.0  # disengage after x seconds
         self.interaction_block = None
 
@@ -39,35 +35,21 @@ class AnimationWorker(IRCWorker):
     Override parent methods
     """
 
-    @inlineCallbacks
-    def on_connect(self, session, details=None):
+    def connect_robot(self, data_dict=None):
         try:
-            self.logger.debug("Received session: {}".format(session))
+            super(AnimationWorker, self).connect_robot(data_dict=data_dict)
 
-            if session is None:
-                self.speech_handler = None
-                self.animation_handler = None
-                self.tablet_handler = None
-            else:
-                self.speech_handler = SpeechHandler(session=session)
-                self.speech_handler.keyword_observers.add_observer(self.on_user_answer)
-
-                self.tablet_handler = TabletHandler(session=session)
+            # set handlers and listeners
+            self.animation_handler = AnimationHandler(session=self.session)
+            if self.has_tablet():
+                self.tablet_handler = TabletHandler(session=self.session)
                 self.tablet_handler.tablet_input_observers.add_observer(self.on_tablet_input)
 
-                self.animation_handler = AnimationHandler(session=session)
+            self.speech_handler.keyword_observers.add_observer(self.on_user_answer)
 
-                self._update_interaction_settings()
-
-                # Start listening to DB Stream
-                self.setup_db_stream()
-
-                yield self.speech_handler.set_language("en")
-                yield self.speech_handler.animated_say("I am ready")
-
-                self.logger.info("Connection to the robot is successfully established.")
+            self._update_interaction_settings()
         except Exception as e:
-            yield self.logger.error("Error while setting the robot controller {}: {}".format(session, e))
+            self.logger.error("Error while connecting to robot: {}".format(e))
 
     def _update_interaction_settings(self):
         # update speech certainty
@@ -122,28 +104,27 @@ class AnimationWorker(IRCWorker):
         except Exception as e:
             self.logger.error("Error while storing tablet input: {}".format(e))
 
-    @inlineCallbacks
+    def on_speech_event(self, event_name=None, task_id=None, subscriber_identifier=None):
+        self.logger.info("Speech Event: {} | {} | {}".format(event_name, task_id, subscriber_identifier))
+        self.on_block_executed()
+
     def on_block_executed(self, val=None, execution_result=""):
         try:
             self.db_stream_controller.update_one(self.db_stream_controller.robot_collection, data_key="isExecuted",
                                                  data_dict={
                                                      "isExecuted": {"value": True, "executionResult": execution_result},
                                                      "timestamp": time.time()})
-            yield sleep(1)
         except Exception as e:
             self.logger.error("Error while storing block completed: {}".format(e))
 
-    @inlineCallbacks
     def on_wakeup(self, data_dict=None):
         self.logger.info("Waking up now!")
-        yield self.animation_handler.wakeup()
+        self.animation_handler.wakeup()
 
-    @inlineCallbacks
     def on_rest(self, data_dict=None):
         self.logger.info("Resting zzz")
-        yield self.animation_handler.rest()
+        self.animation_handler.rest()
 
-    @inlineCallbacks
     def on_animate(self, data_dict=None):
         try:
             self.logger.info("Data received: {}".format(data_dict))
@@ -151,20 +132,20 @@ class AnimationWorker(IRCWorker):
             animation_name = data_dict["animateRobot"]["animation"]
             message = data_dict["animateRobot"]["message"]
             if message is None or message == "":
-                yield self.animation_handler.execute_animation(animation_name=animation_name)
+                self.animation_handler.execute_animation(animation_name=animation_name)
             else:
-                yield self.speech_handler.animated_say(message=message)
+                self.speech_handler.animated_say(message=message, animation_name=animation_name)
         except Exception as e:
             self.logger.error("Error while extracting animate data: {} | {}".format(data_dict, e))
 
     def on_hide_tablet_image(self, data_dict=None):
         try:
             self.logger.info("Data received: {}".format(data_dict))
-            pass
+            if self.has_tablet():
+                self.tablet_handler.set_image(hide=True)
         except Exception as e:
             self.logger.error("Error while extracting tablet image: {} | {}".format(data_dict, e))
 
-    @inlineCallbacks
     def on_interaction_block(self, data_dict=None):
         self.logger.info("Received Interaction Block data.\n")
 
@@ -187,21 +168,19 @@ class AnimationWorker(IRCWorker):
                 if self.has_tablet():
                     self.set_web_view(tablet_page=interaction_block.tablet_page)
 
-                speech_event = self.speech_handler.animated_say(message=message)
-                self.logger.info("Speech Event: {}".format(speech_event))
+                self.speech_handler.animated_say(message=message)
 
                 # check if user answers or tablet_input are needed
                 if "input" in interaction_block.pattern and self.has_tablet():
                     self.logger.info("Wait for input from tablet...")
-                    yield self.tablet_handler.input_stream(start=True)
+                    self.tablet_handler.input_stream(start=True)
                 elif interaction_block.topic_tag.topic == "":
-                    # time.sleep(1)  # to keep the API happy :)
-                    yield speech_event.addCallback(self.on_block_executed)
+                    time.sleep(1)  # to keep the API happy :)
+                    self.on_speech_event()
                 else:
-                    keywords = interaction_block.get_combined_answers()
-                    self.speech_handler.current_keywords = keywords
-
-                    yield speech_event.addCallback(self.speech_handler.on_start_listening)
+                    self.speech_handler.current_keywords = interaction_block.get_combined_answers()
+                    # time.sleep(1)
+                    self.speech_handler.on_start_listening()
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
             self.on_block_executed()

@@ -252,7 +252,7 @@ class UIController(QtWidgets.QMainWindow):
             # update GUI
             # self._toggle_buttons(is_awake=False)
             self._enable_buttons([self.ui.actionMenuConnect], enabled=True)
-            self._enable_buttons([self.ui.actionMenuDisconnect, self.ui.actionMenuWakeUp], enabled=False)
+            self._enable_buttons([self.ui.actionMenuDisconnect], enabled=False)
             self._display_message(message="### Disconnected from the robot.")
             self.update()
         except Exception as e:

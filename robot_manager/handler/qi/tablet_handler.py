@@ -12,8 +12,6 @@
 
 import logging
 
-from twisted.internet.defer import inlineCallbacks
-
 from es_common.model.observable import Observable
 from es_common.utils import config_helper
 
@@ -25,36 +23,46 @@ class TabletHandler(object):
         self.logger = logging.getLogger("TabletHandler")
         self.session = session
 
-        # add a listener to the tablet input stream
-        self.session.subscribe(self.on_tablet_input, "rom.optional.tablet_input.stream")
+        self.tablet_service = self.session.service("ALTabletService")
+        self.memory = self.session.service("ALMemory")
+
+        # TODO: add a listener to the tablet input stream
+        self.tablet_input_listener = self.memory.subscriber("TabletInput")
+        self.tablet_input_listener.signal.connect(self.on_tablet_input)
+
         self.tablet_input_observers = Observable()
         self.is_listening = False
 
     def show_webview(self, url="https://www.google.com", hide=False):
         try:
             if hide is True:
-                self.session.call("rom.optional.tablet.stop")
+                self.tablet_service.hideWebview()
             else:
-                self.session.call("rom.optional.tablet.view", url=url)
+                # Enable tablet wifi and display the webpage
+                self.tablet_service.enableWifi()
+                self.tablet_service.showWebview(url)
         except Exception as e:
             self.logger.error(e)
 
-    @inlineCallbacks
-    def on_tablet_input(self, frame=None):
-        if (not self.is_listening) or (frame is None or len(frame) == 0):
-            self.logger.info("Not listening or no frames!")
+    def on_tablet_input(self, value=None):
+        self.logger.info("Tablet Input: {}".format(value))
+        if not self.is_listening:
+            self.logger.info("Not listening!")
+        elif not value:
+            self.logger.info("No input received!")
         else:
             try:
-                self.logger.info("Received Tablet Input: {}".format(frame["data"]))
+                self.logger.info("Received Tablet Input: {}".format(value))
                 self.is_listening = False
-                yield self.input_stream(start=False)
+                self.input_stream(start=False)
 
-                tablet_input = frame["data"]["body"]["text"]
+                tablet_input = value
                 if type(tablet_input) is bytes:
                     tablet_input = tablet_input.decode('utf-8')
 
                 url = TabletHandler.create_tablet_url(page_name="index")
-                yield self.show_webview(url=url)
+
+                self.show_webview(url=url)
                 self.tablet_input_observers.notify_all(tablet_input)
             except Exception as e:
                 self.logger.error("Error while getting the received tablet input: {}".format(e))
@@ -62,8 +70,7 @@ class TabletHandler(object):
     def input_stream(self, start=False):
         self.logger.info("{} Tablet Input stream.".format("Starting" if start else "Closing"))
         self.is_listening = start
-        # start/close the input stream
-        self.session.call("rom.optional.tablet_input.stream" if start else "rom.optional.tablet_input.close")
+        # TODO: start/close the input stream
 
     @staticmethod
     def create_tablet_url(page_name="index", url_params=None):
@@ -73,14 +80,19 @@ class TabletHandler(object):
         return url
 
     def set_image(self, image_path="img/help_charger.png", hide=False):
+        # If hide is false, display a local image located in img folder in the root of the robot
+        tablet_settings = config_helper.get_tablet_settings()
+        full_path = "http://{}/{}".format(tablet_settings["ip"], image_path)
+        self.logger.info("Image path: {}".format(full_path))
+
         try:
-            self.session.call("rom.optional.tablet.image", location=image_path, hide=hide)
+            self.tablet_service.hideImage() if hide is True else self.tablet_service.showImageNoCache(full_path)
         except Exception as e:
             self.logger.error("Error while setting tablet image: {}".format(e))
 
     def configure_wifi(self, security="WPA2", ssid="", key=""):
         try:
-            self.session.call("rom.optional.tablet.wifi", security=security, ssid=ssid, key=key)
+            self.tablet_service.configureWifi(security, ssid, key)
             self.logger.debug("Successfully configured the wifi.")
         except Exception as e:
             self.logger.error("Error while configuring the wifi! {}".format(e))

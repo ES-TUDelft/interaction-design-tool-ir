@@ -4,7 +4,7 @@ import time
 
 import pymongo
 
-from data_manager.thread.db_thread import DBChangeStreamThread, DBChangeStreamQThread
+from data_manager.thread.db_thread import DBChangeStreamThread
 
 env_name = "CHANGE_STREAM_ROBOT_DB"
 os.environ[env_name] = "mongodb://localhost:27017"
@@ -30,6 +30,7 @@ class DBStreamController(object):
         self.stop_db_stream()  # just in case it was already running
 
         if target_thread == "qt":
+            from data_manager.thread.db_q_thread import DBChangeStreamQThread
             self.db_change_thread = DBChangeStreamQThread()
         else:
             self.db_change_thread = DBChangeStreamThread()
@@ -37,6 +38,7 @@ class DBStreamController(object):
         self.db_change_thread.add_data_observers(observers_dict=observers_dict)
 
         self.db_change_thread.start_listening(db_collection)
+
         self.logger.info("Started listening to DB change stream.")
 
     def stop_db_stream(self):
