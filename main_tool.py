@@ -24,6 +24,7 @@ def main():
 
     win = UIController()
     win.show()
+    win.repaint()
     if app.exec_() == 0:
         print("Exec...")
         win.exit_gracefully()

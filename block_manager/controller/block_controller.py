@@ -168,10 +168,10 @@ class BlockController(object):
         self.logger.debug("Received notification for 'scene change': {}".format(event))
         self.scene_change_observers.notify_all(event)
 
-    def update(self):
+    def update_widget(self):
         self.logger.info("Updating GUI elements.")
         try:
-            self.block_widget.update_elements()
+            self.block_widget.update_widget()
         except Exception as e:
             self.logger.error("Error while updating GUI: {}".format(e))
 

@@ -486,8 +486,6 @@ class UIController(QtWidgets.QMainWindow):
         if block is None:
             self._display_message(error="The scene doesn't contain a starting block! "
                                         "Please add a 'START' block then click on play")
-        else:
-            self._display_message(message="Attempting to play the interaction!")
         return block
 
     def simulate_blocks(self):
@@ -723,7 +721,8 @@ class UIController(QtWidgets.QMainWindow):
     # HELPER METHODS
     ###
     def update_gui(self):
-        self.update()
+        self.block_controller.update_widget()
+        self.repaint()
         # QCoreApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
         # QTest.qWait(1)
 

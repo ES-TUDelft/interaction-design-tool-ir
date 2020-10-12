@@ -49,6 +49,9 @@ class ESGraphicsViewController(QGraphicsView):
         self.no_block_selected_observers = Observable()
         self.invalid_edge_observers = Observable()
 
+        self.update()
+        self.show()
+
     def _init_ui(self):
         self.setRenderHints(
             QPainter.Antialiasing | QPainter.HighQualityAntialiasing |

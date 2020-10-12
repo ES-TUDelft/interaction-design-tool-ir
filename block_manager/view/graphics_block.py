@@ -101,6 +101,7 @@ class ESGraphicsBlock(QGraphicsItem, Observable, object):
                 self.block.notify_all(self.block)
 
         super(ESGraphicsBlock, self).mousePressEvent(event)
+        self.update()
 
     def mouseMoveEvent(self, event):
         super(ESGraphicsBlock, self).mouseMoveEvent(event)
@@ -111,6 +112,7 @@ class ESGraphicsBlock(QGraphicsItem, Observable, object):
                 block.update_connected_edges()
 
         self.is_moved = True
+        self.update()
 
     def mouseReleaseEvent(self, event):
         super(ESGraphicsBlock, self).mouseReleaseEvent(event)
@@ -119,6 +121,7 @@ class ESGraphicsBlock(QGraphicsItem, Observable, object):
             self.is_moved = False
             self.logger.debug("Storing history on block move.")
             self.block.scene.store("Block moved")
+            self.update()
 
     @property
     def title(self):
