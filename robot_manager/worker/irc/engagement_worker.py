@@ -58,7 +58,10 @@ class EngagementWorker(IRCWorker):
                 # Start listening to DB Stream
                 self.setup_db_stream()
 
-                # switch to English
+                # start tracker
+                yield self.engagement_handler.face_tracker(start=True)
+
+                # switch to English and say message
                 yield session.call(u'rom.optional.tts.language', lang="en")
                 yield session.call("rom.optional.tts.say", text="Engagement worker is ready.")
 
@@ -100,7 +103,6 @@ class EngagementWorker(IRCWorker):
                 self.logger.info("Engagement is started.")
                 self.engagement_handler.face_detected_observers.add_observer(self.on_face_detected)
                 yield self.engagement_handler.face_detection(start=True)
-                yield self.engagement_handler.face_tracker(start=True)
             else:
                 self.logger.info("Engagement is disabled")
                 self.engagement_handler.face_detected_observers.remove_observer(self.on_face_detected)
