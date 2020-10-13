@@ -78,3 +78,30 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 ## I.5 Start the tool
 
 `$ python3 main_tool.py`
+
+## I.6 Start the robot workers
+
+   * Option A: using the interactive robotics cloud (Python 3)
+      
+      `$ python3 main_robot.py`
+      
+      `$ python3 main_engagement.py`
+      
+   * Option B: using qi framework (Python 2)
+      
+      - Download **Pepper SDK 2.5.10 - Python 2.7 SDK** from: [https://www.softbankrobotics.com/emea/en/support/pepper-naoqi-2-9/downloads-softwares](https://www.softbankrobotics.com/emea/en/support/pepper-naoqi-2-9/downloads-softwares)
+      
+      - Open a Terminal:
+      
+      `$ vim ~/.bashrc`
+      
+      `>> export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/home/PATH_TO_PYNAOQI/pynaoqi-python2.7-2.5.5.5-linux64/lib`
+      
+         ***Remember to set the PATH_TO_PYNAOQI to where you saved the Pepper SDK***
+         
+      `$ source ~/.bashrc`
+   
+      `$ pip2 install qi`
+      
+      `$ python2 main_qi_robot.py`
+      
