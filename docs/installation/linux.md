@@ -53,8 +53,9 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 `$ sudo vim /etc/mongod.conf`
 
 - Go to the section "# replication" and add the following:
-   `replication: `
-   `  replSetName: "rs0"`
+   
+      replication:
+        replSetName: "rs0"
    
 - Restart MongoDB:
 
@@ -97,7 +98,7 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
       
       `$ vim ~/.bashrc`
       
-      `>> export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/home/PATH_TO_PYNAOQI/pynaoqi-python2.7-2.5.5.5-linux64/lib`
+      `>> export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/home/PATH_TO_PYNAOQI/pynaoqi-python2.7-2.5.7.1-linux64/lib`
       
          ***Remember to set the PATH_TO_PYNAOQI to where you saved the Pepper SDK***
          
