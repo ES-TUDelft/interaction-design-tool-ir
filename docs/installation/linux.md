@@ -4,17 +4,17 @@
 
 `$ sudo apt-get install python3`
 
-## 2 Pip3
+## 2. Pip3
 
 `$ sudo apt-get install python3-pip`
 
-## 3 Requirements
+## 3. Requirements
 
    `$ cd ~/PATH_TO/interaction-design-tool-ir`
 
    `$ pip3 install -r requirements.txt`
 
-## 4 MongoDB
+## 4. MongoDB
 
 The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 
@@ -76,12 +76,12 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
    `> rs.status();`
 
 
-## 5 Start the tool
+## 5. Start the tool
 
 `$ python3 main_tool.py`
 
 
-## 6 Start the robot workers
+## 6. Start the robot workers
 
    * Option A: using the interactive robotics cloud (Python 3)
       
