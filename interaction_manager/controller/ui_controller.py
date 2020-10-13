@@ -14,7 +14,7 @@ import logging
 import os
 
 from block_manager.utils import config_helper as bconfig_helper
-from es_common.utils import date_helper
+from es_common.utils import date_helper, data_helper
 from es_common.utils.qt import QtCore, QtGui, QtWidgets
 from interaction_manager.controller.database_controller import DatabaseController
 from interaction_manager.controller.es_block_controller import ESBlockController
@@ -125,7 +125,6 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.disengagementIntervalSpinBox.valueChanged.connect(
             lambda: self.update_setting(key="disengagementInterval",
                                         value=float(self.ui.disengagementIntervalSpinBox.value())))
-
         # UNDO/REDO
         # ---------
         self.ui.actionMenuUndo.triggered.connect(self.on_undo)
@@ -155,6 +154,9 @@ class UIController(QtWidgets.QMainWindow):
 
         # enable buttons
         self._toggle_buttons(is_awake=False)
+
+        self.load_backup_file()
+        self.update()
 
     def _setup_block_manager(self):
         self.block_controller = ESBlockController(parent_widget=self)
@@ -211,7 +213,7 @@ class UIController(QtWidgets.QMainWindow):
     def exit_gracefully(self):
         self.logger.info("Exiting...")
         # add any other disconnection calls...
-        self.interaction_controller.disconnect()
+        self.interaction_controller.on_exit()
 
     # ---------- #
     # Connection
@@ -695,8 +697,16 @@ class UIController(QtWidgets.QMainWindow):
         if export_dialog.exec_():
             self._display_message(message="Successfully exported the interaction blocks.")
 
+    def load_backup_file(self):
+        try:
+            blocks_data = data_helper.load_data_from_file(data_helper.get_backup_filename())
+            self.block_controller.load_blocks_data(blocks_data)
+            self.logger.info("Loaded backup data.")
+        except Exception as e:
+            self.logger.error("Error while loading backup: {}".format(e))
+
     def backup_blocks(self):
-        filename = "{}/logs/interaction.json".format(os.getcwd())
+        filename = data_helper.get_backup_filename()
         self.block_controller.save_blocks(filename=filename)
 
     def save_blocks(self):

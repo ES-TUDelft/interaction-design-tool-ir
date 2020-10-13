@@ -1,5 +1,6 @@
 import logging
 import json
+import os
 from collections import OrderedDict
 
 logger = logging.getLogger("File_Helper")
@@ -24,6 +25,10 @@ def load_data_from_file(filename):
         logger.error("Error while loading data from file {} : {}".format(filename, e))
     finally:
         return data
+
+
+def get_backup_filename():
+    return "{}/logs/interaction.json".format(os.getcwd())
 
 
 # HELPER METHOD

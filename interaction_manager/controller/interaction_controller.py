@@ -80,10 +80,7 @@ class InteractionController(object):
     def disconnect(self):
         try:
             self.logger.info("Disconnecting...")
-
             self.engagement(start=False)
-            self.db_stream_controller.stop_db_stream()
-
             self.db_stream_controller.update_one(self.db_stream_controller.interaction_collection,
                                                  data_key="disconnectRobot",
                                                  data_dict={"disconnectRobot": True, "timestamp": time.time()})
@@ -92,6 +89,10 @@ class InteractionController(object):
             self.logger.error("Error while disconnecting: {}".format(e))
 
         return True
+
+    def on_exit(self):
+        self.logger.info("Exiting...")
+        self.db_stream_controller.stop_db_stream()
 
     def stop_all_threads(self):
         # close all threads
@@ -290,7 +291,7 @@ class InteractionController(object):
     def execute_next_block(self):
         try:
             self.logger.info("Executing next block.\n")
-            self.block_controller.clear_selection()
+            # self.block_controller.clear_selection()
             connecting_edge = None
 
             # check for remaining actions; otherwise, continue
@@ -311,9 +312,9 @@ class InteractionController(object):
                 # change the block status
                 self.current_interaction_block.execution_mode = ExecutionMode.EXECUTING
                 # update selection
-                self.current_interaction_block.set_selected(True)
-                if connecting_edge is not None:
-                    connecting_edge.set_selected(True)
+                # self.current_interaction_block.set_selected(True)
+                # if connecting_edge is not None:
+                #     connecting_edge.set_selected(True)
 
                 # send a request to say the robot message
                 self.customized_say(interaction_block=self.current_interaction_block)
