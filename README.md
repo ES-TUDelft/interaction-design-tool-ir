@@ -24,13 +24,17 @@ To use the tool you need to do the following:
   
   `$ cd ~/Documents/interaction-design-tool-ir`
   
-  `$ ./update_app.sh`
+  `$ ./scripts/update_app.sh`
   
-**D.** Launch the interface as follows:
+**D.** Launch the interface and robot workers as follows:
 
 `$ cd ~/Documents/interaction-design-tool-ir`
 
 `$ python3 main_tool.py`
+
+  - Click "Connect" to the robot and enter the settings (e.g., name, realm and/or IP) then run:
+
+`$ ./scripts/workers_irc.sh`
 
   * ***Note***: This repository is being updated on a regular basis. Use ***git pull*** to integrate the latest changes.
 
@@ -54,17 +58,27 @@ To use the tool you need to do the following:
 
 ## I. Installation Guide
 
-**TODO**
-
-Briefly: you need Python3 and pip3, then in a terminal do:
-
-  `$ pip3 install -r requirements.txt`
+Follow the instructions for [LINUX](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/linux.md) or [MAC](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/mac.md)
 
 ---
 
 ## II. Setting up Spotify
 
-**TODO**
+* Follow the instructions in the [setup Spotify document](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/spotify.md)
+
+* Once you're connected to **Spotify**, you'll be able to see your playlists and tracks.
+
+* To play a song (e.g., using the test button or the mini-player panel in the main interface), you will need an active device (i.e., a Spotify Player) that is running on either your browser or PC/Phone.
+
+* ***NOTE:*** When the player is not able to start a song, it means the device is not active. Just refresh your Spotify Player browser or the desktop app. 
+
+* (DISABLED in the current version) When playing music, you can set the robot to do some animations as follows:
+  
+  * Make one (or more) list of animations using the default ones available for the [Pepper robot](http://doc.aldebaran.com/2-5/naoqi/motion/alanimationplayer-advanced.html#pepp-pepper-list-of-animations-available-by-default).
+  
+  * Add your list of animations to [/interaction_manager/properties/animations.yaml](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/interaction_manager/properties/animations.yaml).
+  
+  * Create a music action (i.e., using the Action block) and enable the "animation" check box in the edit panel. 
 
 ---
 
