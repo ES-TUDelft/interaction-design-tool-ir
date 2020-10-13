@@ -16,7 +16,7 @@
 
 ## I.4 MongoDB
 
-The instructions below are based on: hhttps://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
+The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 
 - Open a Terminal and do:
 
