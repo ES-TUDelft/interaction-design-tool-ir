@@ -1,6 +1,6 @@
 # Interaction-Design Tool for Multi-Modal Robot Communication
 
-This project provides a prototyping tool for designing interactions with social robots. The current version is compatible with the [Pepper Robot](https://www.ald.softbankrobotics.com/en/robots/pepper) and requires a license from [Interactive-Robotics](https://www.interactive-robotics.com). 
+This project provides a prototyping tool for designing interactions with social robots. The current version of the tool requires Python3 and is compatible with the [Pepper and NAO Robots](https://www.ald.softbankrobotics.com/en/robots/pepper). Interacting with the robots can be via the qi framework (Python2) or the [Interactive-Robotics](https://www.interactive-robotics.com) cloud (Python3). 
 
 The tool was successfully tested on ***MAC*** and ***Linux*** (it should also work on ***Windows***).
 
@@ -16,7 +16,7 @@ To use the tool you need to do the following:
 
 `$ cd ~/Documents`
 
-`$ git clone https://github.com/ES-TUDelft/robot-interaction-tool.git`
+`$ git clone https://github.com/ES-TUDelft/interaction-design-tool-ir.git`
 
 **B.** Install the requirements as described in [Section I](#i-installation-guide)
 
