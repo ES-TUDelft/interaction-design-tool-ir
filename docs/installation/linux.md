@@ -69,12 +69,10 @@ The instructions below are based on: hhttps://docs.mongodb.com/manual/tutorial/i
 - Open a mongo shell and do:
    `$ mongo`
    
-   `> config = {`
-   `         _id = "robot-change-stream",`
-   `         members = [{_id: 0, host: "localhost:27017"}]`
-   `   };`
+   `> config = { _id = "robot-change-stream", members = [{_id: 0, host: "localhost:27017"}] };`
       
    `> rs.initiate();`
+   
    `> rs.status();`
 
 ## I.5 Start the tool
