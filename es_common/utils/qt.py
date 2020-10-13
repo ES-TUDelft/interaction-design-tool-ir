@@ -9,7 +9,7 @@ try:
     from PyQt5 import QtGui, QtWidgets, QtCore
     from PyQt5.QtTest import QTest
     from PyQt5.QtCore import QCoreApplication, QEventLoop
-    from PyQt5.QtCore import pyqtSignal as Signal, QTimer
+    from PyQt5.QtCore import pyqtSignal as Signal, QTimer, pyqtSlot as qtSlot
     from PyQt5.QtCore import Qt, QThread, QRectF, QPointF
     from PyQt5.QtCore import QSize, Qt, QByteArray, QDataStream, QIODevice, QMimeData, QPoint
     from PyQt5.QtGui import QPen, QBrush, QPainter, QPainterPath, QFont

@@ -15,7 +15,7 @@ import os
 
 from block_manager.utils import config_helper as bconfig_helper
 from es_common.utils import date_helper, data_helper
-from es_common.utils.qt import QtCore, QtGui, QtWidgets
+from es_common.utils.qt import QtCore, QtGui, QtWidgets, qtSlot
 from interaction_manager.controller.database_controller import DatabaseController
 from interaction_manager.controller.es_block_controller import ESBlockController
 from interaction_manager.controller.interaction_controller import InteractionController
@@ -218,6 +218,7 @@ class UIController(QtWidgets.QMainWindow):
     # ---------- #
     # Connection
     # ---------- #
+    @qtSlot()
     def robot_connect(self):
         try:
             connection_dialog = UIRobotConnectionController(self.interaction_controller)
@@ -244,6 +245,7 @@ class UIController(QtWidgets.QMainWindow):
         except Exception as e:
             self._display_message(error="Error while attempting to connect to the robot! {}".format(e))
 
+    @qtSlot()
     def robot_disconnect(self):
         try:
             self.interaction_controller.disconnect()
@@ -259,6 +261,7 @@ class UIController(QtWidgets.QMainWindow):
     # --------- #
     # MONGO DB
     # --------- #
+    @qtSlot()
     def database_connect(self):
         self.database_controller = DatabaseController()
 
@@ -273,6 +276,7 @@ class UIController(QtWidgets.QMainWindow):
         else:
             self._display_message(error=error)
 
+    @qtSlot()
     def database_disconnect(self):
 
         self._enable_buttons([self.ui.actionMenuDatabaseDisconnect,
@@ -292,6 +296,7 @@ class UIController(QtWidgets.QMainWindow):
     ####
     # SPOTIFY
     ###
+    @qtSlot()
     def spotify_connect(self):
         try:
             if self.music_controller is None:
@@ -359,6 +364,7 @@ class UIController(QtWidgets.QMainWindow):
         except Exception as e:
             self._display_message(warning="Unable to load tracks! {}".format(e))
 
+    @qtSlot()
     def enable_music_buttons(self):
         if self.ui.musicTracksComboBox.currentText() != SELECT_OPTION:
             # enable play button
@@ -368,6 +374,7 @@ class UIController(QtWidgets.QMainWindow):
             self._enable_buttons([self.ui.musicPlayButton], enabled=False)
         self.ui.musicDockWidget.update()
 
+    @qtSlot()
     def play_music(self):
         try:
             self.music_volume()
@@ -390,6 +397,7 @@ class UIController(QtWidgets.QMainWindow):
             self.ui.musicMessageLineEdit.setText("Unable to play!" if warning_msg is None else warning_msg)
             self._display_message("Error while playing {} | {}".format(self.ui.musicTracksComboBox.currentText(), e))
 
+    @qtSlot()
     def pause_music(self):
         try:
             success = self.music_controller.pause()
@@ -403,6 +411,7 @@ class UIController(QtWidgets.QMainWindow):
         except Exception as e:
             self._display_message("Error while playing {} | {}".format(self.ui.musicTracksComboBox, e))
 
+    @qtSlot()
     def music_volume(self):
         val = int(self.ui.musicVolumeSpinBox.value())
         self.music_controller.volume(val)
@@ -435,11 +444,13 @@ class UIController(QtWidgets.QMainWindow):
     # ----------- #
     # Robot Start
     # ----------- #
+    @qtSlot()
     def wakeup(self):
         success = self.interaction_controller.wakeup_robot()
         self._toggle_buttons(is_awake=success)
         self._display_message(message="Robot is awake and ready for action.")
 
+    @qtSlot()
     def rest(self):
         self.interaction_controller.rest_robot()
         self._toggle_buttons(is_awake=False)
@@ -447,16 +458,19 @@ class UIController(QtWidgets.QMainWindow):
 
     # TOUCH
     # ------
+    @qtSlot()
     def enable_touch(self):
         self.interaction_controller.enable_touch()
         self._enable_buttons([self.ui.actionMenuEnableTouch], False)
         self._display_message(message="Touch sensors are enabled.")
 
+    @qtSlot()
     def volume_up(self):
         vol = self.volume + self.volume_increase
         self.set_volume(vol)
         self._display_message("Volume set to: {}".format(self.volume))
 
+    @qtSlot()
     def volume_down(self):
         vol = self.volume - self.volume_increase
         self.set_volume(vol)
@@ -470,12 +484,14 @@ class UIController(QtWidgets.QMainWindow):
 
     # TABLET
     # ------
+    @qtSlot()
     def show_image_on_tablet(self):
         self.interaction_controller.tablet_image(hide=False)
         self._enable_buttons([self.ui.actionMenuShowImage], enabled=False)
         self._enable_buttons([self.ui.actionMenuHideImage], enabled=True)
         self._display_message(message="Updating tablet's image")
 
+    @qtSlot()
     def hide_image_on_tablet(self):
         self.interaction_controller.tablet_image(hide=True)
         self._enable_buttons([self.ui.actionMenuShowImage], enabled=True)
@@ -490,6 +506,7 @@ class UIController(QtWidgets.QMainWindow):
                                         "Please add a 'START' block then click on play")
         return block
 
+    @qtSlot()
     def simulate_blocks(self):
         if self.simulation_controller is None:
             self._setup_simulation_controller()
@@ -511,6 +528,7 @@ class UIController(QtWidgets.QMainWindow):
 
         super(UIController, self).keyPressEvent(event)
 
+    @qtSlot()
     def play_blocks(self):
         # if yes, send the request to the interaction controller
         block = self.verify_interaction_setup()
@@ -579,11 +597,13 @@ class UIController(QtWidgets.QMainWindow):
         except Exception as e:
             self._display_message(error="Error while attempting to edit the block! {}".format(e))
 
+    @qtSlot()
     def copy_block(self):
         if self.selected_block is not None:
             self.copied_block = self.selected_block
             # self.enable_paste_buttons()
 
+    @qtSlot()
     def paste_block(self):
         # if self.selected_block is not None and self.copied_block is not None:
         #     # TODO
@@ -597,20 +617,25 @@ class UIController(QtWidgets.QMainWindow):
     #
     # MENU ACTIONS
     # ============
+    @qtSlot()
     def on_file_new(self):
         self.block_controller.clear_scene()
 
+    @qtSlot()
     def on_undo(self):
         self.block_controller.undo()
         self.on_no_block_selected(None)
 
+    @qtSlot()
     def on_redo(self):
         self.block_controller.redo()
         self.on_no_block_selected(None)
 
+    @qtSlot()
     def on_delete(self):
         self.block_controller.delete_selected()
 
+    @qtSlot(int)
     def on_zoom(self, val):
         self.block_controller.zoom_scene(val=val)
 
@@ -675,6 +700,7 @@ class UIController(QtWidgets.QMainWindow):
         # backup
         self.backup_blocks()
 
+    @qtSlot()
     def clear_blocks(self):
         # Ask for confirmation
         confirmation_dialog = UIConfirmationDialogController(message="All blocks will be deleted!")
@@ -688,6 +714,7 @@ class UIController(QtWidgets.QMainWindow):
         else:
             self._display_message(error="Error while inserting interaction blocks.")
 
+    @qtSlot()
     def export_blocks(self):
         # TODO: get dict of blocks
         interaction_design = self.block_controller.get_serialized_scene()
@@ -709,12 +736,14 @@ class UIController(QtWidgets.QMainWindow):
         filename = data_helper.get_backup_filename()
         self.block_controller.save_blocks(filename=filename)
 
+    @qtSlot()
     def save_blocks(self):
         filename = "{}/logs/blocks_{}.json".format(os.getcwd(), date_helper.get_day_and_month())
 
         self.block_controller.save_blocks(filename=filename)
         self._display_message(message="Successfully saved the blocks!")
 
+    @qtSlot()
     def import_blocks(self):
         # open import dialog
         import_dialog = UIImportBlocksController()

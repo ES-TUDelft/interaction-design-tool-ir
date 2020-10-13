@@ -288,4 +288,4 @@ class AnimationWorker(QIWorker):
             return last_seen_data["isEngaged"]
         except Exception as e:
             self.logger.error("Error while fetching isEngaged data: {}".format(e))
-            return False
+            return True
