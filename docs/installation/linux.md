@@ -30,11 +30,12 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 
 `$ sudo apt-get install -y mongodb-org`
 
+
 - Check which init system is used by your platform:
 
 `$ ps --no-headers -o comm 1`
 
-  * Option 1) If you get: **systemd** then use the following command:
+    * Option 1) If you get: **systemd** then use the following command:
       
       `$ sudo systemctl start mongod`
       
@@ -42,7 +43,7 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
       
       `$ sudo systemctl status mongod`
       
-  * Option 2) If you get: **init** then do the following:
+    * Option 2) If you get: **init** then do the following:
   
       `$ sudo service mongod start`
       
