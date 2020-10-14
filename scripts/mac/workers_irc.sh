@@ -7,11 +7,13 @@ filenames=(
   "main_engagement.py"
 )
 
-
 # open scripts in new tabs
 for f in "${filenames[@]}"
 do
-  osascript -e 'tell application "Terminal"' -e 'tell application "System Events" to keystroke "t" using {command down}' -e 'do script "cd '"$d"'; python3 '"$f"'" in selected tab of the front window' -e 'end tell'
+  osascript -e 'tell application "Terminal"' \
+            -e 'tell application "System Events" to keystroke "t" using {command down}' \
+            -e 'do script "cd '"$d"'; python3 '"$f"'" in selected tab of the front window' \
+            -e 'end tell'
 done
 
 # echo "cd $d; python3 main_tool.py" > tmp_tool.sh ; chmod +x tmp_tool.sh ; # open -a Terminal tmp_tool.sh
