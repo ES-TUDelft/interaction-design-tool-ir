@@ -84,13 +84,17 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 
 ## 6. Start the robot workers
 
-   * Option A: using the interactive robotics cloud (Python 3)
+   * **Option A**: using the interactive robotics cloud (Python 3)
+      
+      `./scripts/linux/workers_irc.sh`
+      
+      ***OR***
       
       `$ python3 main_robot.py`
       
       `$ python3 main_engagement.py`
       
-   * Option B: using qi framework (Python 2)
+   * **Option B**: using qi framework (Python 2)
       
       - Download **Pepper SDK 2.5.10 - Python 2.7 SDK** from: [https://www.softbankrobotics.com/emea/en/support/pepper-naoqi-2-9/downloads-softwares](https://www.softbankrobotics.com/emea/en/support/pepper-naoqi-2-9/downloads-softwares)
       
@@ -106,5 +110,13 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
    
       `$ pip2 install qi`
       
+      - Run the tool using: 
+      
+      `$ ./scripts/linux/workers_qi.sh` 
+      
+      ***OR*** 
+      
       `$ python2 main_qi_robot.py`
+      
+      `$ python2 main_qi_engagement.py`
       
