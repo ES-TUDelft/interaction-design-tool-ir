@@ -79,7 +79,7 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 
 ## 5. Start the tool
 
-`$ python3 main_tool.py`
+`$ python3 main_tool.py` ***OR*** `./scripts/design_tool.sh`
 
 
 ## 6. Start the robot workers
