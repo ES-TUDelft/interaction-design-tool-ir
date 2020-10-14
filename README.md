@@ -32,7 +32,7 @@ Follow the instructions in [Section I](#i-installation-guide)
 
 `$ cd ~/Documents/interaction-design-tool-ir`
 
-`$ python3 main_tool.py`
+`$ python3 main_tool.py` ***OR*** `$ ./scripts/design_tool.sh`
 
   - Click "**Connect**" to the robot and enter the settings (e.g., name and realm or IP) then run:
   
