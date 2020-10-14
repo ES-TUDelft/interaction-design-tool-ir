@@ -108,8 +108,8 @@ class SpeechHandler(object):
         self.session.call("rom.actuator.audio.volume", volume=vol)
 
     def set_language(self, name="en"):
-        self.session.call(u'rom.optional.tts.language', lang="{}".format(name))
-        self.session.call("rie.dialogue.config.language", lang="{}".format(name))
+        self.session.call("rom.optional.tts.language", lang=u"{}".format(name))
+        self.session.call("rie.dialogue.config.language", lang=u"{}".format(name))
 
     # MEMORY
     # =======

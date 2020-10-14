@@ -19,3 +19,9 @@ class VoiceTag(ESEnum):
     VOLUME = "vol"
     PAUSE = "pau"
     RESET = "rst"
+
+
+class RobotLanguage(ESEnum):
+    ENGLISH = "en"
+    FRENCH = "fr"
+    DUTCH = "nl"

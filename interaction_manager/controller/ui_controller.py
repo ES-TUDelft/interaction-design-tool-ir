@@ -14,6 +14,7 @@ import logging
 import os
 
 from block_manager.utils import config_helper as bconfig_helper
+from es_common.enums.robot_enums import RobotLanguage
 from es_common.utils import date_helper, data_helper
 from es_common.utils.qt import QtCore, QtGui, QtWidgets, qtSlot
 from interaction_manager.controller.database_controller import DatabaseController
@@ -111,20 +112,9 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuVolumeDown.triggered.connect(self.volume_down)
 
         # SETTINGS
-        self.ui.speechCertaintySpinBox.valueChanged.connect(
-            lambda: self.update_setting(key="speechCertainty", value=float(self.ui.speechCertaintySpinBox.value())))
-        self.ui.voicePitchSpinBox.valueChanged.connect(
-            lambda: self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value())))
-        self.ui.voiceSpeedSpinBox.valueChanged.connect(
-            lambda: self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value())))
-        self.ui.faceSizeDoubleSpinBox.valueChanged.connect(
-            lambda: self.update_setting(key="faceSize", value=round(float(self.ui.faceSizeDoubleSpinBox.value()), 2)))
-        self.ui.interactionIntervalSpinBox.valueChanged.connect(
-            lambda: self.update_setting(key="interactionInterval",
-                                        value=float(self.ui.interactionIntervalSpinBox.value())))
-        self.ui.disengagementIntervalSpinBox.valueChanged.connect(
-            lambda: self.update_setting(key="disengagementInterval",
-                                        value=float(self.ui.disengagementIntervalSpinBox.value())))
+        # ---------
+        self._init_settings_widget()
+
         # UNDO/REDO
         # ---------
         self.ui.actionMenuUndo.triggered.connect(self.on_undo)
@@ -157,6 +147,28 @@ class UIController(QtWidgets.QMainWindow):
 
         self.load_backup_file()
         self.update()
+
+    def _init_settings_widget(self):
+        # Speech
+        self.ui.languageComboBox.clear()
+        self.ui.languageComboBox.addItems([k.title() for k in RobotLanguage.keys()])
+        self.ui.languageComboBox.currentIndexChanged.connect(
+            lambda: self.update_setting(key="robotLanguage", value=self.ui.languageComboBox.currentText()))
+        self.ui.voicePitchSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="voicePitch", value=float(self.ui.voicePitchSpinBox.value())))
+        self.ui.voiceSpeedSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="voiceSpeed", value=float(self.ui.voiceSpeedSpinBox.value())))
+        self.ui.speechCertaintySpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="speechCertainty", value=float(self.ui.speechCertaintySpinBox.value())))
+        # Engagement
+        self.ui.faceSizeDoubleSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="faceSize", value=round(float(self.ui.faceSizeDoubleSpinBox.value()), 2)))
+        self.ui.interactionIntervalSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="interactionInterval",
+                                        value=float(self.ui.interactionIntervalSpinBox.value())))
+        self.ui.disengagementIntervalSpinBox.valueChanged.connect(
+            lambda: self.update_setting(key="disengagementInterval",
+                                        value=float(self.ui.disengagementIntervalSpinBox.value())))
 
     def _setup_block_manager(self):
         self.block_controller = ESBlockController(parent_widget=self)
@@ -534,9 +546,15 @@ class UIController(QtWidgets.QMainWindow):
         block = self.verify_interaction_setup()
         if block is not None:
             self._display_message(message="Attempting to play the interaction!")
+
+            # set Language
+            self.update_setting(key="robotLanguage", value=self.ui.languageComboBox.currentText())
+
             self._enable_buttons([self.ui.actionMenuPlay], enabled=False)
             self._enable_buttons([self.ui.actionMenuStop], enabled=True)
             self.interaction_controller.robot_volume = self.volume
+
+            # Start
             self.interaction_controller.is_interacting = True
             self.interaction_controller.start_playing(int_block=block.parent)
 

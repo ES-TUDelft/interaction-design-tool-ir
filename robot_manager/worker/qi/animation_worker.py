@@ -13,6 +13,7 @@
 import logging
 import time
 
+from es_common.enums.robot_enums import RobotLanguage
 from es_common.model.interaction_block import InteractionBlock
 from robot_manager.handler.qi.animation_handler import AnimationHandler
 from robot_manager.handler.qi.speech_handler import SpeechHandler
@@ -50,7 +51,7 @@ class AnimationWorker(QIWorker):
 
             self.speech_handler.keyword_observers.add_observer(self.on_user_answer)
 
-            self.speech_handler.set_language(name="English")
+            self.speech_handler.set_language(name=RobotLanguage.ENGLISH.name.title())
             self.speech_handler.animated_say("I am up and running")
 
             self._update_interaction_settings()
@@ -82,6 +83,7 @@ class AnimationWorker(QIWorker):
             "speechCertainty": self.on_speech_certainty,
             "voicePitch": self.on_voice_pitch,
             "voiceSpeed": self.on_voice_speed,
+            "robotLanguage": self.on_robot_language,
             "disengagementInterval": self.on_disengagement_interval
         }
         # Listen to the "interaction_collection"
@@ -271,6 +273,13 @@ class AnimationWorker(QIWorker):
             self.speech_handler.voice_speed = data_dict["voiceSpeed"]
         except Exception as e:
             self.logger.error("Error while extracting voice speed data: {} | {}".format(data_dict, e))
+
+    def on_robot_language(self, data_dict=None):
+        try:
+            self.logger.info("Data received: {}".format(data_dict))
+            self.speech_handler.set_language(name=data_dict["robotLanguage"].title())
+        except Exception as e:
+            self.logger.error("Error while extracting language data: {} | {}".format(data_dict, e))
 
     def on_disengagement_interval(self, data_dict=None):
         try:
