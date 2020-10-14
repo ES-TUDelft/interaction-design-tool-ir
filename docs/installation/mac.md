@@ -60,12 +60,16 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 
 ## 5. Start the tool
 
-`$ python3 main_tool.py`
+`$ python3 main_tool.py` ***OR*** `./scripts/design_tool.sh`
 
 
 ## 6. Start the robot workers
 
-   * Option A: using the interactive robotics cloud (Python 3)
+   * **Option A**: using the interactive robotics cloud (Python 3)
+   
+      `./scripts/mac/workers_irc.sh`
+      
+      ***OR***
       
       `$ python3 main_robot.py`
       
@@ -73,7 +77,7 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
       
       ***If you get errors try: brew install openssl***
       
-   * Option B: using qi framework (Python 2)
+   * **Option B**: using qi framework (Python 2)
       
       - Install [Python 2.7](https://www.python.org/)
       
@@ -91,5 +95,14 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
    
       `$ pip2 install qi`
       
+      
+      - Run the tool using: 
+      
+      `$ ./scripts/mac/workers_qi.sh` 
+      
+      ***OR*** 
+      
       `$ python2 main_qi_robot.py`
+      
+      `$ python2 main_qi_engagement.py`
       
