@@ -13,15 +13,13 @@
 import logging
 import time
 
-from twisted.internet.defer import inlineCallbacks
-
-from robot_manager.handler.irc.engagement_handler import EngagementHandler
-from robot_manager.worker.irc.irc_worker import IRCWorker
+from robot_manager.handler.qi.engagement_handler import EngagementHandler
+from robot_manager.worker.qi.qi_worker import QIWorker
 
 
-class EngagementWorker(IRCWorker):
+class EngagementWorker(QIWorker):
     def __init__(self):
-        super().__init__()
+        super(EngagementWorker, self).__init__()
 
         self.logger = logging.getLogger("EngagementWorker")
 
@@ -36,39 +34,29 @@ class EngagementWorker(IRCWorker):
     Override parent methods
     """
 
-    @inlineCallbacks
-    def on_connect(self, session, details=None):
+    def connect_robot(self, data_dict=None):
         try:
-            self.logger.debug("Received session: {}".format(session))
+            super(EngagementWorker, self).connect_robot(data_dict=data_dict)
 
-            if session is None:
-                self.engagement_handler = None
-            else:
-                self.engagement_handler = EngagementHandler(session=session)
-                self.engagement_handler.notification_interval = self.notification_interval
+            # set handlers and listeners
+            self.engagement_handler = EngagementHandler(session=self.session)
+            self.engagement_handler.notification_interval = self.notification_interval
 
-                # update settings
-                self.on_face_size(
-                    data_dict=self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
-                                                                 "faceSize"))
-                self.on_interaction_interval(
-                    data_dict=self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
-                                                                 "interactionInterval"))
+            # update settings
+            self.on_face_size(
+                data_dict=self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
+                                                             "faceSize"))
+            self.on_interaction_interval(
+                data_dict=self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
+                                                             "interactionInterval"))
 
-                # Start listening to DB Stream
-                self.setup_db_stream()
+            # start tracker
+            self.engagement_handler.face_detection(start=True)
+            self.engagement_handler.face_tracker(start=True)
 
-                # start tracker
-                yield self.engagement_handler.face_detection(start=True)
-                yield self.engagement_handler.face_tracker(start=True)
-
-                # switch to English and say message
-                yield session.call(u'rom.optional.tts.language', lang="en")
-                yield session.call("rom.optional.tts.say", text="Engagement worker is ready.")
-
-                self.logger.info("Connection to the robot is successfully established.")
+            self.logger.info("Engagement worker is up and running.")
         except Exception as e:
-            yield self.logger.error("Error while setting the robot controller {}: {}".format(session, e))
+            self.logger.error("Error while starting engagement worker: {}".format(e))
 
     def start_listening_to_db_stream(self):
         observers_dict = {
@@ -87,15 +75,13 @@ class EngagementWorker(IRCWorker):
     Class methods
     """
 
-    @inlineCallbacks
     def on_resume_engagement(self, data_dict=None):
         try:
             self.logger.info("Data received: {}".format(data_dict))
-            yield self.engagement_handler.face_detection(start=True)
+            self.engagement_handler.face_detection(start=True)
         except Exception as e:
             self.logger.error("Error while resuming engagement: {}".format(e))
 
-    @inlineCallbacks
     def on_start_engagement(self, data_dict=None):
         try:
             self.logger.info("Data received: {}".format(data_dict))
@@ -103,12 +89,13 @@ class EngagementWorker(IRCWorker):
             if start is True:
                 self.logger.info("Engagement is started.")
                 self.engagement_handler.face_detected_observers.add_observer(self.on_face_detected)
-                yield self.engagement_handler.face_detection(start=True)
+                self.engagement_handler.face_detection(start=True)
+                self.engagement_handler.face_tracker(start=True)
             else:
                 self.logger.info("Engagement is disabled")
                 self.engagement_handler.face_detected_observers.remove_observer(self.on_face_detected)
-                yield self.engagement_handler.face_detection(start=False)
-                yield self.engagement_handler.face_tracker(start=False)
+                self.engagement_handler.face_detection(start=False)
+                self.engagement_handler.face_tracker(start=False)
         except Exception as e:
             self.logger.error("Error while extracting engagement data: {} | {}".format(data_dict, e))
 
@@ -123,7 +110,6 @@ class EngagementWorker(IRCWorker):
         except Exception as e:
             self.logger.error("Error while storing isEngaged: {}".format(e))
 
-    @inlineCallbacks
     def check_for_start_interaction(self):
         try:
             data_dict = self.db_stream_controller.find_one(self.db_stream_controller.interaction_collection,
@@ -138,7 +124,7 @@ class EngagementWorker(IRCWorker):
                                                      data_key="startInteraction",
                                                      data_dict={"startInteraction": True, "timestamp": time.time()})
                 # pause face_detection
-                yield self.engagement_handler.face_detection(start=False)
+                self.engagement_handler.face_detection(start=False)
         except Exception as e:
             self.logger.error("Error while checking isInteracting data: {}".format(e))
 

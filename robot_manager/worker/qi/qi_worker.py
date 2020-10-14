@@ -16,7 +16,6 @@ import time
 from data_manager.controller.db_stream_controller import DBStreamController
 from es_common.enums.robot_enums import RobotName
 from robot_manager.handler.qi.connection_handler import ConnectionHandler
-from robot_manager.handler.qi.speech_handler import SpeechHandler
 
 
 class QIWorker(object):
@@ -30,7 +29,6 @@ class QIWorker(object):
         self.session = None
 
         self.db_stream_controller = DBStreamController()
-        self.speech_handler = None
 
         self.is_interacting = False
 
@@ -52,13 +50,9 @@ class QIWorker(object):
             self.session = self.app.session
 
             self.is_connected = True
-            self.speech_handler = SpeechHandler(session=self.session)
 
             # Start listening to DB Stream
             self.setup_db_stream()
-
-            self.speech_handler.set_language(name="English")
-            self.speech_handler.animated_say("I am up and running")
 
             self.logger.info("Connection to the robot is successfully established.")
 

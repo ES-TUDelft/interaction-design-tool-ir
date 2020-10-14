@@ -24,7 +24,7 @@ class EngagementHandler(object):
         self.session = session
 
         self.memory = self.session.service("ALMemory")
-        self.face_detection = self.session.service("ALFaceDetection")
+        self.face_service = self.session.service("ALFaceDetection")
         self.tracker = self.session.service("ALTracker")
 
         self.min_face_size = 0.2  # rads
@@ -45,12 +45,13 @@ class EngagementHandler(object):
         if subscribe:
             self.face_subscriber = self.memory.subscriber("FaceDetected")
             self.face_subscriber.signal.connect(self.on_face_detected)
-            self.face_detection.subscribe("ESEngagementHandler")
+            self.face_service.subscribe("ESEngagementHandler")
         else:
             self.face_subscriber = None
-            self.face_detection.unsubscribe("ESEngagementHandler")
+            self.face_service.unsubscribe("ESEngagementHandler")
 
     def on_face_detected(self, value):
+        # self.logger.info("Face detected: {}".format(value))
         try:
             if value is None or value == []:
                 time.sleep(1)
@@ -59,6 +60,7 @@ class EngagementHandler(object):
 
                 # skip empty frames
                 if faces_info and len(faces_info) > 0:
+                    faces_info.pop()  # rec info
                     face_size = 0.0
                     for f_info in faces_info:
                         tmp_size = max(f_info[0][3], f_info[0][4])
@@ -68,7 +70,7 @@ class EngagementHandler(object):
                         # > x seconds: notify observers
                         detection_interval = time.time() - self.last_time_detected
                         if detection_interval >= self.notification_interval:
-                            self.logger.info("Detected a face: {} | after {}s".format(faces_info, detection_interval))
+                            self.logger.info("Detected a face: {} | after {}s".format(face_size, detection_interval))
                             self.last_time_detected = time.time()
                             self.face_detected_observers.notify_all(detection_interval)
                 else:
@@ -79,9 +81,9 @@ class EngagementHandler(object):
     def face_detection(self, start=False):
         # start/close the face stream
         if start:
-            self.face_detection.subscribe("ESEngagementHandler")
+            self.face_service.subscribe("ESEngagementHandler")
         else:
-            self.face_detection.unsubscribe("ESEngagementHandler")
+            self.face_service.unsubscribe("ESEngagementHandler")
 
     def face_tracker(self, start=False):
         target_name = "Face"

@@ -15,6 +15,7 @@ import time
 
 from es_common.model.interaction_block import InteractionBlock
 from robot_manager.handler.qi.animation_handler import AnimationHandler
+from robot_manager.handler.qi.speech_handler import SpeechHandler
 from robot_manager.handler.qi.tablet_handler import TabletHandler
 from robot_manager.worker.qi.qi_worker import QIWorker
 
@@ -25,6 +26,7 @@ class AnimationWorker(QIWorker):
 
         self.logger = logging.getLogger("AnimationWorker")
 
+        self.speech_handler = None
         self.animation_handler = None
         self.tablet_handler = None
 
@@ -40,12 +42,16 @@ class AnimationWorker(QIWorker):
             super(AnimationWorker, self).connect_robot(data_dict=data_dict)
 
             # set handlers and listeners
+            self.speech_handler = SpeechHandler(session=self.session)
             self.animation_handler = AnimationHandler(session=self.session)
             if self.has_tablet():
                 self.tablet_handler = TabletHandler(session=self.session)
                 self.tablet_handler.tablet_input_observers.add_observer(self.on_tablet_input)
 
             self.speech_handler.keyword_observers.add_observer(self.on_user_answer)
+
+            self.speech_handler.set_language(name="English")
+            self.speech_handler.animated_say("I am up and running")
 
             self._update_interaction_settings()
         except Exception as e:
