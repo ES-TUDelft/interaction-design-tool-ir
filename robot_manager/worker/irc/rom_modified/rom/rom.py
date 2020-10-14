@@ -29,8 +29,15 @@ class Rom(object):
 
     def __init__(self):
         # The desired amount of frames per second
-        # Might not be reached if load is high
-        self.fps = 16
+        # and interval for video frames
+        self.fps = 12
+        self.rate = 1
+        # Total ticks and ticks at last clean
+        # In that case the desired fps is not reached
+        # the rom increases the interval for video frames
+        # based on the true fps, but tries to keep it above 1 fps
+        self.ticks = 0
+        self.cticks = 0
         self.running = False
         self.timestamp = 0
         self.clean_timestamp = 0
@@ -41,7 +48,7 @@ class Rom(object):
         self.light = Light()
         self.audio = Audio()
         # Sensor modalities
-        self.sight = Sight()
+        self.sight = Sight(self.fps)
         self.hearing = Hearing()
         self.proprio = Proprio()
         self.touch = Touch()
@@ -54,7 +61,6 @@ class Rom(object):
         self.keyword = Keyword()
         if not self.is_nao:
             self.tablet = Tablet()
-            self.tablet_input = TabletInput()
         # Add Actuator modalities to Data model
         self.data.infomap['actuator'] = {
             'motor': self.motor.info(),
@@ -79,7 +85,13 @@ class Rom(object):
         }
         if not self.is_nao:
             self.data.infomap['optional']['tablet'] = self.tablet.info()
+
+        self._init_tablet_input()
+
+    def _init_tablet_input(self):
+        if not self.is_nao:
             self.data.infomap['optional']['tablet_input'] = self.tablet_input.info()
+            self.tablet_input = TabletInput()
 
     def register(self, sess):
         self.sess = sess
@@ -100,9 +112,9 @@ class Rom(object):
         self.card.register(sess)
         self.face.register(sess)
         self.keyword.register(sess)
-        self.tablet_input.register(sess)
         if not self.is_nao:
             self.tablet.register(sess)
+            self.tablet_input.register(sess)
 
     @inlineCallbacks
     def run(self):
@@ -119,27 +131,33 @@ class Rom(object):
         self.clean_timestamp = 0
         while self.running:
             self.timestamp = time.time()*1000
-            yield self.tick()
+            self.tick()
             self.clean()
+            self.ticks += 1
             yield self.sync_sleep()
         print 'The main loop is terminated'
         returnValue(None)
 
-    @inlineCallbacks
     def tick(self):
         # Sensor modalities
-        s = threads.deferToThread(self.sight.tick, self.timestamp)
-        h = threads.deferToThread(self.hearing.tick, self.timestamp)
+        if not (self.ticks % self.rate):
+            self.sight.tick(self.timestamp)
+        self.hearing.tick(self.timestamp)
         self.touch.tick(self.timestamp)
         self.proprio.tick(self.timestamp)
         # Optional modality
         self.face.tick(self.timestamp)
-        # Yields
-        yield s
-        yield h
 
     def clean(self):
-        if self.timestamp-self.clean_timestamp > 10*1000:
+        t = self.timestamp-self.clean_timestamp
+        if t > 10*1000:
+            # Calculate true fps
+            f = self.ticks - self.cticks
+            self.cticks = self.ticks
+            tfps = f/(t/1000)
+            # If true fps is to low, increase the video frame interval
+            if tfps and tfps < self.fps:
+                self.rate = min(round(self.rate*self.fps / tfps),self.fps)
             # Sensor modalities
             self.sight.clean()
             self.hearing.clean()
@@ -149,12 +167,16 @@ class Rom(object):
             self.face.clean()
             self.card.clean()
             self.keyword.clean()
-            self.tablet_input.clean()
             self.clean_timestamp = self.timestamp
+            if self.tablet_input:
+                self.tablet_input.clean()
 
     @inlineCallbacks
     def sync_sleep(self):
-        yield sleep((0-time.time()) % (1.0/self.fps))
+        sleep_time = (0-time.time()) % (1.0/self.fps)
+        # We sleep a minimum of 10ms
+        # this allows the network to send stuff
+        yield sleep(max(sleep_time, 0.01))
 
     def kill(self):
         """
