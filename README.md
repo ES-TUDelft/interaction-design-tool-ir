@@ -34,15 +34,15 @@ Follow the instructions in [Section I](#i-installation-guide)
 
 `$ python3 main_tool.py`
 
-  - Click "Connect" to the robot and enter the settings (e.g., name and realm or IP) then run:
+  - Click "**Connect**" to the robot and enter the settings (e.g., name and realm or IP) then run:
   
-    * Option 1: using the interactive-robotics cloud (requires Python 3 and robot realm)
+    * ***Option 1***: using the interactive-robotics cloud (requires Python 3 and robot realm)
 
       `$ python3 main_robot.py`
       
       `$ python3 main_engagement.py`
      
-    * Option 2: using qi framework (requires Python 2 and robot IP)
+    * ***Option 2***: using qi framework (requires Python 2 and robot IP)
     
       `$ python2 main_qi_robot.py`
       
