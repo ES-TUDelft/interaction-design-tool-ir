@@ -22,13 +22,13 @@ To use the tool you need to do the following:
 
 Follow the instructions in [Section I](#i-installation-guide)
 
-### **C.** Run the following script to load the tablet app on Pepper:
+#### **C.** Run the following script to load the tablet app on Pepper:
   
   `$ cd ~/Documents/interaction-design-tool-ir`
   
   `$ ./scripts/update_app.sh`
   
-##### **D.** Launch the user interface and robot workers as follows:
+#### **D.** Launch the user interface and robot workers as follows:
 
 `$ cd ~/Documents/interaction-design-tool-ir`
 
