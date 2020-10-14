@@ -81,6 +81,8 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 
 `$ python3 main_tool.py` ***OR*** `./scripts/design_tool.sh`
 
+- Click "Connect" to the robot and enter the settings such as the name, realm (for the interactive robotics cloud) and/or IP (for the qi framework).
+
 
 ## 6. Start the robot workers
 
