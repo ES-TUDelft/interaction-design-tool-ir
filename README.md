@@ -38,15 +38,13 @@ Follow the instructions in [Section I](#i-installation-guide)
   
     * ***Option 1***: using the interactive-robotics cloud (requires Python 3 and robot realm)
 
-      `$ python3 main_robot.py`
-      
-      `$ python3 main_engagement.py`
+      `$ ./scripts/linux/workers_irc.sh`
      
     * ***Option 2***: using qi framework (requires Python 2 and robot IP)
     
-      `$ python2 main_qi_robot.py`
+      `$ ./scripts/linux/workers_qi.sh`
       
-      `$ python2 main_qi_engagement.py`
+            On MAC, replace 'linux' by 'mac' in the previous commands. You can also run 'python3 main_robot.py' or 'python2 main_qi_robot.py' instead.
 
   * ***Note***: This repository is being updated on a regular basis. Use ***git pull*** to integrate the latest changes.
 
