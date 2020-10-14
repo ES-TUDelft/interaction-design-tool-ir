@@ -12,29 +12,37 @@ The tool was successfully tested on ***MAC*** and ***Linux*** (it should also wo
 
 To use the tool you need to do the following:
 
-**A.** Clone the repository (e.g., in the Documents folder).
+#### **A.** Clone the repository (e.g., in the Documents folder).
 
 `$ cd ~/Documents`
 
 `$ git clone https://github.com/ES-TUDelft/interaction-design-tool-ir.git`
 
-**B.** Install the requirements as described in [Section I](#i-installation-guide)
+#### **B.** Install the requirements 
 
-**C.** Run the following script to load the tablet app on Pepper:
+Follow the instructions in [Section I](#i-installation-guide)
+
+### **C.** Run the following script to load the tablet app on Pepper:
   
   `$ cd ~/Documents/interaction-design-tool-ir`
   
   `$ ./scripts/update_app.sh`
   
-**D.** Launch the interface and robot workers as follows:
+##### **D.** Launch the user interface and robot workers as follows:
 
 `$ cd ~/Documents/interaction-design-tool-ir`
 
 `$ python3 main_tool.py`
 
   - Click "Connect" to the robot and enter the settings (e.g., name, realm and/or IP) then run:
+  
+    * Option 1: using the interactive-robotics cloud (Python 3)
 
-`$ ./scripts/workers_irc.sh`
+      `$ python3 main_robot.py`
+     
+    * Option 2: using qi framework (Python 2)
+    
+      `$ python2 main_qi_robot.py`
 
   * ***Note***: This repository is being updated on a regular basis. Use ***git pull*** to integrate the latest changes.
 
