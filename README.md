@@ -45,6 +45,8 @@ Follow the instructions in [Section I](#i-installation-guide)
     * Option 2: using qi framework (requires Python 2 and robot IP)
     
       `$ python2 main_qi_robot.py`
+      
+      `$ python2 main_qi_engagement.py`
 
   * ***Note***: This repository is being updated on a regular basis. Use ***git pull*** to integrate the latest changes.
 
