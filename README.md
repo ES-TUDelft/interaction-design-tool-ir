@@ -39,6 +39,8 @@ Follow the instructions in [Section I](#i-installation-guide)
     * Option 1: using the interactive-robotics cloud (requires Python 3 and robot realm)
 
       `$ python3 main_robot.py`
+      
+      `$ python3 main_engagement.py`
      
     * Option 2: using qi framework (requires Python 2 and robot IP)
     
