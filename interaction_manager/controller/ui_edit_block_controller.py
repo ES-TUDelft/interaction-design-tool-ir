@@ -83,23 +83,9 @@ class UIEditBlockController(QtWidgets.QDialog):
         self.ui.tabWidget.removeTab(beh_tab_index)
 
         # tablet page
-        tablet_page = self.interaction_block.tablet_page
-        if not tablet_page.name == "":
-            self.ui.tabletPageNameComboBox.setCurrentIndex(
-                self.ui.tabletPageNameComboBox.findText(tablet_page.name, QtCore.Qt.MatchFixedString))
-
-        self.ui.tabletImageComboBox.clear()
-        self.ui.tabletImageComboBox.addItems(os.listdir(config_helper.get_tablet_properties()["pics_folder"]))
-        if not tablet_page.image == "":
-            self.ui.tabletImageComboBox.setCurrentIndex(
-                self.ui.tabletImageComboBox.findText(tablet_page.image, QtCore.Qt.MatchFixedString))
-
-        self.ui.tabletHeadingTextEdit.setText(tablet_page.heading)
-        self.ui.tabletInfoTextEdit.setText(tablet_page.text)
+        self.set_tablet_tab()
 
         # topic tag
-        self.ui.topicNameComboBox.currentIndexChanged.connect(self.update_tags)
-        self.ui.topicTagComboBox.currentIndexChanged.connect(self.update_pages)
         self.toggle_topic_tab()
 
     def _get_pattern_settings(self, pattern_name):
@@ -291,69 +277,39 @@ class UIEditBlockController(QtWidgets.QDialog):
         except Exception as e:
             self.logger.error("Error while loading tracks for playlist: {}! {}".format(playlist, e))
 
-    def update_tags(self):
-        # tags
-        self.ui.topicTagComboBox.clear()
-
-        tags = self.pattern_settings["tags"]
-        if len(tags) > 1:
-            self.ui.topicTagComboBox.addItems([SELECT_OPTION])
-        self.ui.topicTagComboBox.addItems(tags)
-
-        tag = self.interaction_block.topic_tag.name
-        if tag != "" and tag.lower() in tags:
-            self.ui.topicTagComboBox.setCurrentIndex(
-                self.ui.topicTagComboBox.findText(tag.lower(), QtCore.Qt.MatchFixedString))
-
-        self.update_pages()
-
-    def update_pages(self):
+    def set_tablet_tab(self):
         pages = config_helper.get_tablet_properties()["pages"].keys()
-
-        if self.pattern_settings["topic"] != "":
-            # check topic tag pages
-            tag = "{}".format(self.ui.topicTagComboBox.currentText())
-            tags = config_helper.get_tags()
-            if tag in tags:
-                pages = tags[tag]["pages"]
-
-        self.set_tablet_page_combo(pages=pages)
-
-    def set_tablet_page_combo(self, pages):
-        self.ui.tabletPageNameComboBox.clear()
-        self.ui.tabletPageNameComboBox.addItems([SELECT_OPTION])
-        self.ui.tabletPageNameComboBox.addItems(pages)
-
         tablet_page = self.interaction_block.tablet_page
-        if not tablet_page.name == "":
-            self.ui.tabletPageNameComboBox.setCurrentIndex(
-                self.ui.tabletPageNameComboBox.findText(tablet_page.name, QtCore.Qt.MatchFixedString))
+
+        self.ui.tabletPageNameComboBox.clear()
+
+        if "input" in self.pattern.lower():
+            self.ui.tabletPageNameComboBox.addItems(config_helper.get_tablet_properties()["input_page"].keys())
+        else:
+            self.ui.tabletPageNameComboBox.addItems([SELECT_OPTION])
+            self.ui.tabletPageNameComboBox.addItems(pages)
+            if not tablet_page.name == "":
+                self.ui.tabletPageNameComboBox.setCurrentIndex(
+                    self.ui.tabletPageNameComboBox.findText(tablet_page.name, QtCore.Qt.MatchFixedString))
+
+        self.ui.tabletImageComboBox.clear()
+        self.ui.tabletImageComboBox.addItems(os.listdir(config_helper.get_tablet_properties()["pics_folder"]))
+        if not tablet_page.image == "":
+            self.ui.tabletImageComboBox.setCurrentIndex(
+                self.ui.tabletImageComboBox.findText(tablet_page.image, QtCore.Qt.MatchFixedString))
+
+        self.ui.tabletHeadingTextEdit.setText(tablet_page.heading)
+        self.ui.tabletInfoTextEdit.setText(tablet_page.text)
 
     def _set_topic_tab(self, reset=False):
-        # clear the combo-boxes
-        self.ui.topicNameComboBox.clear()
-        self.ui.topicTagComboBox.clear()
-
         # set answers and feedbacks
         if reset is True:
             tag, topic, a1, a2, = ("",) * 4
         else:
             topic_tag = self.interaction_block.topic_tag
-            # tag = topic_tag.name
-            topic = topic_tag.topic
 
             a1 = '' if len(topic_tag.answers) == 0 else topic_tag.answers[0]
             a2 = '' if len(topic_tag.answers) < 2 else topic_tag.answers[1]
-
-            # topic properties ==> we're using one topic for now!
-            self.ui.topicNameComboBox.addItems([self.pattern_settings["topic"]])
-
-            if topic.lower() != "" and topic.lower() != self.pattern_settings["topic"]:
-                self.ui.topicNameComboBox.addItems([topic.lower()])
-                self.ui.topicNameComboBox.setCurrentIndex(
-                    self.ui.topicNameComboBox.findText(topic.lower(), QtCore.Qt.MatchFixedString))
-            # tags
-            self.update_tags()
 
         # update the slots
         self.ui.answer1TextEdit.setText(a1)
@@ -395,8 +351,6 @@ class UIEditBlockController(QtWidgets.QDialog):
     def get_topic_tag(self):
         topic_tag = TopicTag()
         if self.ui.topicTab.isEnabled():
-            topic_tag.name = "{}".format(self.ui.topicTagComboBox.currentText())
-            topic_tag.topic = "{}".format(self.ui.topicNameComboBox.currentText())
             topic_tag.answers = ["{}".format(self.ui.answer1TextEdit.toPlainText()).strip(),
                                  "{}".format(self.ui.answer2TextEdit.toPlainText()).strip()]
 
