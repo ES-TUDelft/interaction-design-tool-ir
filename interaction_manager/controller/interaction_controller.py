@@ -18,13 +18,16 @@ from data_manager.controller.db_stream_controller import DBStreamController
 from es_common.enums.command_enums import ActionCommand
 from es_common.factory.module_factory import ModuleFactory
 from es_common.model.observable import Observable
-from es_common.utils.qt import QTimer
+from es_common.utils.qt import QtCore, QTimer, Signal
 from es_common.utils.timer_helper import TimerHelper
 from interaction_manager.utils import config_helper
 
 
-class InteractionController(object):
+class InteractionController(QtCore.QObject):
+    face_detected_signal = Signal(float)
+
     def __init__(self, block_controller, music_controller=None):
+        super().__init__()
         self.logger = logging.getLogger("Interaction Controller")
 
         self.block_controller = block_controller
@@ -125,7 +128,8 @@ class InteractionController(object):
             "isExecuted": self.on_block_executed,
             "isDisengaged": self.on_disengaged,
             "startInteraction": self.on_start_interaction,
-            "tabletInput": self.on_tablet_input
+            "tabletInput": self.on_tablet_input,
+            "faceDetected": self.on_face_detected
         }
         self.db_stream_controller.start_db_stream(observers_dict=observers_dict,
                                                   db_collection=self.db_stream_controller.robot_collection,
@@ -158,6 +162,13 @@ class InteractionController(object):
             self.logger.error("Error while extracting tablet data: {} | {}".format(data_dict, e))
             self.tablet_input = None
             self.execution_result = None
+
+    def on_face_detected(self, data_dict=None):
+        try:
+            self.logger.info("Received a detected face: {}".format(data_dict))
+            self.face_detected_signal.emit(data_dict["faceDetected"])
+        except Exception as e:
+            self.logger.error("Error while extracting face size: {}".format(e))
 
     def on_disengaged(self, data_dict=None):
         try:

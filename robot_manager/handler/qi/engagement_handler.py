@@ -27,10 +27,9 @@ class EngagementHandler(object):
         self.face_service = self.session.service("ALFaceDetection")
         self.tracker = self.session.service("ALTracker")
 
-        self.min_face_size = 0.2  # rads
         self.tracker_face_size = 0.1
         self.last_time_detected = 0  # log the time
-        self.notification_interval = 2  # seconds
+        self.notification_interval = 1  # seconds
 
         # observers
         self.face_detected_observers = Observable()
@@ -66,13 +65,12 @@ class EngagementHandler(object):
                         tmp_size = max(f_info[0][3], f_info[0][4])
                         face_size = max(face_size, tmp_size)
 
-                    if face_size >= self.min_face_size:
-                        # > x seconds: notify observers
-                        detection_interval = time.time() - self.last_time_detected
-                        if detection_interval >= self.notification_interval:
-                            self.logger.info("Detected a face: {} | after {}s".format(face_size, detection_interval))
-                            self.last_time_detected = time.time()
-                            self.face_detected_observers.notify_all(detection_interval)
+                    # > x seconds: notify observers
+                    detection_interval = time.time() - self.last_time_detected
+                    if detection_interval >= self.notification_interval:
+                        self.logger.info("Detected a face: {} | after {}s".format(face_size, detection_interval))
+                        self.last_time_detected = time.time()
+                        self.face_detected_observers.notify_all(face_size)
                 else:
                     time.sleep(1)
         except Exception as e:

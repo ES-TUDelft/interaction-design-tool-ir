@@ -60,6 +60,8 @@ class Scene(Serializable, Observable):
     def save_scene(self, filename):
         try:
             data_helper.save_to_file(filename, self.serialize())
+            self.logger.info("Successfully saved scene data.")
+            return True
         except Exception as e:
             self.logger.error("Error while saving scene data to: {} | {}".format(filename, e))
             return False

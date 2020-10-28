@@ -26,7 +26,7 @@ class EngagementWorker(QIWorker):
         self.connection_handler = None
         self.engagement_handler = None
 
-        self.notification_interval = 2.0  # seconds
+        self.notification_interval = 1.0  # seconds
         self.interaction_interval = 30.0  # seconds
         self.face_size = 0.2
 
@@ -99,14 +99,19 @@ class EngagementWorker(QIWorker):
         except Exception as e:
             self.logger.error("Error while extracting engagement data: {} | {}".format(data_dict, e))
 
-    def on_face_detected(self, val=None):
+    def on_face_detected(self, face_size=None):
         self.check_for_start_interaction()
 
         try:
             self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
-                                                 data_key="isEngaged",
-                                                 data_dict={"isEngaged": True,
+                                                 data_key="faceDetected",
+                                                 data_dict={"faceDetected": face_size,
                                                             "timestamp": time.time()})
+            if face_size >= self.face_size:
+                self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
+                                                     data_key="isEngaged",
+                                                     data_dict={"isEngaged": True,
+                                                                "timestamp": time.time()})
         except Exception as e:
             self.logger.error("Error while storing isEngaged: {}".format(e))
 
@@ -167,7 +172,5 @@ class EngagementWorker(QIWorker):
         return self._face_size
 
     @face_size.setter
-    def face_size(self, val=30.0):
+    def face_size(self, val=0.2):
         self._face_size = val
-        if self.engagement_handler:
-            self.engagement_handler.min_face_size = val

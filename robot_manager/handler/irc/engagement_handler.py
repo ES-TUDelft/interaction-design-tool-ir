@@ -26,9 +26,8 @@ class EngagementHandler(object):
 
         self.session = session
 
-        self.min_face_size = 0.2  # rads
         self.last_time_detected = 0  # log the time
-        self.notification_interval = 2  # seconds
+        self.notification_interval = 1  # seconds
 
         # observers
         self.face_detected_observers = Observable()
@@ -38,6 +37,7 @@ class EngagementHandler(object):
 
     @inlineCallbacks
     def on_face_detected(self, frame):
+        self.logger.info("Face detected: {}".format(frame))
         try:
             if frame is None or len(frame) == 0:
                 yield sleep(1)
@@ -47,13 +47,13 @@ class EngagementHandler(object):
                 if detected_face and len(detected_face) > 0:
                     # check face size
                     face_size = frame["data"]["body"][0][2]
-                    if face_size >= self.min_face_size:
-                        # > x seconds: notify observers
-                        detection_interval = time.time() - self.last_time_detected
-                        if detection_interval >= self.notification_interval:
-                            self.logger.info("Detected a face: {} | after {}s".format(frame["data"], detection_interval))
-                            self.last_time_detected = time.time()
-                            self.face_detected_observers.notify_all(detection_interval)
+                    # > x seconds: notify observers
+                    detection_interval = time.time() - self.last_time_detected
+                    if detection_interval >= self.notification_interval:
+                        self.logger.info("Detected a face: {} | after {}s".format(frame["data"],
+                                                                                  detection_interval))
+                        self.last_time_detected = time.time()
+                        self.face_detected_observers.notify_all(face_size)
                     yield sleep(1)
                 else:
                     yield sleep(1)

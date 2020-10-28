@@ -8,6 +8,9 @@ logger = logging.getLogger("File_Helper")
 
 def save_to_file(filename, serialized_data):
     try:
+        if not filename.endswith(".json"):
+            filename = "{}.json".format(filename)
+
         with open(filename, "w") as w_file:
             json.dump(serialized_data, w_file, indent=4, sort_keys=False)
             logger.info("Successfully saved data to '{}'".format(filename))
@@ -18,6 +21,9 @@ def save_to_file(filename, serialized_data):
 def load_data_from_file(filename):
     data = None
     try:
+        if not filename.endswith(".json"):
+            filename = "{}.json".format(filename)
+
         with open(filename, "r") as r_file:
             data = json.loads(r_file.read(), object_pairs_hook=OrderedDict, encoding="utf-8")
             logger.info("Successfully loaded data from '{}'".format(filename))
@@ -28,7 +34,7 @@ def load_data_from_file(filename):
 
 
 def get_backup_filename():
-    return "{}/logs/interaction.json".format(os.getcwd())
+    return "{}/logs/backup.json".format(os.getcwd())
 
 
 # HELPER METHOD

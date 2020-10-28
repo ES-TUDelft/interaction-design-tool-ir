@@ -12,6 +12,7 @@ pyuic5 -x interaction_manager/ui/exportdialog.ui -o interaction_manager/view/ui_
 pyuic5 -x interaction_manager/ui/importdialog.ui -o interaction_manager/view/ui_importblocks_dialog.py;
 pyuic5 -x interaction_manager/ui/spotifydialog.ui -o interaction_manager/view/ui_spotify_dialog.py;
 pyuic5 -x interaction_manager/ui/parametersdialog.ui -o interaction_manager/view/ui_parameters_dialog.py;
+pyuic5 -x interaction_manager/ui/saveasdialog.ui -o interaction_manager/view/ui_saveas_dialog.py;
 
 # PySide2
 pyside2-rcc interaction_manager/ui/hre_resources/resources.qrc -o interaction_manager/view/resources_rc.py

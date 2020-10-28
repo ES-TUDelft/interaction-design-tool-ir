@@ -204,7 +204,7 @@ class BlockController(object):
         self.scene.store(description=description)
 
     def save_blocks(self, filename):
-        self.scene.save_scene(filename=filename)
+        return self.scene.save_scene(filename=filename)
 
     def load_blocks(self, filename):
         self.scene.load_scene(filename=filename)

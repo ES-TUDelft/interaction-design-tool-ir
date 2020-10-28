@@ -19,6 +19,7 @@ from es_common.utils import date_helper, data_helper
 from es_common.utils.qt import QtCore, QtGui, QtWidgets, qtSlot
 from interaction_manager.controller.database_controller import DatabaseController
 from interaction_manager.controller.es_block_controller import ESBlockController
+from interaction_manager.controller.graph_widget_controller import GraphWidgetController
 from interaction_manager.controller.interaction_controller import InteractionController
 from interaction_manager.controller.music_controller import MusicController
 from interaction_manager.controller.simulation_controller import SimulationController
@@ -27,6 +28,7 @@ from interaction_manager.controller.ui_edit_block_controller import UIEditBlockC
 from interaction_manager.controller.ui_export_blocks_controller import UIExportBlocksController
 from interaction_manager.controller.ui_import_blocks_controller import UIImportBlocksController
 from interaction_manager.controller.ui_robot_connection_controller import UIRobotConnectionController
+from interaction_manager.controller.ui_save_as_controller import UISaveAsController
 from interaction_manager.controller.ui_spotify_connection_controller import UISpotifyConnectionController
 from interaction_manager.view.ui_dialog import Ui_DialogGUI
 
@@ -63,6 +65,10 @@ class UIController(QtWidgets.QMainWindow):
 
         # init UI elements
         self._init_ui()
+
+        self.filename = None
+        self.load_backup_file()
+        self.update()
 
     def _init_ui(self):
         self.ui = Ui_DialogGUI()
@@ -115,6 +121,9 @@ class UIController(QtWidgets.QMainWindow):
         # ---------
         self._init_settings_widget()
 
+        # Graph
+        self._init_graph_widget()
+
         # UNDO/REDO
         # ---------
         self.ui.actionMenuUndo.triggered.connect(self.on_undo)
@@ -135,18 +144,17 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.actionMenuPaste.triggered.connect(self.paste_block)
 
         # DELETE, RESET, CLEAR, IMPORT and SAVE list listeners
-        self._enable_buttons([self.ui.actionMenuNew, self.ui.actionMenuSaveAs],
+        self._enable_buttons([self.ui.actionMenuNew],
                              enabled=False)  # disabled for now!
-        self.ui.actionMenuSave.triggered.connect(self.save_blocks)
+        self.ui.actionMenuSave.triggered.connect(self.on_save)
+        self.ui.actionMenuSaveAs.triggered.connect(self.on_save_as)
 
-        self.ui.actionMenuImportBlocks.triggered.connect(self.import_blocks)
-        self.ui.actionMenuExportBlocks.triggered.connect(self.export_blocks)
+        self.ui.actionMenuOpen.triggered.connect(self.import_blocks)
+        # self.ui.actionMenuImportBlocks.triggered.connect(self.import_blocks)
+        # self.ui.actionMenuExportBlocks.triggered.connect(self.export_blocks)
 
         # enable buttons
         self._toggle_buttons(is_awake=False)
-
-        self.load_backup_file()
-        self.update()
 
     def _init_settings_widget(self):
         # Speech
@@ -169,6 +177,10 @@ class UIController(QtWidgets.QMainWindow):
         self.ui.disengagementIntervalSpinBox.valueChanged.connect(
             lambda: self.update_setting(key="disengagementInterval",
                                         value=float(self.ui.disengagementIntervalSpinBox.value())))
+
+    def _init_graph_widget(self):
+        self.graph_widget_controller = GraphWidgetController(self.ui.plotWidget)
+        self.interaction_controller.face_detected_signal.connect(self.graph_widget_controller.append_data)
 
     def _setup_block_manager(self):
         self.block_controller = ESBlockController(parent_widget=self)
@@ -214,6 +226,7 @@ class UIController(QtWidgets.QMainWindow):
         self.tabifyDockWidget(self.ui.logsDockWidget, self.simulation_dock_widget)
         self.tabifyDockWidget(self.simulation_dock_widget, self.ui.musicDockWidget)
         self.tabifyDockWidget(self.ui.musicDockWidget, self.ui.settingsDockWidget)
+        self.tabifyDockWidget(self.ui.settingsDockWidget, self.ui.graphDockWidget)
 
         # activate logs panel
         self.ui.logsDockWidget.setFocus()
@@ -238,7 +251,7 @@ class UIController(QtWidgets.QMainWindow):
             if connection_dialog.exec_():
                 if connection_dialog.success is True:
                     self.logger.debug("Robot is_awake = {}".format(connection_dialog.is_awake))
-                    self._toggle_buttons(is_awake=connection_dialog.is_awake)
+                    self._toggle_buttons(is_awake=False)
 
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=False)
                     self._enable_buttons([self.ui.actionMenuDisconnect], enabled=True)
@@ -248,7 +261,7 @@ class UIController(QtWidgets.QMainWindow):
                     self._display_message(message="Successfully connected to the robot.")
                 else:
                     self._enable_buttons([self.ui.actionMenuConnect], enabled=True)
-                    self._enable_buttons([self.ui.actionMenuDisconnect, self.ui.actionMenuWakeUp], enabled=False)
+                    self._enable_buttons([self.ui.actionMenuDisconnect], enabled=False)
                     self._display_message(error="Unable to connect!")
             else:
                 self._display_message(error="Connection is canceled!")
@@ -280,8 +293,7 @@ class UIController(QtWidgets.QMainWindow):
         message, error = self.database_controller.connect()
 
         if error is None:
-            self._enable_buttons([self.ui.actionMenuDatabaseDisconnect,
-                                  self.ui.actionMenuSave, self.ui.actionMenuSaveAs],
+            self._enable_buttons([self.ui.actionMenuDatabaseDisconnect],
                                  enabled=True)
             self._enable_buttons([self.ui.actionMenuDatabaseConnect], enabled=False)
             self._display_message(message=message)
@@ -291,8 +303,7 @@ class UIController(QtWidgets.QMainWindow):
     @qtSlot()
     def database_disconnect(self):
 
-        self._enable_buttons([self.ui.actionMenuDatabaseDisconnect,
-                              self.ui.actionMenuSave, self.ui.actionMenuSaveAs],
+        self._enable_buttons([self.ui.actionMenuDatabaseDisconnect],
                              enabled=False)
         self._enable_buttons([self.ui.actionMenuDatabaseConnect], enabled=True)
 
@@ -744,7 +755,8 @@ class UIController(QtWidgets.QMainWindow):
 
     def load_backup_file(self):
         try:
-            blocks_data = data_helper.load_data_from_file(data_helper.get_backup_filename())
+            filename = data_helper.get_backup_filename()
+            blocks_data = data_helper.load_data_from_file(filename)
             self.block_controller.load_blocks_data(blocks_data)
             self.logger.info("Loaded backup data.")
         except Exception as e:
@@ -753,13 +765,42 @@ class UIController(QtWidgets.QMainWindow):
     def backup_blocks(self):
         filename = data_helper.get_backup_filename()
         self.block_controller.save_blocks(filename=filename)
+        self._update_filename_label(is_modified=True)
 
     @qtSlot()
-    def save_blocks(self):
-        filename = "{}/logs/blocks_{}.json".format(os.getcwd(), date_helper.get_day_and_month())
+    def on_save(self):
+        if self.filename is None:
+            self.on_save_as()
+        else:
+            self.save_blocks()
 
-        self.block_controller.save_blocks(filename=filename)
-        self._display_message(message="Successfully saved the blocks!")
+    def save_blocks(self):
+        if self.filename is None:
+            self.logger.warning("Select a file to save the design.")
+        else:
+            # filename = "{}/logs/blocks_{}.json".format(os.getcwd(), date_helper.get_day_and_month())
+            success = self.block_controller.save_blocks(filename=self.filename)
+            self._update_filename_label()
+            if success:
+                self._display_message(message="Successfully saved the blocks!")
+            else:
+                self._display_message(error="Error while saving the blocks!")
+
+    @qtSlot()
+    def on_save_as(self):
+        # open save_as dialog
+        save_as_dialog = UISaveAsController()
+        if save_as_dialog.exec_():
+            filename = save_as_dialog.get_full_path()
+            try:
+                data_helper.save_to_file(filename=filename,
+                                         serialized_data=self.block_controller.get_serialized_scene())
+                self.filename = filename
+                self._display_message(message="Successfully saved the design.")
+            except Exception as e:
+                self._display_message("Error while saving design data to: {} | {}".format(filename, e))
+        else:
+            self._display_message(message="SaveAs is Cancelled!")
 
     @qtSlot()
     def import_blocks(self):
@@ -772,6 +813,8 @@ class UIController(QtWidgets.QMainWindow):
             # fill scene with blocks
             self.block_controller.load_blocks_data(data=import_dialog.blocks_data)
 
+            self.filename = import_dialog.ui.fileNameLineEdit.text()
+            self._update_filename_label()
             self._display_message(message="New blocks are imported.")
 
     ###
@@ -849,3 +892,16 @@ class UIController(QtWidgets.QMainWindow):
                                   self.ui.actionMenuVolumeDown, self.ui.actionMenuVolumeUp, self.ui.actionMenuPlay,
                                   self.ui.actionMenuEngage, self.ui.actionMenuStop,
                                   ], enabled=False)
+
+    @property
+    def filename(self):
+        return self._filename
+
+    @filename.setter
+    def filename(self, filename):
+        self._filename = filename
+        self._update_filename_label()
+
+    def _update_filename_label(self, is_modified=False):
+        if self.filename:
+            self.ui.filenameLabel.setText("{}{}".format(self.filename, "*" if is_modified else ""))

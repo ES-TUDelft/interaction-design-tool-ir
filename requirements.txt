@@ -5,4 +5,5 @@ pymongo
 pyOpenSSL
 autobahn[twisted,serialization]
 PyQt5==5.15.0
+pyqtgraph
 service_identity

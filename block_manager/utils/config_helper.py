@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 # **
 #
-# ========================= #
+# ============= #
 # CONFIG_HELPER #
-# ========================= #
-# Helper class for accessing the app config.
+# ============= #
+# Helper class
 #
 # @author ES
 # **

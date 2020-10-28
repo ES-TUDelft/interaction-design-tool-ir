@@ -9,7 +9,6 @@
         <file>icons/play.png</file>
         <file>icons/rest.png</file>
         <file>icons/robot.png</file>
-        <file>icons/save.png</file>
         <file>icons/settings.png</file>
         <file>icons/wakeup.png</file>
         <file>icons/database-connect.png</file>
@@ -61,5 +60,9 @@
         <file>pepper-icons/pepper-standing-icon.png</file>
         <file>pepper-icons/pepper-standing-icon-green.png</file>
         <file>pepper-icons/pepper-standing-icon-grey.png</file>
+        <file>icons/open.png</file>
+        <file>icons/saveas.png</file>
+        <file>icons/save_teal.png</file>
+        <file>icons/save.png</file>
     </qresource>
 </RCC>
