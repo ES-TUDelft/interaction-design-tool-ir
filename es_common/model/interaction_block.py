@@ -9,7 +9,6 @@
 #
 # @author ES
 # **
-import copy
 import logging
 from collections import OrderedDict
 
@@ -21,7 +20,7 @@ from es_common.model.design_module import DesignModule
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
 from es_common.utils.data_helper import join_array
-from interaction_manager.model.speech_act import SpeechAct
+from es_common.model.speech_act import SpeechAct
 
 
 class InteractionBlock(Serializable):
@@ -109,6 +108,7 @@ class InteractionBlock(Serializable):
             # in the absence of a condition
             if execution_result is None or execution_result == "" or len(self.topic_tag.answers) == 0:
                 # select first if possible
+                self.execution_result = ""
                 next_int_block = int_blocks[0]  # we already verified the len to be > 0
             else:
                 # check the answers
@@ -119,8 +119,8 @@ class InteractionBlock(Serializable):
                     if execution_result.strip().lower() in ans:
                         next_int_block = self._get_block_by_id(int_blocks, self.topic_tag.goto_ids[i])
                         break
-            if next_int_block:
-                next_int_block.execution_result = execution_result
+            # if next_int_block:
+            #     next_int_block.execution_result = execution_result
             connecting_edge = self.get_output_connected_edge(next_int_block)
             self.logger.debug("Next block is: {} | {}".format(0 if next_int_block is None else next_int_block.title,
                                                               next_int_block.message))

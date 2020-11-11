@@ -22,7 +22,7 @@ from es_common.model.interaction_block import InteractionBlock
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
 from es_common.utils.qt import QtCore, QtWidgets
-from interaction_manager.model.speech_act import SpeechAct
+from es_common.model.speech_act import SpeechAct
 from interaction_manager.utils import config_helper
 from interaction_manager.view.ui_editblock_dialog import Ui_EditBlockDialog
 

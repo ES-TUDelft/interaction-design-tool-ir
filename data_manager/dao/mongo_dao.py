@@ -28,21 +28,23 @@ class MongoDAO(object):
         self.port = self.db_props['port'] if port is None else port
         self.client = None
         self.database = None
-        # self.connect()
+        self.is_connected = False
+
+        self.connect()
 
     def connect(self):
-        success = True
         try:
             self.client = MongoClient(str('mongodb://{}:{}'.format(self.host, self.port)))  # or MongoClient(host, port)
             self.database = self.client[self.db_name]
+            self.is_connected = True
+            return True
         except Exception as e:
-            self.logger.error("Error while connecting to MongoDB")
-            self.logger.error(e)
-            success = e
-        finally:
-            return success
+            self.logger.error("Error while connecting to MongoDB: {}".format(e))
+            self.is_connected = False
+            return False
 
     def disconnect(self):
+        self.is_connected = False
         if self.client is None:
             return False
 
@@ -91,7 +93,8 @@ class MongoDAO(object):
     '''
 
     def get_all_collections(self):
-        if self.client is None: return None
+        if self.client is None:
+            return None
 
         return self.database.collection_names()
 
@@ -108,16 +111,17 @@ class MongoDAO(object):
     DIALOGUE BLOCKS
     '''
 
-    def insert_dialogue_design(self, dialogue_design=None):
-        if self.client is None or dialogue_design is None:
+    def insert_interaction_design(self, design_dict=None):
+        if not self.is_connected:
             return False
 
         return self._insert(collection=self.database[self._get_blocks_collection_name()],
-                            to_insert=dialogue_design.to_dict,
+                            to_insert=design_dict,
                             one_record=True)
 
     def get_dialogue_designs(self, limit=0):
-        if self.client is None: return None
+        if self.client is None:
+            return None
 
         dialogues = []
         try:

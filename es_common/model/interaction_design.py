@@ -18,13 +18,15 @@ class InteractionDesign(object):
         self.time = time.time()
         self.communication_style = "" if communication_style is None else communication_style
         self.blocks = {} if blocks is None else blocks
+        self.face_size = []
 
     @property
     def to_dict(self):
         block_dict = {
             'time': self.time,
             'communication_style': self.communication_style,
-            'blocks': self.blocks
+            'blocks': self.blocks,
+            'face_size': self.face_size
         }
 
         return block_dict
@@ -36,5 +38,6 @@ class InteractionDesign(object):
             design.time = design_dict['time']
             design.communication_style = design_dict['communication_style']
             design.blocks = design_dict['blocks']
+            design.face_size = design_dict['face_size'] if "face_size" in design_dict.keys() else []
 
         return design

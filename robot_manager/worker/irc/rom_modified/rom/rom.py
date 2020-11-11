@@ -61,6 +61,7 @@ class Rom(object):
         self.keyword = Keyword()
         if not self.is_nao:
             self.tablet = Tablet()
+            self.tablet_input = TabletInput()
         # Add Actuator modalities to Data model
         self.data.infomap['actuator'] = {
             'motor': self.motor.info(),
@@ -85,13 +86,7 @@ class Rom(object):
         }
         if not self.is_nao:
             self.data.infomap['optional']['tablet'] = self.tablet.info()
-
-        self._init_tablet_input()
-
-    def _init_tablet_input(self):
-        if not self.is_nao:
             self.data.infomap['optional']['tablet_input'] = self.tablet_input.info()
-            self.tablet_input = TabletInput()
 
     def register(self, sess):
         self.sess = sess

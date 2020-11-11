@@ -10,7 +10,7 @@ class FaceDetection(SensorModality):
         'ubi': {
             'body': u'list of faces with [abs-x, abs-y, size, rel-x rel-y] in rads for each face',
         },
-        'default': SensorModality.default_ubi[0]
+        'default': u'body'
     }
 
     def __init__(self, fps):
@@ -24,7 +24,7 @@ class FaceDetection(SensorModality):
 
     def register(self, sess):
         SensorModality.register(self, sess)
-        # register new function
+        # register tracker
         sess.register(self.face_tracker, self.name + 'face_tracker')
 
     def poll(self, frame):
@@ -49,15 +49,6 @@ class FaceDetection(SensorModality):
             ] for f in faces]#list of faces
         frame.raw['body'] = res
 
-    def face_tracker(self, start=False):
-        target_name = "Face"
-        if start is True:
-            self.tracker.registerTarget(target_name, self.face_size)
-            self.tracker.track(target_name)
-        else:
-            self.tracker.stopTracker()
-            self.tracker.unregisterAllTargets()
-
     def diff(self, frame, ubi):
         if self.sensitivity < 0:
             return True
@@ -73,3 +64,12 @@ class FaceDetection(SensorModality):
 
     def __del__(self):
         self.face_detection.unsubscribe(self.getName())
+
+    def face_tracker(self, start=False):
+        target_name = "Face"
+        if start is True:
+            self.tracker.registerTarget(target_name, self.face_size)
+            self.tracker.track(target_name)
+        else:
+            self.tracker.stopTracker()
+            self.tracker.unregisterAllTargets()

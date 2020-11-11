@@ -21,7 +21,7 @@ class SpeechAct(object):
         self.logger = logging.getLogger("SpeechAct")
 
         self.message = message
-        self.message_type = SpeechActsType.INFORMAL if message_type is None else message_type
+        self.message_type = SpeechActsType.UNDEFINED if message_type is None else message_type
 
     def clone(self):
         return SpeechAct(self.message, self.message_type)
@@ -39,6 +39,7 @@ class SpeechAct(object):
     @staticmethod
     def create_speech_act(speech_dict):
         if speech_dict:
-            return SpeechAct(speech_dict["message"], SpeechActsType[speech_dict["message_type"].upper()])
+            return SpeechAct(speech_dict["message"], None)
+            #                   TODO: SpeechActsType[speech_dict["message_type"].upper()])
 
         return None

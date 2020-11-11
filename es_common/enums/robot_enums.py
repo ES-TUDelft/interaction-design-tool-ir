@@ -7,6 +7,7 @@ class RobotName(ESEnum):
 
 
 class SpeechActsType(ESEnum):
+    UNDEFINED = -1
     FORMAL = 0
     INFORMAL = 1
 

@@ -11,11 +11,11 @@
 # **
 
 import logging
-import os
 
 from block_manager.utils import config_helper as bconfig_helper
 from es_common.enums.robot_enums import RobotLanguage
-from es_common.utils import date_helper, data_helper
+from es_common.model.interaction_design import InteractionDesign
+from es_common.utils import data_helper
 from es_common.utils.qt import QtCore, QtGui, QtWidgets, qtSlot
 from interaction_manager.controller.database_controller import DatabaseController
 from interaction_manager.controller.es_block_controller import ESBlockController
@@ -573,6 +573,16 @@ class UIController(QtWidgets.QMainWindow):
         try:
             self._enable_buttons([self.ui.actionMenuPlay], enabled=True)
             # self._enable_buttons([self.ui.actionMenuStop], enabled=False)
+
+            # insert executed blocks in DB
+            if self.database_controller:
+                interaction_design = InteractionDesign()
+                for i in range(len(self.interaction_controller.executed_blocks)):
+                    interaction_design.blocks[i] = self.interaction_controller.executed_blocks[i]
+
+                self.insert_design_in_db(interaction_design)
+
+            self.interaction_controller.reset()
         except Exception as e:
             self.logger.error("Warning while enabling the buttons: {}".format(e))
 
@@ -736,8 +746,8 @@ class UIController(QtWidgets.QMainWindow):
         if confirmation_dialog.exec_():
             self.block_controller.clear_scene()
 
-    def insert_interaction_design(self, design):
-        success = self.database_controller.insert_interaction_design(design=design)
+    def insert_design_in_db(self, interaction_design):
+        success = self.database_controller.insert_interaction_design(design_dict=interaction_design.to_dict)
         if success is True:
             self._display_message(message="Successfully inserted the selected interaction blocks.")
         else:
@@ -745,7 +755,6 @@ class UIController(QtWidgets.QMainWindow):
 
     @qtSlot()
     def export_blocks(self):
-        # TODO: get dict of blocks
         interaction_design = self.block_controller.get_serialized_scene()
 
         # open export dialog

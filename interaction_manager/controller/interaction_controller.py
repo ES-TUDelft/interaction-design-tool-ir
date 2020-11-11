@@ -47,8 +47,10 @@ class InteractionController(QtCore.QObject):
         self.previous_interaction_block = None
         self.interaction_module = None
         self.is_interacting = False
+        self.face_size_dict = {}
 
         self.execution_result = None
+        self.executed_blocks = []
         self.tablet_input = None
         self.has_finished_playing_observers = Observable()
         self.threads = []
@@ -78,7 +80,6 @@ class InteractionController(QtCore.QObject):
                 self.logger.info("Robot is not connected!")
         except Exception as e:
             self.logger.error("Error while extracting isConnected: {} | {}".format(data_dict, e))
-            self.execution_result = None
 
     def disconnect(self):
         try:
@@ -92,6 +93,13 @@ class InteractionController(QtCore.QObject):
             self.logger.error("Error while disconnecting: {}".format(e))
 
         return True
+
+    def reset(self):
+        self.execution_result = ""
+        self.tablet_input = ""
+        self.current_interaction_block = None
+        self.previous_interaction_block = None
+        self.executed_blocks = []
 
     def on_exit(self):
         self.logger.info("Exiting...")
@@ -136,6 +144,8 @@ class InteractionController(QtCore.QObject):
                                                   target_thread="qt")
 
     def on_block_executed(self, data_dict=None):
+        self.execution_result = ""
+
         try:
             if self.is_interacting is False:
                 self.logger.info("Not in interaction mode!")
@@ -146,9 +156,11 @@ class InteractionController(QtCore.QObject):
             self.execute_next_block()
         except Exception as e:
             self.logger.error("Error while extracting isExecuted block: {} | {}".format(data_dict, e))
-            self.execution_result = None
 
     def on_tablet_input(self, data_dict=None):
+        self.tablet_input = ""
+        self.execution_result = ""
+
         try:
             if self.is_interacting is False:
                 self.logger.info("Not in interaction mode!")
@@ -160,13 +172,14 @@ class InteractionController(QtCore.QObject):
             self.execute_next_block()
         except Exception as e:
             self.logger.error("Error while extracting tablet data: {} | {}".format(data_dict, e))
-            self.tablet_input = None
-            self.execution_result = None
 
     def on_face_detected(self, data_dict=None):
         try:
             self.logger.info("Received a detected face: {}".format(data_dict))
             self.face_detected_signal.emit(data_dict["faceDetected"])
+
+            if self.is_interacting:
+                self.face_size_dict["{}".format(time.time())] = data_dict["faceDetected"]
         except Exception as e:
             self.logger.error("Error while extracting face size: {}".format(e))
 
@@ -235,8 +248,8 @@ class InteractionController(QtCore.QObject):
             return
 
         block_to_execute = interaction_block.clone()
-        if "{answer}" in block_to_execute.message and block_to_execute.execution_result:
-            block_to_execute.message = block_to_execute.message.format(answer=block_to_execute.execution_result.lower())
+        if "{answer}" in block_to_execute.message and self.execution_result:
+            block_to_execute.message = block_to_execute.message.format(answer=self.execution_result.lower())
 
         self.db_stream_controller.update_one(self.db_stream_controller.interaction_collection,
                                              data_key="interactionBlock",
@@ -362,8 +375,10 @@ class InteractionController(QtCore.QObject):
 
             # Change current block status
             self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
+            self.current_interaction_block.execution_result = self.execution_result
             # update previous block
             self.previous_interaction_block = self.current_interaction_block
+            self.executed_blocks.append(self.current_interaction_block)
 
             return next_block, connecting_edge
         except Exception as e:

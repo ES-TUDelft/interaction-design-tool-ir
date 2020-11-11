@@ -20,17 +20,18 @@ from interaction_manager.view.ui_db_dialog import Ui_DBDialog
 
 class UIDBController(QtWidgets.QDialog):
 
-    def __init__(self, parent=None, db_list=[]):
+    def __init__(self, parent=None, db_list=None, db_keyname="DB"):
         super(UIDBController, self).__init__(parent)
 
         self.logger = logging.getLogger("UIDBController")
+        self.db_keyname = db_keyname
 
         # init UI elements
         self._init_ui(db_list=db_list)
         # give it control
         self.setModal(True)
 
-    def _init_ui(self, db_list=[]):
+    def _init_ui(self, db_list=None):
         self.ui = Ui_DBDialog()
         self.ui.setupUi(self)
 
@@ -68,4 +69,4 @@ class UIDBController(QtWidgets.QDialog):
         self.ui.dbNamesComboBox.setCurrentIndex(self.ui.dbNamesComboBox.findText(db_name, QtCore.Qt.MatchFixedString))
 
     def get_formatted_db_name(self):
-        return 'HRE_DB_{0:%d}{0:%b}{0:%Y}_{0:%Hh%M}'.format(datetime.datetime.now())
+        return "{0}_{1:%d}{1:%b}{1:%Y}_{1:%Hh%M}".format(self.db_keyname, datetime.datetime.now())

@@ -1,6 +1,6 @@
 mongodb:
   host: localhost
   port: 27017
-  blocks_dbname: HRE_DialogueBlocks
-  blocks_collection: dialogueblocks
-  blocks_keyname: HRE_DB_
+  blocks_dbname: InteractionDesignBlocks
+  blocks_collection: interactionBlocks
+  blocks_keyname: Interaction_DB
