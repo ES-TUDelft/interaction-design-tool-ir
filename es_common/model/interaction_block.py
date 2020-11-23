@@ -24,20 +24,20 @@ from es_common.model.speech_act import SpeechAct
 
 
 class InteractionBlock(Serializable):
-    def __init__(self, name=None, pattern=None, topic_tag=None, tablet_page=None, icon_path=None, block=None):
+    def __init__(self, name=None, pattern=None, block=None):
         super(InteractionBlock, self).__init__()
 
         self.logger = logging.getLogger("Interaction Block")
 
         self.name = "Start" if name is None else name
         self.pattern = pattern if pattern is not None else self.name
-        self.topic_tag = TopicTag() if topic_tag is None else topic_tag
-        self.tablet_page = TabletPage() if tablet_page is None else tablet_page
+        self.topic_tag = TopicTag()
+        self.tablet_page = TabletPage()
 
         self.icon_path = None
-        self.set_icon_path(icon_path)
 
         self.speech_act = SpeechAct()
+        self.animation = None
         self.block = block
 
         # action command
@@ -227,6 +227,7 @@ class InteractionBlock(Serializable):
             ("tablet_page", self.tablet_page.to_dict),
             ("icon_path", self.icon_path),
             ("speech_act", self.speech_act.to_dict),
+            ("animation", self.animation),
             ("execution_result", self.execution_result),
             ("action_command", self.action_command.serialize() if self.action_command is not None else {}),
             ("interaction_module_name", self.interaction_module_name),
@@ -243,33 +244,34 @@ class InteractionBlock(Serializable):
     def create_interaction_block(block_dict):
         if block_dict:
             b_pattern = block_dict["pattern"] if "pattern" in block_dict.keys() else block_dict["name"]
-            block = InteractionBlock(name=block_dict['name'],
-                                     pattern=b_pattern,
-                                     topic_tag=TopicTag.create_topic_tag(tag_dict=block_dict['topic_tag']),
-                                     tablet_page=TabletPage.create_tablet_page(page_dict=block_dict["tablet_page"]),
-                                     icon_path=block_dict['icon_path']
-                                     )
-            if 'behavioral_parameters' in block_dict.keys():  # otherwise, keep default values
-                block.speech_act = SpeechAct.create_speech_act(block_dict['behavioral_parameters'])
-            if "speech_act" in block_dict.keys():
-                block.speech_act = SpeechAct.create_speech_act(block_dict["speech_act"])
+            int_block = InteractionBlock(name=block_dict['name'],
+                                         pattern=b_pattern)
+            int_block.topic_tag = TopicTag.create_topic_tag(tag_dict=block_dict['topic_tag'])
+            int_block.tablet_page = TabletPage.create_tablet_page(page_dict=block_dict["tablet_page"])
+            int_block.icon_path = block_dict['icon_path']
 
-            block.is_hidden = block_dict["is_hidden"] if "is_hidden" in block_dict.keys() else False
+            if 'behavioral_parameters' in block_dict.keys():  # otherwise, keep default values
+                int_block.speech_act = SpeechAct.create_speech_act(block_dict['behavioral_parameters'])
+            if "speech_act" in block_dict.keys():
+                int_block.speech_act = SpeechAct.create_speech_act(block_dict["speech_act"])
+
+            int_block.animation = block_dict["animation"] if "animation" in block_dict.keys() else None
+            int_block.is_hidden = block_dict["is_hidden"] if "is_hidden" in block_dict.keys() else False
 
             if "interaction_module_name" in block_dict.keys():
-                block.interaction_module_name = block_dict["interaction_module_name"]
+                int_block.interaction_module_name = block_dict["interaction_module_name"]
 
             if "design_module" in block_dict.keys():
-                block.design_module = DesignModule.create_design_module(block_dict["design_module"])
+                int_block.design_module = DesignModule.create_design_module(block_dict["design_module"])
 
             if "execution_result" in block_dict.keys():
-                block.execution_result = block_dict["execution_result"]
+                int_block.execution_result = block_dict["execution_result"]
 
-            if any('interaction' in k for k in block_dict.keys()):
-                block.interaction_start_time = block_dict['interaction_start_time']
-                block.interaction_end_time = block_dict['interaction_end_time']
+            # if any('interaction' in k for k in block_dict.keys()):
+            int_block.interaction_start_time = block_dict['interaction_start_time']
+            int_block.interaction_end_time = block_dict['interaction_end_time']
 
-            return block
+            return int_block
 
         return None
 

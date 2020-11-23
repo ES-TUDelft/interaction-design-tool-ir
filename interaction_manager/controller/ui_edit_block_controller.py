@@ -21,7 +21,7 @@ from es_common.model.design_module import DesignModule
 from es_common.model.interaction_block import InteractionBlock
 from es_common.model.tablet_page import TabletPage
 from es_common.model.topic_tag import TopicTag
-from es_common.utils.qt import QtCore, QtWidgets
+from es_common.utils.qt import QtCore, QtWidgets, qtSlot
 from es_common.model.speech_act import SpeechAct
 from interaction_manager.utils import config_helper
 from interaction_manager.view.ui_editblock_dialog import Ui_EditBlockDialog
@@ -71,6 +71,10 @@ class UIEditBlockController(QtWidgets.QDialog):
         self.ui.messageTextEdit.setText(speech_act.message)
         # self.ui.messageTypeComboBox.setCurrentIndex(
         #     self.ui.messageTypeComboBox.findText(speech_act.message_type.name.title(), QtCore.Qt.MatchFixedString))
+
+        # Animation
+        self.ui.animationLineEdit.setText(self.interaction_block.animation)
+        self.ui.animationsComboBox.currentIndexChanged.connect(self.on_animation_change)
 
         # Actions
         self.set_actions()
@@ -348,6 +352,16 @@ class UIEditBlockController(QtWidgets.QDialog):
         return SpeechAct.create_speech_act({"message": "{}".format(self.ui.messageTextEdit.toPlainText()).strip(),
                                             "message_type": "Informal"})
 
+    @qtSlot()
+    def on_animation_change(self):
+        animation = self.ui.animationsComboBox.currentText()
+        if animation != SELECT_OPTION:
+            self.ui.animationLineEdit.setText(animation)
+
+    def get_animation(self):
+        animation = self.ui.animationLineEdit.text().strip()
+        return None if animation == "" else animation
+
     def get_topic_tag(self):
         topic_tag = TopicTag()
         if self.ui.topicTab.isEnabled():
@@ -450,6 +464,7 @@ class UIEditBlockController(QtWidgets.QDialog):
         d_block.pattern = "{}".format(self.ui.patternLineEdit.text().strip())
         d_block.description = "{}".format(self.ui.blockDescriptionLineEdit.text().strip())
         d_block.speech_act = self.get_speech_act()
+        d_block.animation = self.get_animation()
         d_block.topic_tag = self.get_topic_tag()
         d_block.tablet_page = self.get_tablet_page()
         d_block.action_command = self.get_command()
@@ -468,6 +483,7 @@ class UIEditBlockController(QtWidgets.QDialog):
             int_block.block.title = int_block.pattern.title()
         int_block.description = "{}".format(self.ui.blockDescriptionLineEdit.text().strip())
         int_block.speech_act = self.get_speech_act()
+        int_block.animation = self.get_animation()
         int_block.topic_tag = self.get_topic_tag()
         int_block.tablet_page = self.get_tablet_page()
         int_block.design_module = self.get_module()

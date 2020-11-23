@@ -177,6 +177,10 @@ class AnimationWorker(IRCWorker):
         try:
             interaction_block = self.get_interaction_block(data_dict=data_dict)
 
+            # execute the animation
+            if interaction_block.animation is not None:
+                yield self.animation_handler.execute_animation(interaction_block.animation)
+
             # get the message
             message = interaction_block.message
             if message is None or message == "":
