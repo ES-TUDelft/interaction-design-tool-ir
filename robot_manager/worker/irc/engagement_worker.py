@@ -60,7 +60,7 @@ class EngagementWorker(IRCWorker):
 
                 # start tracker
                 yield self.engagement_handler.face_detection(start=True)
-                yield self.engagement_handler.face_tracker(start=True)
+                self.engage(True)
 
                 # switch to English and say message
                 yield session.call(u'rom.optional.tts.language', lang="en")
@@ -82,6 +82,11 @@ class EngagementWorker(IRCWorker):
         # Listen to the "interaction_collection"
         self.db_stream_controller.start_db_stream(observers_dict=observers_dict,
                                                   db_collection=self.db_stream_controller.interaction_collection)
+
+    def engage(self, val=False):
+        self.db_stream_controller.update_one(self.db_stream_controller.interaction_collection,
+                                             data_key="startEngagement",
+                                             data_dict={"startEngagement": val, "timestamp": time.time()})
 
     """
     Class methods
@@ -113,8 +118,7 @@ class EngagementWorker(IRCWorker):
             self.logger.error("Error while extracting engagement data: {} | {}".format(data_dict, e))
 
     def on_face_detected(self, face_size=None):
-        self.check_for_start_interaction()
-
+        # self.check_for_start_interaction()
         try:
             self.db_stream_controller.update_one(self.db_stream_controller.robot_collection,
                                                  data_key="faceDetected",
@@ -143,7 +147,7 @@ class EngagementWorker(IRCWorker):
                                                      data_key="startInteraction",
                                                      data_dict={"startInteraction": True, "timestamp": time.time()})
                 # pause face_detection
-                yield self.engagement_handler.face_detection(start=False)
+                # yield self.engagement_handler.face_detection(start=False)
         except Exception as e:
             self.logger.error("Error while checking isInteracting data: {}".format(e))
 

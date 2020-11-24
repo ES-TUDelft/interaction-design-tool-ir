@@ -28,6 +28,7 @@ class EngagementHandler(object):
 
         self.last_time_detected = 0  # log the time
         self.notification_interval = 1  # seconds
+        self.detected_faces_lst = []
 
         # observers
         self.face_detected_observers = Observable()
@@ -47,13 +48,17 @@ class EngagementHandler(object):
                 if detected_face and len(detected_face) > 0:
                     # check face size
                     face_size = frame["data"]["body"][0][2]
+                    self.detected_faces_lst.append(face_size)
                     # > x seconds: notify observers
                     detection_interval = time.time() - self.last_time_detected
                     if detection_interval >= self.notification_interval:
                         self.logger.info("Detected a face: {} | after {}s".format(frame["data"],
                                                                                   detection_interval))
                         self.last_time_detected = time.time()
+                        face_size = max(self.detected_faces_lst)
+                        self.detected_faces_lst = []
                         self.face_detected_observers.notify_all(face_size)
+
                     yield sleep(1)
                 else:
                     yield sleep(1)
