@@ -197,17 +197,17 @@ class AnimationWorker(IRCWorker):
                 self.logger.info("Speech Event: {}".format(speech_event))
 
                 # check if user answers or tablet_input are needed
-                if "input" in interaction_block.pattern and self.has_tablet():
+                if "input" in interaction_block.pattern.lower() and self.has_tablet():
                     self.logger.info("Wait for input from tablet...")
                     yield self.tablet_handler.input_stream(start=True)
-                elif interaction_block.topic_tag.topic == "":
-                    # time.sleep(1)  # to keep the API happy :)
-                    yield speech_event.addCallback(self.on_block_executed)
-                else:
+                elif "question" in interaction_block.pattern.lower():
                     keywords = interaction_block.get_combined_answers()
                     self.speech_handler.current_keywords = keywords
 
                     yield speech_event.addCallback(self.speech_handler.on_start_listening)
+                else:
+                    # time.sleep(1)  # to keep the API happy :)
+                    yield speech_event.addCallback(self.on_block_executed)
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
             self.on_block_executed()

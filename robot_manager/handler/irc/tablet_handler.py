@@ -68,7 +68,7 @@ class TabletHandler(object):
     @staticmethod
     def create_tablet_url(page_name="index", url_params=None):
         tablet_settings = config_helper.get_tablet_settings()
-        url = "http://{}/{}{}".format(tablet_settings["ip"], tablet_settings["pages"][page_name],
+        url = "http://{}/{}{}".format(tablet_settings["ip"], tablet_settings["pages"]["{}".format(page_name)],
                                       "" if url_params is None else url_params)
         return url
 

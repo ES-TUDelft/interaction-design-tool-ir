@@ -183,16 +183,17 @@ class AnimationWorker(QIWorker):
                 self.speech_handler.animated_say(message=message)
 
                 # check if user answers or tablet_input are needed
-                if "input" in interaction_block.pattern and self.has_tablet():
+                if "input" in interaction_block.pattern.lower() and self.has_tablet():
                     self.logger.info("Wait for input from tablet...")
                     self.tablet_handler.input_stream(start=True)
-                elif interaction_block.topic_tag.topic == "":
-                    time.sleep(1)  # to keep the API happy :)
-                    self.on_speech_event()
-                else:
+                elif "question" in interaction_block.pattern.lower():
                     self.speech_handler.current_keywords = interaction_block.get_combined_answers()
+                    self.logger.info(self.speech_handler.current_keywords)
                     # time.sleep(1)
                     self.speech_handler.on_start_listening()
+                else:
+                    time.sleep(1)  # to keep the API happy :)
+                    self.on_speech_event()
         except Exception as e:
             self.logger.error("Error while extracting interaction block: {} | {}".format(data_dict, e))
             self.on_block_executed()

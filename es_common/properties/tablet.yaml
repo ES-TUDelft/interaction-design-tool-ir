@@ -4,7 +4,8 @@ tablet:
     index: "apps/es_app/index.html",
     displayinfo: "apps/es_app/pages/displayinfo.html",
     displayimage: "apps/es_app/pages/displayimage.html",
-    displaytext: "apps/es_app/pages/displaytext.html"
+    displaytext: "apps/es_app/pages/displaytext.html",
+    getinput: "apps/es_app/pages/getinput.html"
   }
   input_page: {
     getinput: "apps/es_app/pages/getinput.html"
