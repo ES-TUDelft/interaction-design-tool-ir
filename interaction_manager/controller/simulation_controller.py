@@ -125,7 +125,7 @@ class SimulationController(object):
                 self.connecting_edge.set_selected(True)
 
             self.update_interaction_log(robot_message=self.current_interaction_block.message)
-            if self.current_interaction_block.topic_tag.topic != "":
+            if "question" in self.current_interaction_block.pattern.lower():
                 self.user_turn = True
                 return True
             # check actions
