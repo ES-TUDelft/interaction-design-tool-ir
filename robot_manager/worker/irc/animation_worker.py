@@ -179,7 +179,8 @@ class AnimationWorker(IRCWorker):
 
             # execute the animation
             if interaction_block.animation is not None:
-                yield self.animation_handler.execute_animation(interaction_block.animation)
+                animation_event = self.animation_handler.execute_animation(animation_name=interaction_block.animation)
+                yield animation_event.addCallback(self.animation_handler.on_animation_event)
 
             # get the message
             message = interaction_block.message

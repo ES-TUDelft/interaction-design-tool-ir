@@ -33,4 +33,7 @@ class AnimationHandler(object):
         self.session.call("rom.optional.posture.goto", name="Stand" if posture_name is None else posture_name)
 
     def execute_animation(self, animation_name):
-        self.session.call("rom.optional.behavior.play", name="{}".format(animation_name))
+        return self.session.call("rom.optional.behavior.play", name="" if animation_name is None else animation_name)
+
+    def on_animation_event(self, val=None):
+        self.logger.info("Finished executing the animation.")
