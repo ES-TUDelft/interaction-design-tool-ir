@@ -51,7 +51,7 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 
    `$ mongo`
    
-   `> config = { _id = "robot-change-stream", members = [{_id: 0, host: "localhost:27017"}] };`
+   `> config = { _id: "robot-change-stream", members: [{_id: 0, host: "localhost:27017"}] };`
       
    `> rs.initiate();`
    
