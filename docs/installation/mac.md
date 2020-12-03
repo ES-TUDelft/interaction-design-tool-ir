@@ -56,6 +56,8 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
    `> rs.initiate();`
    
    `> rs.status();`
+   
+   `> exit;`
 
 
 ## 5. Start the tool
