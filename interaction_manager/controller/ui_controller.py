@@ -578,8 +578,9 @@ class UIController(QtWidgets.QMainWindow):
             if self.database_controller:
                 interaction_design = InteractionDesign()
                 for i in range(len(self.interaction_controller.executed_blocks)):
-                    interaction_design.blocks[i] = self.interaction_controller.executed_blocks[i]
-
+                    interaction_design.blocks["{}".format(i)] = self.interaction_controller.executed_blocks[i].to_dict
+                # interaction_design.face_size = self.interaction_controller.face_size_dict
+                # self.logger.info(interaction_design.to_dict)
                 self.insert_design_in_db(interaction_design)
 
             self.interaction_controller.reset()

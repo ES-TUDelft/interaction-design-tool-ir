@@ -179,7 +179,7 @@ class InteractionController(QtCore.QObject):
             self.face_detected_signal.emit(data_dict["faceDetected"])
 
             if self.is_interacting:
-                self.face_size_dict["{}".format(time.time())] = data_dict["faceDetected"]
+                self.face_size_dict["{}".format(time.time()).replace(".", "_")] = data_dict["faceDetected"]
         except Exception as e:
             self.logger.error("Error while extracting face size: {}".format(e))
 
