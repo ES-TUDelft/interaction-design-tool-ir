@@ -2,7 +2,7 @@
 
 This project provides a prototyping tool for designing interactions with social robots. The current version of the tool requires Python3 and is compatible with the [Pepper and NAO Robots](https://www.ald.softbankrobotics.com/en/robots/pepper). Interacting with the robots can be via the qi framework (Python2) or the [Interactive-Robotics](https://www.interactive-robotics.com) cloud (Python3). 
 
-The tool was successfully tested on ***MAC*** and ***Linux*** (it should also work on ***Windows***).
+The tool was successfully tested on ***MAC***.
 
 ## Requirements
 [![Python 3.x](https://img.shields.io/badge/Python-3.x-blue)](https://www.python.org/downloads/)
@@ -32,19 +32,17 @@ Follow the instructions in [Section I](#i-installation-guide)
 
 `$ cd ~/Documents/interaction-design-tool-ir`
 
-`$ python3 main_tool.py` ***OR*** `$ ./scripts/design_tool.sh`
+`$ python3 main_tool.py`
 
   - Click "**Connect**" to the robot and enter the settings (e.g., name and realm or IP) then run:
   
     * ***Option 1***: using the interactive-robotics cloud (requires Python 3 and robot realm)
 
-      `$ ./scripts/linux/workers_irc.sh`
+      `python3 main_robot.py`
      
     * ***Option 2***: using qi framework (requires Python 2 and robot IP)
     
-      `$ ./scripts/linux/workers_qi.sh`
-      
-            On MAC, replace 'linux' by 'mac' in the previous commands. You can also run 'python3 main_robot.py' or 'python2 main_qi_robot.py' instead.
+      `python2 main_qi_robot.py`
 
   * ***Note***: This repository is being updated on a regular basis. Use ***git pull*** to integrate the latest changes.
 
@@ -68,7 +66,7 @@ Follow the instructions in [Section I](#i-installation-guide)
 
 ## I. Installation Guide
 
-Follow the instructions for [LINUX](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/linux.md) or [MAC](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/mac.md)
+Follow the instructions for [MAC](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/mac.md)
 
 ---
 
