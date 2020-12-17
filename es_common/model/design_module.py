@@ -17,16 +17,16 @@ class DesignModule(object):
         self.available_files = []
         self.selected_files = []
 
-        self._filename = self.filename = filename
+        self.filename = filename
 
     def get_file_data(self):
         try:
             data = data_helper.load_data_from_file(self.filename)
             # "{}{}".format(os.path.expanduser('~'), self.filename))
-            return data
+            return data, self._filename
         except Exception as e:
-            self.logger.error("Error while while loading data from {} | {}".format(self.filename, e))
-            return None
+            self.logger.error("Error while while loading data from {} | {}".format(self._filename, e))
+            return None, None
 
     @property
     def filename(self):

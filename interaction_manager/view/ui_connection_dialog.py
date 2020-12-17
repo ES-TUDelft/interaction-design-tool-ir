@@ -21,7 +21,7 @@ class Ui_ConnectionDialog(object):
         sizePolicy.setHeightForWidth(ConnectionDialog.sizePolicy().hasHeightForWidth())
         ConnectionDialog.setSizePolicy(sizePolicy)
         ConnectionDialog.setMinimumSize(QtCore.QSize(350, 220))
-        ConnectionDialog.setMaximumSize(QtCore.QSize(500, 750))
+        ConnectionDialog.setMaximumSize(QtCore.QSize(1275000, 1275000))
         self.gridLayout_3 = QtWidgets.QGridLayout(ConnectionDialog)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.groupBox = QtWidgets.QGroupBox(ConnectionDialog)

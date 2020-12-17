@@ -5,7 +5,6 @@
 # ============ #
 # MODULE_ENUMS #
 # ============ #
-# List of enums for the command
 #
 # @author ES
 # **

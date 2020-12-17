@@ -576,7 +576,8 @@ class UIController(QtWidgets.QMainWindow):
 
             # insert executed blocks in DB
             if self.database_controller:
-                interaction_design = InteractionDesign()
+                interaction_design = InteractionDesign(communication_style=self.interaction_controller.comm_style.value)
+
                 for i in range(len(self.interaction_controller.executed_blocks)):
                     interaction_design.blocks["{}".format(i)] = self.interaction_controller.executed_blocks[i].to_dict
                 # interaction_design.face_size = self.interaction_controller.face_size_dict

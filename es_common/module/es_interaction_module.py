@@ -17,6 +17,7 @@ class ESInteractionModule(Serializable):
 
         self.blocks_data = None
         self.execution_result = None
+        self.filename = None
 
     def execute_module(self):
         success = self.start_module()
@@ -40,7 +41,7 @@ class ESInteractionModule(Serializable):
     def load_blocks_data(self):
         try:
             # self.blocks_data = data_helper.load_data_from_file(self.design_file)
-            self.blocks_data = self.origin_block.design_module.get_file_data()
+            self.blocks_data, self.filename = self.origin_block.design_module.get_file_data()
         except Exception as e:
             self.logger.error("Error while loading hidden blocks! {}".format(e))
 

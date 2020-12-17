@@ -16,6 +16,7 @@ import time
 from block_manager.enums.block_enums import ExecutionMode
 from data_manager.controller.db_stream_controller import DBStreamController
 from es_common.enums.command_enums import ActionCommand
+from es_common.enums.interaction_enums import CommunicationStyle
 from es_common.factory.module_factory import ModuleFactory
 from es_common.model.observable import Observable
 from es_common.utils.qt import QtCore, QTimer, Signal
@@ -46,6 +47,7 @@ class InteractionController(QtCore.QObject):
         self.current_interaction_block = None
         self.previous_interaction_block = None
         self.interaction_module = None
+        self.comm_style = CommunicationStyle.UNDEFINED
         self.is_interacting = False
         self.face_size_dict = {}
 
@@ -247,6 +249,7 @@ class InteractionController(QtCore.QObject):
         if interaction_block is None:
             return
 
+        interaction_block.interaction_start_time = time.time()
         block_to_execute = interaction_block.clone()
         if "{answer}" in block_to_execute.message and self.execution_result:
             block_to_execute.message = block_to_execute.message.format(answer=self.execution_result.lower())
@@ -335,6 +338,7 @@ class InteractionController(QtCore.QObject):
 
                 # change the block status
                 self.current_interaction_block.execution_mode = ExecutionMode.EXECUTING
+
                 # update selection
                 # self.current_interaction_block.set_selected(True)
                 # if connecting_edge is not None:
@@ -376,6 +380,8 @@ class InteractionController(QtCore.QObject):
             # Change current block status
             self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
             self.current_interaction_block.execution_result = self.execution_result
+            self.current_interaction_block.interaction_end_time = time.time()
+
             # update previous block
             self.previous_interaction_block = self.current_interaction_block
             self.executed_blocks.append(self.current_interaction_block)
@@ -411,12 +417,22 @@ class InteractionController(QtCore.QObject):
             return
 
         next_b = self.interaction_module.execute_module()
+        self.update_communication_style()
 
         if next_b is not None:
             next_b.is_hidden = True  # just in case!
             self.current_interaction_block.execution_mode = ExecutionMode.COMPLETED
             self.previous_interaction_block = self.current_interaction_block
             self.current_interaction_block = next_b
+
+    def update_communication_style(self):
+        try:
+            if "person" in self.interaction_module.filename.lower():
+                self.comm_style = CommunicationStyle.PERSON_ORIENTED
+            elif "task" in self.interaction_module.filename.lower():
+                self.comm_style = CommunicationStyle.TASK_ORIENTED
+        except Exception as e:
+            self.logger.error("Error while setting the communication style: {}".format(e))
 
     def execute_action_command(self):
         # check for remaining actions

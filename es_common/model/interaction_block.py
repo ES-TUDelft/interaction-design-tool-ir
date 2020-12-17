@@ -223,6 +223,7 @@ class InteractionBlock(Serializable):
             ("id", self.id),
             ("name", self.name),
             ("pattern", self.pattern),
+            ("description", self.description),
             ("topic_tag", self.topic_tag.to_dict),
             ("tablet_page", self.tablet_page.to_dict),
             ("icon_path", self.icon_path),
