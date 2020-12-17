@@ -62,7 +62,7 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 
 ## 5. Start the tool
 
-`$ python3 main_tool.py` ***OR*** `./scripts/design_tool.sh`
+`$ python3 main_tool.py`
 
 - Click "Connect" to the robot and enter the settings such as the name, realm (for the interactive robotics cloud) and/or IP (for the qi framework).
 
@@ -70,12 +70,10 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
 ## 6. Start the robot workers
 
    * **Option A**: using the interactive robotics cloud (Python 3)
-   
-      `./scripts/mac/workers_irc.sh`
-      
-      ***OR***
       
       `$ python3 main_robot.py`
+      
+      - You can run the face tracker using:
       
       `$ python3 main_engagement.py`
       
@@ -100,13 +98,11 @@ The instructions below are based on: [https://docs.mongodb.com/manual/tutorial/i
       `$ pip2 install qi`
       
       
-      - Run the tool using: 
-      
-      `$ ./scripts/mac/workers_qi.sh` 
-      
-      ***OR*** 
+      - Run the robot manager using: 
       
       `$ python2 main_qi_robot.py`
+      
+      - Run the face tracker using:
       
       `$ python2 main_qi_engagement.py`
       
