@@ -34,8 +34,8 @@ def _get_block_properties():
     try:
         # on Linux use: block-linux.yaml
         filename = "block.yaml"
-        if "linux" in sys.platform:  # for Mac: darwin | for windows: win32
-            filename = "block-linux.yaml"
+        # if "linux" in sys.platform:  # for Mac: darwin | for windows: win32
+        #    filename = "block-linux.yaml"
 
         with open("block_manager/properties/{}".format(filename), 'r') as yaml_file:
             props = yaml.load(yaml_file, Loader=yaml.SafeLoader)
