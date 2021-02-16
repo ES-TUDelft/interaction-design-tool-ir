@@ -2,7 +2,7 @@
 
 This project provides a prototyping tool for designing interactions with social robots. The current version of the tool requires Python3 and is compatible with the [Pepper and NAO Robots](https://www.ald.softbankrobotics.com/en/robots/pepper). Interacting with the robots can be via the qi framework (Python2) or the [Interactive-Robotics](https://www.interactive-robotics.com) cloud (Python3). 
 
-The tool was successfully tested on ***MAC***.
+The tool was successfully tested on ***MAC*** and ***LINUX*** (note that on Linux machines you may need to change the display if the tool is not showing correctly).
 
 ## Requirements
 [![Python 3.x](https://img.shields.io/badge/Python-3.x-blue)](https://www.python.org/downloads/)
@@ -66,7 +66,7 @@ Follow the instructions in [Section I](#i-installation-guide)
 
 ## I. Installation Guide
 
-Follow the instructions for [MAC](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/mac.md)
+Follow the instructions for [MAC](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/mac.md) and [LINUX](https://github.com/ES-TUDelft/interaction-design-tool-ir/blob/master/docs/installation/linux.md)
 
 ---
 
