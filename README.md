@@ -34,7 +34,9 @@ Follow the instructions in [Section I](#i-installation-guide)
 
 `$ python3 main_tool.py`
 
-  - Click "**Connect**" to the robot and enter the settings (e.g., name and realm or IP) then run:
+  - Click "**Connect**" to the robot and enter the settings (e.g., name and realm or IP) 
+  
+  - Then run the robot worker:
   
     * ***Option 1***: using the interactive-robotics cloud (requires Python 3 and robot realm)
 
