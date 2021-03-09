@@ -439,12 +439,12 @@ class InteractionController(QtCore.QObject):
         if self.current_interaction_block.has_action(action_type=ActionCommand.PLAY_MUSIC):
             self.on_music_mode()
             return True
-        elif self.current_interaction_block.has_action(action_type=ActionCommand.WAIT):
-            self.on_wait_mode()
-            return True
-        elif self.current_interaction_block.has_action(action_type=ActionCommand.GET_RESERVATIONS):
-            self.on_get_reservations()
-            return True
+        # elif self.current_interaction_block.has_action(action_type=ActionCommand.WAIT):
+        #     self.on_wait_mode()
+        #     return True
+        # elif self.current_interaction_block.has_action(action_type=ActionCommand.GET_RESERVATIONS):
+        #     self.on_get_reservations()
+        #     return True
 
         return False
 

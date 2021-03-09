@@ -1,0 +1,7 @@
+AnimationList_WithoutMessages:
+  - animations/Stand/Gestures/Hey_1: ""
+  - animations/Stand/Gestures/Enthusiastic_5: ""
+
+AnimationList_WithMessages:
+  - animations/Stand/Gestures/ShowSky_1: "Show the sky"
+  - animations/Stand/Gestures/ShowSky_5: "Show the sky again"

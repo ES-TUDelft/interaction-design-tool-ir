@@ -138,7 +138,7 @@ logs/*.json
 .cache-*
 
 interaction_manager/properties/spotify*.yaml
-interaction_manager/properties/*animations*.yaml
+# interaction_manager/properties/*animations*.yaml
 design-tool*
 es_common/properties/tablebooker.yaml
 
@@ -148,3 +148,4 @@ logs/*
 
 robot_manager/tablet/es_app/html/pics/*
 interaction_manager/ui/hre_resources/pepper-icons/*.psd
+interaction_manager/properties/animations_prev.yaml

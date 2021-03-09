@@ -3,6 +3,8 @@ cd ~/path-to/robot-interaction-tool
 pyrcc5 interaction_manager/ui/hre_resources/resources.qrc -o interaction_manager/view/resources_rc.py;
 pyuic5 -x interaction_manager/ui/dialogmainwindow.ui -o interaction_manager/view/ui_dialog.py;
 
+python3 -m PyQt5.uic.pyuic -x interaction_manager/ui/editblockdialog.ui -o interaction_manager/view/ui_editblock_dialog.
+
 pyuic5 -x interaction_manager/ui/editblockdialog.ui -o interaction_manager/view/ui_editblock_dialog.py;
 pyuic5 -x interaction_manager/ui/connectiondialog.ui -o interaction_manager/view/ui_connection_dialog.py;
 pyuic5 -x interaction_manager/ui/editblockdialog.ui -o interaction_manager/view/ui_editblock_dialog.py;

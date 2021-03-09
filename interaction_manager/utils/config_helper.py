@@ -74,19 +74,16 @@ def _get_db_properties():
         return props
 
 
-db_properties = _get_db_properties()
-
-
 def get_db_mongo_settings():
     # returns dict of gestures: 
     # names are the keys and path are values
-    return _get_property(db_properties, 'mongodb')
+    return _get_property(_get_db_properties(), 'mongodb')
 
 
 ####
 # Patterns
 ###
-def _get_patterns_properties():
+def get_patterns():
     patt = None
     try:
         with open("interaction_manager/properties/patterns.yaml", 'r') as yaml_file:
@@ -95,13 +92,6 @@ def _get_patterns_properties():
         logger.error("Error while opening the patterns properties file! {}".format(e))
     finally:
         return patt
-
-
-_patterns = _get_patterns_properties()
-
-
-def get_patterns():
-    return _get_patterns_properties()
 
 
 ####

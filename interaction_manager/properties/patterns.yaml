@@ -56,15 +56,15 @@ question:
 #    topic: "question"
 #    tags:
 #        - confirmationTag
-#action_wait:
-#    inputs: 1
-#    outputs: 1
-#    output_edges: 1
-#    icon: block_manager/icons/blue/action-wait.png
-#    bg_color: 057389
-#    topic: ""
-#    tags: []
-#    action: 1
+action:
+    inputs: 1
+    outputs: 1
+    output_edges: 1
+    icon: block_manager/icons/blue/action-wait.png
+    bg_color: 057389
+    topic: ""
+    tags: []
+    action: 1
 #instructions:
 #    inputs: 1
 #    outputs: 1

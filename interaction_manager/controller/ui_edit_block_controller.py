@@ -74,7 +74,7 @@ class UIEditBlockController(QtWidgets.QDialog):
 
         # Animation
         self.ui.animationLineEdit.setText(self.interaction_block.animation)
-        self.ui.animationsComboBox.currentIndexChanged.connect(self.on_animation_change)
+        self.ui.animationsActionComboBox.currentIndexChanged.connect(self.on_animation_change)
 
         # Actions
         self.set_actions()
@@ -189,15 +189,16 @@ class UIEditBlockController(QtWidgets.QDialog):
                 self.toggle_action_tab(enable=True)
 
                 self.ui.actionComboBox.addItems([SELECT_OPTION])
-                self.ui.actionComboBox.addItems(actions)
+                # Enable music action only!
+                self.ui.actionComboBox.addItems([ActionCommand.PLAY_MUSIC.name])  # (actions)
 
                 # listeners
                 self.ui.actionComboBox.currentIndexChanged.connect(self.on_action_change)
                 # music
                 self.ui.playlistComboBox.currentIndexChanged.connect(self.update_tracks_combo)
-                self.ui.animationsCheckBox.stateChanged.connect(lambda: self.ui.animationsComboBox.setEnabled(
-                    self.ui.animationsCheckBox.isChecked()))
-                self.ui.animationsComboBox.addItems([a for a in config_helper.get_animations()])
+                self.ui.animationsActionCheckBox.stateChanged.connect(lambda: self.ui.animationsActionComboBox.setEnabled(
+                    self.ui.animationsActionCheckBox.isChecked()))
+                self.ui.animationsActionComboBox.addItems([a for a in config_helper.get_animations()])
 
                 # check if the block contains an action
                 if self.interaction_block.action_command is not None:
@@ -222,9 +223,9 @@ class UIEditBlockController(QtWidgets.QDialog):
 
                         anim = self.interaction_block.action_command.animations_key
                         if anim is not None and anim != "":
-                            self.ui.animationsCheckBox.setChecked(True)
-                            self.ui.animationsComboBox.setCurrentIndex(
-                                self.ui.animationsComboBox.findText(anim,
+                            self.ui.animationsActionCheckBox.setChecked(True)
+                            self.ui.animationsActionComboBox.setCurrentIndex(
+                                self.ui.animationsActionComboBox.findText(anim,
                                                                     QtCore.Qt.MatchFixedString))
             except Exception as e:
                 self.logger.error("Error while setting actions! {}".format(e))
@@ -354,7 +355,7 @@ class UIEditBlockController(QtWidgets.QDialog):
 
     @qtSlot()
     def on_animation_change(self):
-        animation = self.ui.animationsComboBox.currentText()
+        animation = self.ui.animationComboBox.currentText()
         if animation != SELECT_OPTION:
             self.ui.animationLineEdit.setText(animation)
 
@@ -450,8 +451,8 @@ class UIEditBlockController(QtWidgets.QDialog):
                 args = None
             else:
                 args = [playlist, track, int(self.ui.playTimeSpinBox.value())]
-                if self.ui.animationsCheckBox.isChecked():
-                    args.append("{}".format(self.ui.animationsComboBox.currentText()))
+                if self.ui.animationsActionCheckBox.isChecked():
+                    args.append("{}".format(self.ui.animationsActionComboBox.currentText()))
         except Exception as e:
             self.logger.error("Error while loading music arguments! {}".format(e))
         finally:
